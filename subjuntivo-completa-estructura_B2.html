@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subjuntivo: Completa la Estructura – PaoSpanishTeacher</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f7ff;
+  --brand:#1a5fa8;
+  --brand2:#0e3d6e;
+  --accent:#3b82f6;
+  --green:#27ae60;
+  --red:#e74c3c;
+  --verb:#d97706;
+  --text:#2c3e50;
+  --card:#fff;
+  --shadow:rgba(0,0,0,0.09);
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 10% 15%, rgba(59,130,246,0.13) 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 80%, rgba(26,95,168,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at 55% 45%, rgba(219,119,6,0.06) 0%, transparent 60%);
+  pointer-events:none;z-index:0;
+}
+
+.sym{
+  position:fixed;font-size:1rem;opacity:0.06;
+  font-family:'Baloo 2',cursive;font-weight:800;
+  color:#1a5fa8;pointer-events:none;z-index:0;
+  animation:floatSym 9s ease-in-out infinite;
+}
+@keyframes floatSym{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+#app{
+  position:relative;z-index:1;
+  max-width:800px;margin:0 auto;
+  padding:16px 14px 100px;
+}
+
+/* ── HEADER ── */
+header{text-align:center;margin-bottom:18px;}
+header h1{
+  font-family:'Baloo 2',cursive;
+  font-size:clamp(1.3rem,4.2vw,2.2rem);
+  font-weight:800;color:var(--brand2);
+  text-shadow:2px 3px 0 rgba(14,61,110,0.12);
+  line-height:1.15;
+}
+header .brand-sub{
+  font-family:'Playfair Display',serif;
+  font-style:italic;color:var(--brand);
+  font-size:clamp(0.88rem,2.5vw,1.1rem);margin-top:2px;
+}
+header .icon-row{font-size:1.3rem;margin-top:6px;letter-spacing:4px;}
+.nivel-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,#1a5fa8,#0e3d6e);
+  color:#fff;border-radius:30px;
+  padding:4px 16px;font-size:0.8rem;font-weight:800;
+  font-family:'Baloo 2',cursive;letter-spacing:1px;
+  margin-top:6px;box-shadow:0 3px 10px rgba(26,95,168,0.3);
+}
+
+/* ── PROGRESS ── */
+#progress-wrap{
+  background:#fff;border-radius:40px;
+  box-shadow:0 2px 10px var(--shadow);
+  padding:8px 18px;margin-bottom:14px;
+  display:flex;align-items:center;gap:12px;
+}
+#progress-wrap .plabel{font-size:0.82rem;font-weight:700;color:var(--brand);white-space:nowrap;}
+#prog-bg{flex:1;height:14px;background:#dbeafe;border-radius:40px;overflow:hidden;}
+#prog-bar{height:100%;background:linear-gradient(90deg,#60a5fa,#1a5fa8);border-radius:40px;width:0%;transition:width .5s ease;}
+#prog-count{font-size:0.85rem;font-weight:800;color:var(--brand2);min-width:44px;text-align:right;}
+
+/* ── MOTIVATOR ── */
+#motivator{
+  display:none;
+  background:linear-gradient(135deg,#eff6ff,#dbeafe);
+  border:2px solid #60a5fa;border-radius:18px;
+  padding:11px 18px;margin-bottom:14px;
+  text-align:center;font-size:1rem;font-weight:700;
+  color:var(--brand2);box-shadow:0 4px 14px rgba(96,165,250,.22);
+  animation:pop .4s;
+}
+
+/* ── HINT CARD ── */
+#hint-card{
+  background:linear-gradient(135deg,#fefce8,#fef9c3);
+  border:1.5px solid #fbbf24;
+  border-radius:14px;
+  padding:12px 18px;
+  margin-bottom:16px;
+  font-size:0.86rem;
+  color:#92400e;
+  font-weight:700;
+  display:flex;align-items:flex-start;gap:10px;
+  box-shadow:0 2px 10px rgba(251,191,36,0.12);
+}
+#hint-card .hint-icon{font-size:1.3rem;flex-shrink:0;}
+#hint-card .hint-text{line-height:1.65;}
+#hint-card .hint-text em{
+  font-style:normal;
+  background:#fef3c7;
+  border-radius:5px;
+  padding:1px 6px;
+  margin:0 1px;
+  border-bottom:2px solid #f59e0b;
+  color:#78350f;
+  font-weight:800;
+}
+
+/* ── LEGEND ── */
+#legend{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  background:#fff;border-radius:14px;
+  padding:10px 18px;margin-bottom:16px;
+  box-shadow:0 2px 10px var(--shadow);
+  font-size:0.83rem;font-weight:700;
+}
+.leg-item{display:flex;align-items:center;gap:6px;}
+.leg-verb{
+  background:#fef3c7;color:#d97706;
+  border-radius:6px;padding:2px 8px;
+  font-style:italic;font-weight:800;
+  border-bottom:2px solid #f59e0b;
+  font-size:0.83rem;
+}
+.leg-blank{
+  background:#eff6ff;color:#1a5fa8;
+  border:2px dashed #60a5fa;
+  border-radius:8px;padding:2px 10px;
+  font-weight:800;font-size:0.83rem;
+}
+
+/* ── TEXT CARD ── */
+#text-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:0 6px 24px var(--shadow);
+  padding:24px 28px;margin-bottom:20px;
+  line-height:2.2;font-size:clamp(0.97rem,2.3vw,1.07rem);
+  color:var(--text);
+  border-top:4px solid var(--accent);
+}
+
+/* ── VERB HIGHLIGHT (already given in text) ── */
+.verb-hi{
+  color:#d97706;
+  font-weight:800;
+  font-style:italic;
+  background:#fef3c7;
+  border-radius:6px;
+  padding:1px 6px;
+  border-bottom:2px solid #f59e0b;
+}
+
+/* ── BLANK BUTTON ── */
+.blank-btn{
+  display:inline-block;
+  min-width:130px;
+  background:#eff6ff;
+  border:2.5px dashed #60a5fa;
+  border-radius:10px;
+  padding:3px 10px;
+  font-family:'Baloo 2',cursive;
+  font-size:0.94rem;font-weight:700;
+  color:#1a5fa8;
+  cursor:pointer;
+  vertical-align:middle;
+  margin:0 3px;
+  transition:all .2s;
+  white-space:nowrap;
+}
+.blank-btn:hover{background:#dbeafe;border-color:#1a5fa8;}
+.blank-btn.correct{
+  background:#d5f5e3;border:2.5px solid #27ae60;
+  color:#1a6640;cursor:default;
+  animation:popSmall .35s;
+  font-style:italic;
+}
+.blank-btn.error{
+  background:#fdecea;border-color:#e74c3c;color:#922b21;
+  animation:shake .35s;
+}
+
+/* ── OPTIONS PANEL ── */
+#options-panel{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:0 4px 18px var(--shadow);
+  padding:18px 20px;margin-bottom:18px;
+}
+#options-panel h2{
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;
+  color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:6px;
+}
+#options-grid{display:flex;flex-wrap:wrap;gap:10px;}
+
+.opt-btn{
+  font-family:'Baloo 2',cursive;font-size:0.92rem;font-weight:700;
+  background:#eff6ff;border:2px solid #93c5fd;
+  border-radius:30px;padding:7px 16px;
+  color:#1e40af;cursor:pointer;
+  transition:all .18s;box-shadow:0 2px 8px rgba(147,197,253,.18);
+  user-select:none;font-style:italic;
+}
+.opt-btn:hover{background:#dbeafe;border-color:#1a5fa8;transform:translateY(-2px);}
+.opt-btn.selected{
+  background:linear-gradient(135deg,#3b82f6,#1a5fa8);
+  border-color:#0e3d6e;color:#fff;
+  box-shadow:0 4px 14px rgba(26,95,168,.35);
+}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#fff;border-radius:40px;padding:10px 26px;
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;
+  box-shadow:0 6px 24px rgba(0,0,0,.16);z-index:600;
+  transition:transform .3s cubic-bezier(.4,1.4,.6,1);
+  pointer-events:none;white-space:nowrap;
+}
+#toast.show{transform:translateX(-50%) translateY(0);}
+#toast.ok{color:var(--green);}
+#toast.err{color:var(--red);}
+
+/* ── COMPLETED TEXT ── */
+#completed-text{
+  display:none;
+  background:linear-gradient(135deg,#f0fff6,#eff6ff);
+  border:2px solid #27ae60;border-radius:var(--radius);
+  padding:20px 24px;margin-bottom:18px;
+  font-size:1rem;line-height:2.2;color:var(--text);
+  box-shadow:0 4px 18px rgba(39,174,96,.10);
+}
+#completed-text h3{
+  font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;
+  color:var(--green);margin-bottom:10px;
+}
+
+/* ── FINAL ── */
+#final-screen{
+  display:none;position:fixed;inset:0;
+  background:rgba(5,15,30,.88);z-index:1000;
+  align-items:center;justify-content:center;
+  flex-direction:column;padding:30px;
+}
+#final-screen.show{display:flex;}
+#final-box{
+  background:#fff;border-radius:28px;
+  padding:36px 30px 28px;max-width:420px;width:100%;
+  text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45);
+  animation:pop .5s cubic-bezier(.4,1.4,.6,1);
+  position:relative;overflow:hidden;
+}
+#final-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,#3b82f6,#1a5fa8,#d97706,#2ecc71,#f1c40f,#e74c3c);
+}
+#final-teacher{font-size:3.8rem;margin-bottom:8px;}
+#final-title{
+  font-family:'Baloo 2',cursive;font-size:1.75rem;font-weight:800;
+  color:var(--brand2);margin-bottom:8px;
+}
+#final-sub{font-size:1rem;color:#555;margin-bottom:6px;line-height:1.5;}
+#final-credit{
+  font-family:'Playfair Display',serif;font-style:italic;
+  color:var(--brand);font-size:0.95rem;margin-bottom:20px;
+}
+#btn-replay{
+  font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;
+  background:linear-gradient(135deg,#3b82f6,#1a5fa8);
+  color:#fff;border:none;border-radius:40px;
+  padding:12px 34px;cursor:pointer;
+  box-shadow:0 6px 20px rgba(26,95,168,.4);transition:all .2s;
+}
+#btn-replay:hover{filter:brightness(1.08);transform:translateY(-2px);}
+
+#watermark{
+  position:fixed;bottom:12px;right:14px;
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:0.76rem;color:rgba(26,95,168,.32);
+  pointer-events:none;z-index:500;
+}
+
+@keyframes pop{0%{transform:scale(.75);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes popSmall{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.confetti-p{
+  position:fixed;width:9px;height:9px;top:-9px;border-radius:2px;
+  animation:cfall linear forwards;pointer-events:none;z-index:900;
+}
+@keyframes cfall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(110vh) rotate(720deg)}}
+.balloon{position:fixed;font-size:2.2rem;animation:brise linear forwards;pointer-events:none;z-index:898;}
+@keyframes brise{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-120vh)}}
+</style>
+</head>
+<body>
+
+<div class="sym" style="top:7%;left:3%;animation-delay:0s">ojalá</div>
+<div class="sym" style="top:18%;right:4%;animation-delay:1.8s">es vital que</div>
+<div class="sym" style="top:38%;left:2%;animation-delay:3.2s">desean que</div>
+<div class="sym" style="top:62%;right:3%;animation-delay:0.6s">me alegra que</div>
+<div class="sym" style="top:78%;left:5%;animation-delay:2.5s">confía en que</div>
+<div class="sym" style="top:88%;right:6%;animation-delay:4.2s">es urgente que</div>
+
+<div id="app">
+  <header>
+    <h1>🔄 Subjuntivo: Completa la Estructura</h1>
+    <div class="brand-sub">PaoSpanishTeacher</div>
+    <div class="icon-row">✍️📚🎯💡</div>
+    <div class="nivel-badge">B2</div>
+  </header>
+
+  <div id="progress-wrap">
+    <span class="plabel">Progreso</span>
+    <div id="prog-bg"><div id="prog-bar"></div></div>
+    <span id="prog-count">0 / 0</span>
+  </div>
+
+  <div id="motivator">👨‍🏫 ¡Vas muy bien! ¡Sigue así!</div>
+
+  <div id="hint-card">
+    <div class="hint-icon">💡</div>
+    <div class="hint-text" id="hint-text">Los verbos en subjuntivo ya están dados. Elige la estructura desencadenante correcta para cada espacio.</div>
+  </div>
+
+  <div id="legend">
+    <span style="font-size:0.82rem;color:#555;font-weight:700;">Leyenda:</span>
+    <div class="leg-item"><span class="leg-verb">viva</span><span style="color:#555;">= verbo en subjuntivo (ya dado)</span></div>
+    <div class="leg-item"><span class="leg-blank">___</span><span style="color:#555;">= estructura que debes completar</span></div>
+  </div>
+
+  <div id="text-card"></div>
+  <div id="completed-text"><h3>✅ Texto completo</h3><div id="completed-body"></div></div>
+
+  <div id="options-panel">
+    <h2>🗂️ Elige la estructura desencadenante correcta:</h2>
+    <div id="options-grid"></div>
+  </div>
+</div>
+
+<div id="toast">¡Correcto!</div>
+
+<div id="final-screen">
+  <div id="final-box">
+    <div id="final-teacher">👨‍🏫</div>
+    <div id="final-title">¡Excelente!</div>
+    <div id="final-sub">Has identificado correctamente las estructuras del presente de subjuntivo. ¡Muy buen trabajo!</div>
+    <div id="final-credit">Juego creado por PaoSpanishTeacher</div>
+    <button id="btn-replay">🔄 Jugar otra vez</button>
+  </div>
+</div>
+
+<div id="watermark">PaoSpanishTeacher</div>
+
+<script>
+// ── AUDIO ──
+const AC = new (window.AudioContext || window.webkitAudioContext)();
+function resumeAC(){ if(AC.state==='suspended') AC.resume(); }
+['click','touchstart'].forEach(ev=>window.addEventListener(ev,resumeAC,{once:true}));
+function tone(freq,dur,type='sine',vol=0.22,delay=0){
+  try{
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.connect(g);g.connect(AC.destination);
+    o.type=type;o.frequency.value=freq;
+    const t=AC.currentTime+delay;
+    g.gain.setValueAtTime(vol,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.start(t);o.stop(t+dur);
+  }catch(e){}
+}
+function soundCorrect(){ [523,659,784].forEach((f,i)=>tone(f,0.14,'sine',0.2,i*0.1)); }
+function soundWrong()  { tone(280,0.14,'triangle',0.15); tone(220,0.17,'triangle',0.13,0.15); }
+function soundMotiv()  { [392,440,494,523].forEach((f,i)=>tone(f,0.13,'sine',0.18,i*0.09)); }
+function soundWin()    { [523,587,659,784,880,1047].forEach((f,i)=>tone(f,0.18,'sine',0.22,i*0.11)); }
+
+// ──────────────────────────────────────────────────────────────
+// VARIANTES – 4 textos nivel B2
+// Los VERBOS en subjuntivo están dados y resaltados en ámbar.
+// El estudiante completa los ESPACIOS con la ESTRUCTURA correcta.
+// Segmentos: string=texto normal | {verb} = verbo resaltado
+//            {id, answer} = blank a completar
+// ──────────────────────────────────────────────────────────────
+const VARIANTS = [
+
+  // ── TEXTO 1 ── Contexto: medioambiente y sociedad
+  // Estructuras a completar: Es urgente que · Ojalá · Los científicos piden que
+  //                          Me preocupa que · Es imprescindible que
+  {
+    hint: 'Los verbos en <span style="color:#d97706;font-weight:800;">ámbar</span> ya están dados. Elige la estructura que los activa.',
+    words: [
+      'Es urgente que',
+      'Ojalá',
+      'Los científicos piden que',
+      'Me preocupa que',
+      'Es imprescindible que'
+    ],
+    segments: [
+      "",
+      {id:0, answer:"Es urgente que"},
+      " los gobiernos ",
+      {verb:"tomen"},
+      " medidas concretas contra el cambio climático antes de que sea demasiado tarde. ",
+      {id:1, answer:"Me preocupa que"},
+      " cada año ",
+      {verb:"desaparezcan"},
+      " miles de especies animales sin que la sociedad reaccione con la suficiente rapidez. ",
+      {id:2, answer:"Los científicos piden que"},
+      " la población ",
+      {verb:"reduzca"},
+      " el consumo de plásticos de un solo uso en su vida cotidiana. ",
+      {id:3, answer:"Ojalá"},
+      " las próximas generaciones ",
+      {verb:"encuentren"},
+      " un planeta más limpio y equilibrado del que nosotros hemos heredado. ",
+      {id:4, answer:"Es imprescindible que"},
+      " todos ",
+      {verb:"colaboremos"},
+      " desde casa con pequeños gestos que, sumados, marcan una gran diferencia."
+    ]
+  },
+
+  // ── TEXTO 2 ── Contexto: relaciones personales y emociones
+  // Estructuras: Me alegra que · Espero que · Es natural que
+  //              Siento que · Confío en que
+  {
+    hint: 'Los verbos en <span style="color:#d97706;font-weight:800;">ámbar</span> ya están dados. Elige la estructura que los activa.',
+    words: [
+      'Me alegra que',
+      'Espero que',
+      'Es natural que',
+      'Siento mucho que',
+      'Confío en que'
+    ],
+    segments: [
+      "",
+      {id:0, answer:"Me alegra que"},
+      " por fin ",
+      {verb:"hayas decidido"},
+      " hablar con ella, porque guardar silencio solo empeora las cosas. ",
+      {id:1, answer:"Siento mucho que"},
+      " la situación te ",
+      {verb:"haya afectado"},
+      " tanto; es normal sentirse así cuando alguien importante falla. ",
+      {id:2, answer:"Es natural que"},
+      " al principio ",
+      {verb:"cueste"},
+      " perdonar, pero con el tiempo todo se ve con más claridad y calma. ",
+      {id:3, answer:"Espero que"},
+      " los dos ",
+      {verb:"puedan"},
+      " llegar a un acuerdo que sea justo y respetuoso para ambas partes. ",
+      {id:4, answer:"Confío en que"},
+      " esta experiencia les ",
+      {verb:"sirva"},
+      " para conocerse mejor y construir una relación más honesta y madura."
+    ]
+  },
+
+  // ── TEXTO 3 ── Contexto: tecnología y futuro
+  // Estructuras: Los expertos temen que · Es lógico que · Muchos desean que
+  //              No es seguro que · Es fundamental que
+  {
+    hint: 'Los verbos en <span style="color:#d97706;font-weight:800;">ámbar</span> ya están dados. Elige la estructura que los activa.',
+    words: [
+      'Los expertos temen que',
+      'Es lógico que',
+      'Muchos desean que',
+      'No es seguro que',
+      'Es fundamental que'
+    ],
+    segments: [
+      "",
+      {id:0, answer:"Los expertos temen que"},
+      " la inteligencia artificial ",
+      {verb:"elimine"},
+      " millones de puestos de trabajo en los próximos veinte años si no se regula correctamente. ",
+      {id:1, answer:"Es lógico que"},
+      " la sociedad ",
+      {verb:"sienta"},
+      " incertidumbre ante cambios tan profundos y tan rápidos como los que estamos viviendo. ",
+      {id:2, answer:"Muchos desean que"},
+      " la tecnología solo ",
+      {verb:"se use"},
+      " para mejorar la calidad de vida y nunca para controlar o vigilar a las personas. ",
+      {id:3, answer:"No es seguro que"},
+      " todos los países ",
+      {verb:"estén"},
+      " preparados para afrontar los retos éticos que plantea el desarrollo de la IA. ",
+      {id:4, answer:"Es fundamental que"},
+      " los ciudadanos ",
+      {verb:"participen"},
+      " activamente en los debates sobre el uso responsable de la tecnología."
+    ]
+  },
+
+  // ── TEXTO 4 ── Contexto: viajes y experiencias nuevas
+  // Estructuras: Mi familia quiere que · Ojalá · El guía recomienda que
+  //              Es mejor que · Me sorprende que
+  {
+    hint: 'Los verbos en <span style="color:#d97706;font-weight:800;">ámbar</span> ya están dados. Elige la estructura que los activa.',
+    words: [
+      'Mi familia quiere que',
+      'Ojalá',
+      'El guía recomienda que',
+      'Es mejor que',
+      'Me sorprende que'
+    ],
+    segments: [
+      "",
+      {id:0, answer:"Mi familia quiere que"},
+      " este verano todos ",
+      {verb:"viajemos"},
+      " juntos a un destino diferente donde nadie haya estado antes. ",
+      {id:1, answer:"El guía recomienda que"},
+      " los turistas ",
+      {verb:"lleguen"},
+      " al templo antes de las ocho de la mañana para evitar las multitudes. ",
+      {id:2, answer:"Me sorprende que"},
+      " tan poca gente ",
+      {verb:"conozca"},
+      " este rincón del país, porque es uno de los lugares más hermosos que he visitado. ",
+      {id:3, answer:"Es mejor que"},
+      " cada viajero ",
+      {verb:"lleve"},
+      " ropa cómoda y calzado adecuado para los senderos de montaña. ",
+      {id:4, answer:"Ojalá"},
+      " el próximo año ",
+      {verb:"podamos"},
+      " repetir la experiencia y descubrir aún más lugares increíbles juntos."
+    ]
+  }
+
+];
+
+// ── STATE ──
+let variant, blanks, completed, motivShown, selectedOpt, currentBlankId;
+let lastVariantIndex = -1;
+
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+// ── INIT ──
+function init(){
+  document.getElementById('final-screen').classList.remove('show');
+  document.getElementById('completed-text').style.display='none';
+  document.getElementById('motivator').style.display='none';
+  completed=0; motivShown=false; selectedOpt=null; currentBlankId=null;
+
+  let idx;
+  do { idx=Math.floor(Math.random()*VARIANTS.length); } while(idx===lastVariantIndex && VARIANTS.length>1);
+  lastVariantIndex=idx;
+  variant=VARIANTS[idx];
+  blanks=variant.segments.filter(s=>typeof s==='object' && s.verb===undefined);
+
+  document.getElementById('hint-text').innerHTML = variant.hint;
+
+  updateProgress();
+  renderText();
+  renderOptions();
+  selectFirstBlank();
+}
+
+// ── RENDER TEXT ──
+function renderText(){
+  const card=document.getElementById('text-card');
+  card.innerHTML='';
+  variant.segments.forEach(seg=>{
+    if(typeof seg==='string'){
+      if(seg) card.appendChild(document.createTextNode(seg));
+    } else if(seg.verb !== undefined){
+      // verb already given — highlighted in amber
+      const sp=document.createElement('span');
+      sp.className='verb-hi';
+      sp.textContent=seg.verb;
+      card.appendChild(sp);
+    } else {
+      // blank for the trigger structure
+      const btn=document.createElement('span');
+      btn.className='blank-btn';
+      btn.id=`blank-${seg.id}`;
+      btn.dataset.id=seg.id;
+      btn.dataset.answer=seg.answer;
+      const label=document.createElement('span');
+      label.className='blank-label';
+      label.textContent='___';
+      btn.appendChild(label);
+      btn.addEventListener('click',()=>selectBlank(seg.id));
+      card.appendChild(btn);
+    }
+  });
+}
+
+// ── RENDER OPTIONS ──
+function renderOptions(){
+  const grid=document.getElementById('options-grid');
+  grid.innerHTML='';
+  shuffle(variant.words).forEach(w=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.textContent=w;
+    btn.dataset.word=w;
+    btn.addEventListener('click',()=>selectOption(w,btn));
+    grid.appendChild(btn);
+  });
+}
+
+// ── SELECT FIRST UNANSWERED BLANK ──
+function selectFirstBlank(){
+  const first=blanks.find(b=>{
+    const el=document.getElementById(`blank-${b.id}`);
+    return el && !el.classList.contains('correct');
+  });
+  if(first) selectBlank(first.id);
+}
+
+// ── SELECT BLANK ──
+function selectBlank(id){
+  blanks.forEach(b=>{
+    const el=document.getElementById(`blank-${b.id}`);
+    if(el && !el.classList.contains('correct')){
+      el.style.borderStyle='dashed';
+      el.style.borderColor='#60a5fa';
+      el.style.background='#eff6ff';
+    }
+  });
+  currentBlankId=id;
+  const el=document.getElementById(`blank-${id}`);
+  if(el && !el.classList.contains('correct')){
+    el.style.borderStyle='solid';
+    el.style.borderColor='#f59e0b';
+    el.style.background='#fef9c3';
+  }
+  selectedOpt=null;
+  document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+}
+
+// ── SELECT OPTION ──
+function selectOption(word,btn){
+  resumeAC();
+  if(currentBlankId===null) return;
+  const blankEl=document.getElementById(`blank-${currentBlankId}`);
+  if(!blankEl||blankEl.classList.contains('correct')) return;
+  document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedOpt=word;
+  checkAnswer(word);
+}
+
+// ── CHECK ──
+function checkAnswer(word){
+  const blankDef=blanks.find(b=>b.id===currentBlankId);
+  if(!blankDef) return;
+  const blankEl=document.getElementById(`blank-${currentBlankId}`);
+
+  if(word===blankDef.answer){
+    soundCorrect();
+    blankEl.classList.remove('error');
+    blankEl.classList.add('correct');
+    blankEl.style.borderStyle='solid';
+    blankEl.style.borderColor='#27ae60';
+    blankEl.style.background='#d5f5e3';
+    const lbl=blankEl.querySelector('.blank-label');
+    if(lbl){ lbl.textContent=word; lbl.style.color='#1a6640'; }
+    blankEl.style.cursor='default';
+    blankEl.onclick=null;
+    completed++;
+    updateProgress();
+    showToast('¡Correcto! ✔','ok');
+    document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+    selectedOpt=null;
+    setTimeout(()=>{
+      if(completed<blanks.length) selectFirstBlank();
+      else triggerWin();
+    },400);
+  } else {
+    soundWrong();
+    blankEl.classList.add('error');
+    setTimeout(()=>blankEl.classList.remove('error'),400);
+    showToast('Intenta otra vez 🔁','err');
+    document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+  }
+}
+
+// ── PROGRESS ──
+function updateProgress(){
+  const total=blanks.length||5;
+  const pct=(completed/total)*100;
+  document.getElementById('prog-bar').style.width=pct+'%';
+  document.getElementById('prog-count').textContent=`${completed} / ${total}`;
+  if(completed>=Math.ceil(total/2)&&!motivShown){
+    motivShown=true;
+    const m=document.getElementById('motivator');
+    m.style.display='block'; soundMotiv();
+    setTimeout(()=>m.style.display='none',2800);
+  }
+}
+
+// ── TOAST ──
+let toastTimer=null;
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='show '+type;
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='',1400);
+}
+
+// ── WIN ──
+function triggerWin(){
+  soundWin();
+  showCompletedText();
+  confetti(); balloons();
+  setTimeout(()=>document.getElementById('final-screen').classList.add('show'),900);
+}
+
+function showCompletedText(){
+  const box=document.getElementById('completed-text');
+  const body=document.getElementById('completed-body');
+  body.innerHTML='';
+  variant.segments.forEach(seg=>{
+    if(typeof seg==='string'){
+      if(seg) body.appendChild(document.createTextNode(seg));
+    } else if(seg.verb !== undefined){
+      const sp=document.createElement('span');
+      sp.className='verb-hi';
+      sp.textContent=seg.verb;
+      body.appendChild(sp);
+    } else {
+      const sp=document.createElement('strong');
+      sp.style.cssText='color:#1a5fa8;font-style:italic;';
+      sp.textContent=seg.answer;
+      body.appendChild(sp);
+    }
+  });
+  box.style.display='block';
+}
+
+function confetti(){
+  const colors=['#3b82f6','#1a5fa8','#d97706','#2ecc71','#f1c40f','#e74c3c','#93c5fd'];
+  for(let i=0;i<90;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='confetti-p';
+      c.style.left=Math.random()*100+'vw';
+      c.style.background=colors[Math.floor(Math.random()*colors.length)];
+      const sz=8+Math.random()*9;
+      c.style.width=sz+'px'; c.style.height=sz+'px';
+      c.style.borderRadius=Math.random()>.5?'50%':'3px';
+      const dur=2+Math.random()*2;
+      c.style.animationDuration=dur+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),dur*1000);
+    },Math.random()*1500);
+  }
+}
+
+function balloons(){
+  const emojis=['🎈','🎉','🎊','🥳','✨','🌟','✍️'];
+  for(let i=0;i<12;i++){
+    setTimeout(()=>{
+      const b=document.createElement('div');
+      b.className='balloon';
+      b.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      b.style.left=(3+Math.random()*88)+'vw';
+      b.style.bottom='-40px';
+      const dur=3+Math.random()*3;
+      b.style.animationDuration=dur+'s';
+      document.body.appendChild(b);
+      setTimeout(()=>b.remove(),dur*1000);
+    },Math.random()*1800);
+  }
+}
+
+document.getElementById('btn-replay').addEventListener('click',()=>{ resumeAC(); init(); });
+init();
+</script>
+</body>
+</html>

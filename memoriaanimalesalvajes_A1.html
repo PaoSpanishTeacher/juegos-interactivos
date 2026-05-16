@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memoria - Animales Salvajes</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --verde-selva: #2d6a4f;
+            --verde-claro: #95d5b2;
+            --naranja-tigre: #ff9f1c;
+            --crema: #f8f9fa;
+            --texto: #1b4332;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(45, 106, 79, 0.8), rgba(45, 106, 79, 0.8)), 
+                        url('https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: var(--texto);
+        }
+
+        header { text-align: center; margin-bottom: 20px; color: white; }
+        
+        h1 { font-size: 3rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 5px; }
+        
+        .brand-name {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: var(--verde-claro);
+            font-weight: 300;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            max-width: 900px;
+            width: 100%;
+            perspective: 1000px;
+        }
+
+        @media (max-width: 768px) {
+            .game-container { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .card {
+            aspect-ratio: 3/4;
+            position: relative;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover:not(.flipped):not(.matched) {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 4px solid white;
+        }
+
+        .card-front {
+            background: linear-gradient(45deg, #1b4332, #40916c);
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M0 40 L40 0 M10 40 L40 10 M20 40 L40 20 M30 40 L40 30 M0 30 L30 0 M0 20 L20 0 M0 10 L10 0" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/></svg>');
+            z-index: 2;
+        }
+
+        /* Simulación de zoológico tropical en el reverso */
+        .card-front::after {
+            content: '🌿🐒🐘🌿';
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .card-back {
+            background-color: var(--crema);
+            transform: rotateY(180deg);
+            padding: 10px;
+        }
+
+        .card.matched .card-back {
+            background-color: #d8f3dc;
+            border-color: #b7e4c7;
+        }
+
+        .card-image { font-size: 4rem; }
+        .card-text { font-size: 1.3rem; font-weight: bold; color: var(--verde-selva); text-align: center; }
+
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            opacity: 0.3;
+            color: white;
+            font-style: italic;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+
+        /* Overlays */
+        #excelente-pop {
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--verde-selva);
+            display: none;
+            z-index: 100;
+            animation: bounceIn 0.5s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        #final-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #final-screen h2 { font-size: 2.5rem; margin-bottom: 10px; }
+        #final-screen p { font-size: 1.2rem; margin-bottom: 30px; color: var(--verde-claro); }
+
+        .btn-restart {
+            padding: 15px 40px;
+            background: var(--naranja-tigre);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 159, 28, 0.4);
+        }
+
+        .btn-restart:hover { transform: scale(1.1); background: #ff7b00; }
+
+        .balloon {
+            position: absolute;
+            bottom: -100px;
+            width: 50px;
+            height: 70px;
+            background: red;
+            border-radius: 50%;
+            animation: float 4s linear forwards;
+            z-index: 201;
+        }
+
+        @keyframes float {
+            to { transform: translateY(-120vh) rotate(20deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Memoria - Animales Salvajes</h1>
+        <div class="brand-name">PaoSpanishTeacher</div>
+    </header>
+
+    <main class="game-container" id="game-board"></main>
+
+    <div id="excelente-pop">¡Excelente!</div>
+
+    <div id="final-screen">
+        <span style="font-size: 5rem;">🏆</span>
+        <h2>¡Felicidades!</h2>
+        <p>Has encontrado todos los animales salvajes.</p>
+        <p style="font-style: italic; font-size: 1rem;">Juego creado por Pau Spanish Teacher</p>
+        <button class="btn-restart" onclick="restartGame()">Jugar otra vez</button>
+    </div>
+
+    <div class="watermark">Pau Spanish Teacher</div>
+
+    <script>
+        const ANIMALES = [
+            { nombre: "León", icono: "🦁" },
+            { nombre: "Tigre", icono: "🐯" },
+            { nombre: "Elefante", icono: "🐘" },
+            { nombre: "Jirafa", icono: "🦒" },
+            { nombre: "Mono", icono: "🐒" },
+            { nombre: "Cebra", icono: "🦓" },
+            { nombre: "Oso", icono: "🐻" },
+            { nombre: "Cocodrilo", icono: "🐊" },
+            { nombre: "Rinoceronte", icono: "🦏" },
+            { nombre: "Hipopótamo", icono: "🦛" }
+        ];
+
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let isLocked = false;
+
+        // Audio sintetizado para evitar dependencias externas
+        const playSfx = (type) => {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.connect(g); g.connect(ctx.destination);
+
+            if(type === 'match') {
+                osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+                g.gain.setValueAtTime(0.1, ctx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                osc.start(); osc.stop(ctx.currentTime + 0.3);
+            } else if(type === 'fail') {
+                osc.frequency.setValueAtTime(150, ctx.currentTime);
+                g.gain.setValueAtTime(0.1, ctx.currentTime);
+                g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.2);
+                osc.start(); osc.stop(ctx.currentTime + 0.2);
+            } else if(type === 'win') {
+                const notes = [523, 659, 783, 1046];
+                notes.forEach((f, i) => {
+                    const o = ctx.createOscillator();
+                    const ga = ctx.createGain();
+                    o.connect(ga); ga.connect(ctx.destination);
+                    o.frequency.setValueAtTime(f, ctx.currentTime + i * 0.15);
+                    ga.gain.setValueAtTime(0.1, ctx.currentTime + i * 0.15);
+                    ga.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.3);
+                    o.start(ctx.currentTime + i * 0.15); o.stop(ctx.currentTime + i * 0.15 + 0.3);
+                });
+            }
+        };
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function createBoard() {
+            const board = document.getElementById('game-board');
+            board.innerHTML = '';
+            
+            // Crear el mazo de 20 cartas (10 nombres, 10 iconos)
+            let deck = [];
+            ANIMALES.forEach(animal => {
+                deck.push({ type: 'text', val: animal.nombre, id: animal.nombre });
+                deck.push({ type: 'img', val: animal.icono, id: animal.nombre });
+            });
+
+            shuffle(deck);
+
+            deck.forEach(data => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.id = data.id;
+
+                card.innerHTML = `
+                    <div class="card-face card-front"></div>
+                    <div class="card-face card-back">
+                        ${data.type === 'text' ? `<span class="card-text">${data.val}</span>` : `<span class="card-image">${data.val}</span>`}
+                    </div>
+                `;
+
+                card.onclick = () => flipCard(card);
+                board.appendChild(card);
+            });
+        }
+
+        function flipCard(card) {
+            if (isLocked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+            card.classList.add('flipped');
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            isLocked = true;
+            const [c1, c2] = flippedCards;
+            const isMatch = c1.dataset.id === c2.dataset.id;
+
+            if (isMatch) {
+                matchedPairs++;
+                playSfx('match');
+                c1.classList.add('matched');
+                c2.classList.add('matched');
+                
+                // Efecto "Excelente"
+                const pop = document.getElementById('excelente-pop');
+                pop.style.display = 'block';
+                confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } });
+                
+                setTimeout(() => {
+                    pop.style.display = 'none';
+                    flippedCards = [];
+                    isLocked = false;
+                    if (matchedPairs === ANIMALES.length) showFinal();
+                }, 1000);
+            } else {
+                playSfx('fail');
+                setTimeout(() => {
+                    c1.classList.remove('flipped');
+                    c2.classList.remove('flipped');
+                    flippedCards = [];
+                    isLocked = false;
+                }, 1500);
+            }
+        }
+
+        function showFinal() {
+            const screen = document.getElementById('final-screen');
+            screen.style.display = 'flex';
+            playSfx('win');
+            
+            // Globos
+            for(let i=0; i<20; i++) {
+                setTimeout(createBalloon, i * 200);
+            }
+
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 }
+            });
+        }
+
+        function createBalloon() {
+            const b = document.createElement('div');
+            b.className = 'balloon';
+            b.style.left = Math.random() * 90 + 'vw';
+            b.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 50%)`;
+            document.body.appendChild(b);
+            setTimeout(() => b.remove(), 4000);
+        }
+
+        function restartGame() {
+            matchedPairs = 0;
+            flippedCards = [];
+            isLocked = false;
+            document.getElementById('final-screen').style.display = 'none';
+            createBoard();
+        }
+
+        // Inicializar
+        window.onload = createBoard;
+    </script>
+</body>
+</html>
