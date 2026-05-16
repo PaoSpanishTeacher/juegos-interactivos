@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memoria de la Hora - Letras y Números</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #ec4899;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --card-back: #ffffff;
+            --card-front-text: #4f46e5;
+            --card-front-num: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Contenedor del juego */
+        .game-container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        /* Cartas */
+        .card {
+            height: 160px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 4px solid white;
+            box-sizing: border-box;
+            transition: box-shadow 0.3s;
+        }
+
+        .card:hover .card-face {
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            font-size: 4rem;
+        }
+
+        .card-front {
+            background-color: white;
+            transform: rotateY(180deg);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .card-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--card-front-text);
+            line-height: 1.3;
+        }
+
+        .card-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--card-front-num);
+        }
+
+        .card-icon-small {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        /* Mensajes emergentes (Profesor) */
+        #feedback-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 100;
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            text-align: center;
+            pointer-events: none;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #feedback-overlay.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .profesor-anim {
+            font-size: 5rem;
+            animation: bounce 1s infinite alternate;
+        }
+
+        .feedback-text {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--success);
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-15px); }
+        }
+
+        /* Pantalla Final */
+        #victory-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .victory-msg {
+            font-size: 3rem;
+            color: var(--primary);
+            margin: 20px 0;
+            max-width: 800px;
+            font-weight: 900;
+        }
+
+        .btn-restart {
+            padding: 18px 45px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 0 #3730a3;
+            transition: all 0.2s;
+        }
+
+        .btn-restart:active {
+            transform: translateY(5px);
+            box-shadow: 0 5px 0 #3730a3;
+        }
+
+        /* Elementos animados finales */
+        .balloon {
+            position: absolute;
+            bottom: -100px;
+            font-size: 3rem;
+            animation: floatUp 6s linear forwards;
+        }
+
+        @keyframes floatUp {
+            to { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
+        }
+
+        /* Responsividad */
+        @media (max-width: 850px) {
+            .grid { grid-template-columns: repeat(4, 1fr); }
+            .card { height: 130px; }
+            .card-text { font-size: 0.9rem; }
+            .card-number { font-size: 1.8rem; }
+        }
+
+        @media (max-width: 500px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Memoria de la Hora: Letras y Números</h1>
+    </header>
+
+    <div class="game-container">
+        <div class="grid" id="game-grid"></div>
+    </div>
+
+    <!-- Overlay del Profesor -->
+    <div id="feedback-overlay">
+        <div class="profesor-anim">👨‍🏫</div>
+        <div class="feedback-text" id="feedback-text">¡Excelente!</div>
+    </div>
+
+    <!-- Pantalla Final -->
+    <div id="victory-screen">
+        <div class="profesor-anim" style="font-size: 8rem;">👨‍🏫</div>
+        <h2 class="victory-msg">¡Felicidades! Sigue aprendiendo más español.</h2>
+        <button class="btn-restart" onclick="resetGame()">Jugar otra vez</button>
+        <div id="decorations"></div>
+    </div>
+
+    <script>
+        const HORAS_DATA = [
+            { texto: "Las tres en punto", numero: "3:00" },
+            { texto: "Las cuatro y cuarto", numero: "4:15" },
+            { texto: "Las cinco y media", numero: "5:30" },
+            { texto: "Las seis menos cuarto", numero: "5:45" },
+            { texto: "Las siete en punto", numero: "7:00" },
+            { texto: "Las ocho y diez", numero: "8:10" },
+            { texto: "Las nueve y veinte", numero: "9:20" },
+            { texto: "Las diez y media", numero: "10:30" },
+            { texto: "Las once menos diez", numero: "10:50" },
+            { texto: "Las doce en punto", numero: "12:00" }
+        ];
+
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let isLock = false;
+        let midWayCelebrated = false;
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(freq, type = 'sine', duration = 0.3) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function createDeck() {
+            let deck = [];
+            HORAS_DATA.forEach((h, index) => {
+                deck.push({ id: index, content: h.texto, type: 'letras' });
+                deck.push({ id: index, content: h.numero, type: 'numero' });
+            });
+            return deck.sort(() => Math.random() - 0.5);
+        }
+
+        function initGame() {
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = '';
+            cards = [];
+            flippedCards = [];
+            matchedPairs = 0;
+            midWayCelebrated = false;
+            
+            const deck = createDeck();
+
+            deck.forEach(data => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.pairId = data.id;
+
+                const cardInner = `
+                    <div class="card-face card-back">⏰</div>
+                    <div class="card-face card-front">
+                        ${data.type === 'letras' ? 
+                            `<div class="card-icon-small">⏰</div><div class="card-text">${data.content}</div>` : 
+                            `<div class="card-number">${data.content}</div>`
+                        }
+                    </div>
+                `;
+                
+                card.innerHTML = cardInner;
+                card.addEventListener('click', () => handleCardClick(card));
+                grid.appendChild(card);
+                cards.push(card);
+            });
+        }
+
+        function handleCardClick(card) {
+            if (isLock || card.classList.contains('flipped') || flippedCards.includes(card)) return;
+
+            card.classList.add('flipped');
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            isLock = true;
+            const [c1, c2] = flippedCards;
+            const isMatch = c1.dataset.pairId === c2.dataset.pairId;
+
+            if (isMatch) {
+                matchedPairs++;
+                playSound(523.25, 'sine', 0.4); // C5
+                showFeedback("¡Excelente!", true);
+                
+                flippedCards = [];
+                isLock = false;
+
+                // Validación de progreso 50%
+                if (matchedPairs === 5 && !midWayCelebrated) {
+                    midWayCelebrated = true;
+                    setTimeout(() => {
+                        playSound(659.25, 'sine', 0.5); // E5 motivador
+                        showFeedback("¡Sigue, tú puedes!", false);
+                    }, 1200);
+                }
+
+                // Final
+                if (matchedPairs === 10) {
+                    setTimeout(triggerVictory, 1000);
+                }
+            } else {
+                playSound(220, 'square', 0.3); // Sonido error
+                setTimeout(() => {
+                    c1.classList.remove('flipped');
+                    c2.classList.remove('flipped');
+                    flippedCards = [];
+                    isLock = false;
+                }, 1200);
+            }
+        }
+
+        function showFeedback(text, withConfetti) {
+            const overlay = document.getElementById('feedback-overlay');
+            const feedbackText = document.getElementById('feedback-text');
+            feedbackText.textContent = text;
+            overlay.classList.add('active');
+
+            if (withConfetti) {
+                confetti({
+                    particleCount: 80,
+                    spread: 60,
+                    origin: { y: 0.7 }
+                });
+            }
+
+            setTimeout(() => {
+                overlay.classList.remove('active');
+            }, 1500);
+        }
+
+        function triggerVictory() {
+            const screen = document.getElementById('victory-screen');
+            screen.style.display = 'flex';
+            
+            // Música de celebración
+            const melody = [523, 659, 783, 1046, 783, 1046];
+            melody.forEach((f, i) => {
+                setTimeout(() => playSound(f, 'sine', 0.6), i * 200);
+            });
+
+            // Efectos visuales
+            const decor = document.getElementById('decorations');
+            for(let i=0; i<20; i++) {
+                setTimeout(() => {
+                    const b = document.createElement('div');
+                    b.className = 'balloon';
+                    b.textContent = ['🎈', '🎊', '✨', '⭐', '🎈'][Math.floor(Math.random()*5)];
+                    b.style.left = Math.random() * 90 + 'vw';
+                    decor.appendChild(b);
+                }, i * 300);
+            }
+
+            // Confeti masivo
+            const end = Date.now() + (4 * 1000);
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        function resetGame() {
+            document.getElementById('victory-screen').style.display = 'none';
+            document.getElementById('decorations').innerHTML = '';
+            initGame();
+        }
+
+        // Iniciar
+        window.onload = initGame;
+    </script>
+</body>
+</html>

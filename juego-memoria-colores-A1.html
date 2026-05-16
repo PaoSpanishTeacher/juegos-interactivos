@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memoria de Colores – PaoSpanishTeacher</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fdf6ec;
+    --brand: #e07b39;
+    --brand2: #c0392b;
+    --card-radius: 16px;
+    --card-w: 110px;
+    --card-h: 140px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 10% 20%, rgba(255,200,100,0.18) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(100,180,255,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(200,255,200,0.10) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── ART BLOBS ── */
+  .art-blob {
+    position: fixed;
+    border-radius: 50%;
+    opacity: 0.09;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(40px);
+  }
+
+  #app {
+    position: relative; z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px 12px 80px;
+  }
+
+  /* ── HEADER ── */
+  header { text-align: center; margin-bottom: 18px; }
+  header h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 800;
+    color: var(--brand2);
+    text-shadow: 2px 3px 0 rgba(192,57,43,0.13);
+    line-height: 1.1;
+  }
+  header .brand-sub {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--brand);
+    font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+    margin-top: 2px;
+  }
+  header .palette-row { font-size: 1.5rem; margin-top: 5px; letter-spacing: 3px; }
+
+  /* ── STATS ── */
+  #stats {
+    display: flex; gap: 12px; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 18px;
+  }
+  .stat-pill {
+    background: #fff;
+    border-radius: 30px;
+    padding: 6px 18px;
+    font-weight: 800;
+    font-size: 0.88rem;
+    color: var(--brand2);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.09);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ── GRID ── */
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    justify-items: center;
+    margin-bottom: 20px;
+  }
+  @media(max-width:560px) {
+    #grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    :root { --card-w: 80px; --card-h: 105px; }
+  }
+  @media(max-width:380px) {
+    #grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    :root { --card-w: 70px; --card-h: 92px; }
+  }
+
+  /* ── CARD ── */
+  .card-wrap {
+    width: var(--card-w);
+    height: var(--card-h);
+    perspective: 900px;
+    cursor: pointer;
+  }
+  .card-inner {
+    width: 100%; height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.52s cubic-bezier(.4,1.4,.6,1);
+    border-radius: var(--card-radius);
+  }
+  .card-wrap.flipped .card-inner  { transform: rotateY(180deg); }
+  .card-wrap.matched .card-inner  { transform: rotateY(180deg); }
+  .card-wrap.matched { cursor: default; }
+  .card-wrap.matched .card-front { box-shadow: 0 0 0 3px #2ecc71, 0 6px 20px rgba(46,204,113,0.35); }
+
+  .card-front, .card-back {
+    position: absolute; inset: 0;
+    border-radius: var(--card-radius);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+  }
+  .card-front { transform: rotateY(180deg); }
+
+  /* ── BACK DESIGN (palette illustration) ── */
+  .card-back {
+    background: #fff8f0;
+    border: 2px solid #e8d5c0;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card-back svg { width: 72%; height: 72%; }
+
+  /* ── FRONT: color card ── */
+  .card-front.type-color {
+    border: 3px solid rgba(255,255,255,0.5);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  }
+
+  /* ── FRONT: word card ── */
+  .card-front.type-word {
+    background: #fff;
+    border: 2.5px solid #e8d5c0;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 6px;
+  }
+  .card-front.type-word .word-text {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: clamp(0.95rem, 2.8vw, 1.2rem);
+    color: #2c3e50;
+    text-align: center;
+    padding: 0 6px;
+    line-height: 1.2;
+  }
+  .card-front.type-word .dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.12);
+  }
+
+  /* ── MATCH ANIMATION ── */
+  @keyframes matchPop {
+    0%  { transform: rotateY(180deg) scale(1); }
+    40% { transform: rotateY(180deg) scale(1.13); }
+    100%{ transform: rotateY(180deg) scale(1); }
+  }
+  .card-wrap.matched .card-inner {
+    animation: matchPop 0.38s ease;
+  }
+
+  /* ── WRONG SHAKE ── */
+  @keyframes wrongShake {
+    0%,100%{ transform: rotateY(180deg) translateX(0); }
+    25%    { transform: rotateY(180deg) translateX(-5px); }
+    75%    { transform: rotateY(180deg) translateX(5px); }
+  }
+  .card-wrap.wrong .card-inner {
+    animation: wrongShake 0.35s ease;
+  }
+
+  /* ── MINI CONFETTI ── */
+  .mini-confetti {
+    position: fixed;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    top: -8px;
+    animation: minifall linear forwards;
+    pointer-events: none;
+    z-index: 900;
+  }
+  @keyframes minifall {
+    0%  { opacity:1; transform: translateY(0) rotate(0deg); }
+    100%{ opacity:0; transform: translateY(90vh) rotate(540deg); }
+  }
+
+  /* ── MOTIVATOR ── */
+  #motivator {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%) scale(0);
+    background: #fff;
+    border-radius: 20px;
+    padding: 14px 28px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--brand2);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    z-index: 800;
+    pointer-events: none;
+    transition: transform 0.25s cubic-bezier(.4,1.5,.6,1), opacity 0.25s;
+    opacity: 0;
+  }
+  #motivator.show {
+    transform: translate(-50%,-50%) scale(1);
+    opacity: 1;
+  }
+
+  /* ── FINAL ── */
+  #final-screen {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(15,8,3,0.88);
+    z-index: 1000;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    padding: 30px;
+  }
+  #final-screen.show { display: flex; }
+  #final-box {
+    background: #fff;
+    border-radius: 28px;
+    padding: 36px 30px 28px;
+    max-width: 420px; width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    animation: popIn 0.5s cubic-bezier(.4,1.4,.6,1);
+    position: relative; overflow: hidden;
+  }
+  @keyframes popIn {
+    0%  { transform: scale(0.7); opacity:0; }
+    100%{ transform: scale(1);   opacity:1; }
+  }
+  #final-box::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:6px;
+    background: linear-gradient(90deg,#f1c40f,#e74c3c,#9b59b6,#3498db,#2ecc71,#e07b39);
+  }
+  #final-teacher { font-size: 4rem; margin-bottom: 8px; }
+  #final-title {
+    font-family:'Baloo 2',cursive; font-size:1.8rem; font-weight:800;
+    color: var(--brand2); margin-bottom:8px;
+  }
+  #final-msg { font-size:1rem; color:#555; margin-bottom:18px; line-height:1.5; }
+  #final-stats {
+    display:flex; gap:12px; justify-content:center; margin-bottom:20px; flex-wrap:wrap;
+  }
+  .final-stat {
+    background:#fdf6ec; border-radius:12px; padding:8px 16px;
+    font-weight:800; color: var(--brand); font-size:0.9rem;
+  }
+  #btn-replay {
+    font-family:'Baloo 2',cursive; font-size:1.1rem; font-weight:800;
+    background: linear-gradient(135deg,#f39c12,#e07b39);
+    color:#fff; border:none; border-radius:40px;
+    padding:12px 34px; cursor:pointer;
+    box-shadow:0 6px 20px rgba(224,123,57,0.35);
+    transition:all 0.2s;
+  }
+  #btn-replay:hover { filter:brightness(1.08); transform:translateY(-2px); }
+
+  /* ── WATERMARK ── */
+  #watermark {
+    position:fixed; bottom:12px; right:14px;
+    font-family:'Playfair Display',serif; font-style:italic;
+    font-size:0.76rem; color:rgba(200,120,60,0.4);
+    pointer-events:none; z-index:500;
+  }
+
+  /* ── BIG CONFETTI ── */
+  .big-confetti {
+    position:fixed; width:12px; height:12px;
+    top:-12px; border-radius:3px;
+    animation:bigfall linear forwards;
+    pointer-events:none; z-index:999;
+  }
+  @keyframes bigfall {
+    0%  { opacity:1; transform:translateY(0) rotate(0); }
+    100%{ opacity:0; transform:translateY(110vh) rotate(900deg); }
+  }
+  .balloon {
+    position:fixed; font-size:2.5rem;
+    animation:balloonRise linear forwards;
+    pointer-events:none; z-index:998;
+  }
+  @keyframes balloonRise {
+    0%  { opacity:1; transform:translateY(0) rotate(-4deg); }
+    100%{ opacity:0; transform:translateY(-120vh) rotate(4deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- art blobs -->
+<div class="art-blob" style="width:500px;height:500px;background:#f1c40f;top:-150px;left:-150px;"></div>
+<div class="art-blob" style="width:400px;height:400px;background:#3498db;bottom:-100px;right:-100px;"></div>
+<div class="art-blob" style="width:300px;height:300px;background:#e74c3c;top:40%;left:60%;"></div>
+
+<div id="app">
+  <header>
+    <h1>🎨 Memoria de Colores</h1>
+    <div class="brand-sub">PaoSpanishTeacher</div>
+    <div class="palette-row">🖌️🎨🖍️</div>
+  </header>
+
+  <div id="stats">
+    <div class="stat-pill">🃏 Intentos: <span id="attempts">0</span></div>
+    <div class="stat-pill">✅ Pares: <span id="pairs">0</span> / 10</div>
+    <div class="stat-pill">⏱️ Tiempo: <span id="timer">0:00</span></div>
+  </div>
+
+  <div id="grid"></div>
+</div>
+
+<div id="motivator">🌟 ¡Excelente!</div>
+
+<div id="final-screen">
+  <div id="final-box">
+    <div id="final-teacher">👨‍🏫</div>
+    <div id="final-title">¡Lo lograste!</div>
+    <div id="final-msg">PaoSpanishTeacher te felicita por completar el juego.<br>¡Ahora conoces los colores en español!</div>
+    <div id="final-stats">
+      <div class="final-stat">🃏 Intentos: <span id="f-attempts">0</span></div>
+      <div class="final-stat">⏱️ Tiempo: <span id="f-time">0:00</span></div>
+    </div>
+    <button id="btn-replay">🔄 Jugar otra vez</button>
+  </div>
+</div>
+
+<div id="watermark">PaoSpanishTeacher</div>
+
+<script>
+// ─────────────────────────────────────────────
+// AUDIO
+// ─────────────────────────────────────────────
+const AC = new (window.AudioContext || window.webkitAudioContext)();
+function resumeAC(){ if(AC.state==='suspended') AC.resume(); }
+['click','touchstart'].forEach(e=>window.addEventListener(e, resumeAC, {once:true}));
+
+function tone(freq, dur, type='sine', vol=0.22, delay=0) {
+  try {
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.connect(g); g.connect(AC.destination);
+    o.type=type; o.frequency.value=freq;
+    const t = AC.currentTime + delay;
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t+dur);
+    o.start(t); o.stop(t+dur);
+  } catch(e){}
+}
+function soundFlip()  { tone(600,0.08,'sine',0.12); }
+function soundMatch() { [523,659,784,1047].forEach((f,i)=>tone(f,0.14,'sine',0.2,i*0.1)); }
+function soundWrong() { tone(250,0.15,'triangle',0.15); tone(200,0.15,'triangle',0.13,0.16); }
+function soundWin()   {
+  const m=[523,587,659,698,784,880,988,1047];
+  m.forEach((f,i)=>tone(f,0.18,'sine',0.22,i*0.11));
+}
+
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
+const COLORS = [
+  { word:'amarillo', hex:'#F5D800', dot:'#F5D800' },
+  { word:'azul',     hex:'#2B7FD4', dot:'#2B7FD4' },
+  { word:'rojo',     hex:'#D92B2B', dot:'#D92B2B' },
+  { word:'verde',    hex:'#27A84A', dot:'#27A84A' },
+  { word:'naranja',  hex:'#F07020', dot:'#F07020' },
+  { word:'morado',   hex:'#7B2FBE', dot:'#7B2FBE' },
+  { word:'negro',    hex:'#1a1a1a', dot:'#1a1a1a' },
+  { word:'blanco',   hex:'#f5f5f5', dot:'#cccccc' },
+  { word:'gris',     hex:'#808080', dot:'#808080' },
+  { word:'marrón',   hex:'#8B4513', dot:'#8B4513' },
+];
+
+// ─────────────────────────────────────────────
+// PALETTE BACK SVG
+// ─────────────────────────────────────────────
+const BACK_SVG = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- palette shape -->
+  <ellipse cx="50" cy="54" rx="36" ry="30" fill="#f5e6d0" stroke="#d4a96a" stroke-width="2.5"/>
+  <ellipse cx="68" cy="36" rx="10" ry="8" fill="#f5e6d0" stroke="#d4a96a" stroke-width="2"/>
+  <!-- thumb hole -->
+  <ellipse cx="62" cy="66" rx="7" ry="6" fill="#fdf6ec" stroke="#d4a96a" stroke-width="2"/>
+  <!-- paint blobs -->
+  <circle cx="34" cy="48" r="6.5" fill="#D92B2B" opacity="0.88"/>
+  <circle cx="46" cy="43" r="6" fill="#F5D800" opacity="0.88"/>
+  <circle cx="58" cy="43" r="6" fill="#2B7FD4" opacity="0.88"/>
+  <circle cx="66" cy="55" r="5.5" fill="#27A84A" opacity="0.88"/>
+  <circle cx="38" cy="61" r="5.5" fill="#7B2FBE" opacity="0.88"/>
+  <circle cx="52" cy="62" r="5" fill="#F07020" opacity="0.88"/>
+  <!-- brush -->
+  <rect x="70" y="18" width="5" height="30" rx="2.5" fill="#c8a060" transform="rotate(30 72 33)"/>
+  <ellipse cx="77" cy="21" rx="4" ry="6" fill="#D92B2B" transform="rotate(30 72 33)"/>
+</svg>`;
+
+// ─────────────────────────────────────────────
+// SHUFFLE
+// ─────────────────────────────────────────────
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let cards=[], flipped=[], matched=0, attempts=0, locked=false;
+let timerInterval=null, seconds=0;
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+function init() {
+  clearInterval(timerInterval);
+  seconds=0; attempts=0; matched=0; flipped=[]; locked=false;
+  document.getElementById('attempts').textContent='0';
+  document.getElementById('pairs').textContent='0';
+  document.getElementById('timer').textContent='0:00';
+  document.getElementById('final-screen').classList.remove('show');
+  buildCards();
+  startTimer();
+}
+
+function startTimer() {
+  timerInterval = setInterval(()=>{
+    seconds++;
+    const m=Math.floor(seconds/60), s=seconds%60;
+    document.getElementById('timer').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+  },1000);
+}
+
+// ─────────────────────────────────────────────
+// BUILD CARDS
+// ─────────────────────────────────────────────
+function buildCards() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  cards = [];
+
+  // 20 card objects: 10 color + 10 word
+  let deck = [];
+  COLORS.forEach(c => {
+    deck.push({ id: c.word, type:'color', data: c });
+    deck.push({ id: c.word, type:'word',  data: c });
+  });
+  deck = shuffle(deck);
+
+  deck.forEach((cardData, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'card-wrap';
+    wrap.dataset.index = i;
+    wrap.dataset.id = cardData.id;
+    wrap.dataset.type = cardData.type;
+
+    // inner
+    const inner = document.createElement('div');
+    inner.className = 'card-inner';
+
+    // BACK
+    const back = document.createElement('div');
+    back.className = 'card-back';
+    back.innerHTML = BACK_SVG;
+
+    // FRONT
+    const front = document.createElement('div');
+    front.className = `card-front type-${cardData.type}`;
+
+    if (cardData.type === 'color') {
+      let bg = cardData.data.hex;
+      if (cardData.data.word === 'blanco') {
+        front.style.background = '#e8e8e8';
+        front.style.border = '3px solid #bbb';
+      } else {
+        front.style.background = bg;
+      }
+    } else {
+      const txt = document.createElement('div');
+      txt.className = 'word-text';
+      txt.textContent = cardData.data.word;
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      dot.style.background = cardData.data.dot;
+      if (cardData.data.word === 'blanco') dot.style.border = '2px solid #aaa';
+      front.appendChild(dot);
+      front.appendChild(txt);
+    }
+
+    inner.appendChild(back);
+    inner.appendChild(front);
+    wrap.appendChild(inner);
+    grid.appendChild(wrap);
+
+    wrap.addEventListener('click', () => onCardClick(wrap));
+    cards.push(wrap);
+  });
+}
+
+// ─────────────────────────────────────────────
+// CARD CLICK
+// ─────────────────────────────────────────────
+function onCardClick(card) {
+  resumeAC();
+  if (locked) return;
+  if (card.classList.contains('flipped')) return;
+  if (card.classList.contains('matched')) return;
+  if (flipped.length >= 2) return;
+
+  soundFlip();
+  card.classList.add('flipped');
+  flipped.push(card);
+
+  if (flipped.length === 2) {
+    locked = true;
+    attempts++;
+    document.getElementById('attempts').textContent = attempts;
+    checkMatch();
+  }
+}
+
+// ─────────────────────────────────────────────
+// CHECK MATCH
+// ─────────────────────────────────────────────
+const PRAISE = ['🌟 ¡Excelente!','🎉 ¡Muy bien!','✨ ¡Perfecto!','🥳 ¡Genial!','👏 ¡Correcto!'];
+let praiseIdx = 0;
+
+function checkMatch() {
+  const [a, b] = flipped;
+  if (a.dataset.id === b.dataset.id && a.dataset.type !== b.dataset.type) {
+    // MATCH
+    soundMatch();
+    a.classList.remove('flipped'); b.classList.remove('flipped');
+    a.classList.add('matched');    b.classList.add('matched');
+    miniConfetti(a); miniConfetti(b);
+    showPraise();
+    matched++;
+    document.getElementById('pairs').textContent = matched;
+    flipped = [];
+    locked = false;
+    if (matched === 10) setTimeout(triggerWin, 600);
+  } else {
+    // WRONG
+    soundWrong();
+    a.classList.add('wrong'); b.classList.add('wrong');
+    setTimeout(()=>{
+      a.classList.remove('wrong','flipped');
+      b.classList.remove('wrong','flipped');
+      flipped = [];
+      locked = false;
+    }, 900);
+  }
+}
+
+// ─────────────────────────────────────────────
+// MINI CONFETTI
+// ─────────────────────────────────────────────
+function miniConfetti(card) {
+  const rect = card.getBoundingClientRect();
+  const cx = rect.left + rect.width/2;
+  const cy = rect.top  + rect.height/2;
+  const colors = ['#f1c40f','#e74c3c','#2ecc71','#3498db','#9b59b6','#e07b39'];
+  for(let i=0;i<14;i++){
+    const c = document.createElement('div');
+    c.className = 'mini-confetti';
+    c.style.left = (cx + (Math.random()-0.5)*60)+'px';
+    c.style.top  = cy+'px';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    const dur = 0.7+Math.random()*0.6;
+    c.style.animationDuration = dur+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), dur*1000);
+  }
+}
+
+// ─────────────────────────────────────────────
+// PRAISE POPUP
+// ─────────────────────────────────────────────
+function showPraise() {
+  const el = document.getElementById('motivator');
+  el.textContent = PRAISE[praiseIdx % PRAISE.length];
+  praiseIdx++;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 900);
+}
+
+// ─────────────────────────────────────────────
+// WIN
+// ─────────────────────────────────────────────
+function triggerWin() {
+  clearInterval(timerInterval);
+  soundWin();
+  bigConfetti();
+  bigBalloons();
+  const m=Math.floor(seconds/60), s=seconds%60;
+  document.getElementById('f-attempts').textContent = attempts;
+  document.getElementById('f-time').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  setTimeout(()=> document.getElementById('final-screen').classList.add('show'), 700);
+}
+
+function bigConfetti() {
+  const colors=['#f1c40f','#e74c3c','#9b59b6','#3498db','#2ecc71','#e07b39','#1abc9c'];
+  for(let i=0;i<100;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='big-confetti';
+      c.style.left=Math.random()*100+'vw';
+      c.style.background=colors[Math.floor(Math.random()*colors.length)];
+      c.style.width=(9+Math.random()*9)+'px';
+      c.style.height=(9+Math.random()*9)+'px';
+      c.style.borderRadius=Math.random()>0.5?'50%':'3px';
+      const dur=2.2+Math.random()*2;
+      c.style.animationDuration=dur+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),dur*1000);
+    },Math.random()*1800);
+  }
+}
+
+function bigBalloons() {
+  const emojis=['🎈','🎉','🎊','🥳','🌈','⭐','🌟'];
+  for(let i=0;i<14;i++){
+    setTimeout(()=>{
+      const b=document.createElement('div');
+      b.className='balloon';
+      b.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      b.style.left=(3+Math.random()*88)+'vw';
+      b.style.bottom='-40px';
+      const dur=3+Math.random()*3;
+      b.style.animationDuration=dur+'s';
+      document.body.appendChild(b);
+      setTimeout(()=>b.remove(),dur*1000);
+    },Math.random()*1800);
+  }
+}
+
+// ─────────────────────────────────────────────
+// REPLAY
+// ─────────────────────────────────────────────
+document.getElementById('btn-replay').addEventListener('click', ()=>{ resumeAC(); init(); });
+
+// ─────────────────────────────────────────────
+// START
+// ─────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

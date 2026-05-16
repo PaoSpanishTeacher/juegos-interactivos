@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Construye Nacionalidades – PaoSpanishTeacher</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:  #2ecc71;
+    --red:    #e74c3c;
+    --yellow: #f39c12;
+    --blue:   #3498db;
+    --purple: #9b59b6;
+    --bg:     #fdf6ec;
+    --card:   #fff;
+    --shadow: rgba(0,0,0,0.10);
+    --brand:  #e07b39;
+    --brand2: #c0392b;
+    --text:   #2c3e50;
+    --piece-bg: #eaf4ff;
+    --piece-border: #7eb8e8;
+    --zone-bg: #fffbf3;
+    --zone-border: #f0c070;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── MAP BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(46,204,113,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(52,152,219,0.10) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900' viewBox='0 0 900 900'%3E%3Cellipse cx='430' cy='340' rx='140' ry='210' fill='%23d4edda' opacity='0.45'/%3E%3Cellipse cx='400' cy='580' rx='100' ry='160' fill='%23c8e6c9' opacity='0.35'/%3E%3Cellipse cx='370' cy='760' rx='70' ry='110' fill='%23b2dfdb' opacity='0.30'/%3E%3Cellipse cx='460' cy='190' rx='80' ry='60' fill='%23dcedc8' opacity='0.35'/%3E%3Cellipse cx='490' cy='650' rx='50' ry='80' fill='%23f0f4c3' opacity='0.30'/%3E%3Ccircle cx='340' cy='420' r='30' fill='%23ffe0b2' opacity='0.25'/%3E%3Ccircle cx='510' cy='440' r='20' fill='%23e1f5fe' opacity='0.25'/%3E%3C/svg%3E") center/cover no-repeat;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 18px 14px 80px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  header h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(1.6rem, 5vw, 2.6rem);
+    font-weight: 800;
+    color: var(--brand2);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    text-shadow: 2px 3px 0px rgba(192,57,43,0.15);
+  }
+  header .subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+    color: var(--brand);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+  header .flag-row {
+    font-size: 1.5rem;
+    margin-top: 6px;
+    letter-spacing: 4px;
+  }
+
+  /* ── PROGRESS ── */
+  #progress-wrap {
+    background: #fff;
+    border-radius: 40px;
+    box-shadow: 0 2px 10px var(--shadow);
+    padding: 8px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  #progress-wrap .label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--brand);
+    white-space: nowrap;
+  }
+  #progress-bar-bg {
+    flex: 1;
+    height: 14px;
+    background: #f0e6d3;
+    border-radius: 40px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #f39c12, #e07b39);
+    border-radius: 40px;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+  #progress-count {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--brand2);
+    min-width: 40px;
+    text-align: right;
+  }
+
+  /* ── COUNTRIES LIST ── */
+  #countries-panel {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 18px var(--shadow);
+    padding: 14px 18px;
+    margin-bottom: 18px;
+  }
+  #countries-panel h2 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #countries-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .country-pill {
+    background: #fdf1e5;
+    border: 2px solid #f0c070;
+    border-radius: 30px;
+    padding: 5px 14px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #7a4f1a;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s;
+    cursor: default;
+    user-select: none;
+  }
+  .country-pill.done {
+    background: #d5f5e3;
+    border-color: #2ecc71;
+    color: #1a6640;
+    text-decoration: line-through;
+    opacity: 0.75;
+  }
+  .country-pill .check { display: none; }
+  .country-pill.done .check { display: inline; }
+
+  /* ── WORD SECTIONS ── */
+  #words-container {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .word-section {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 18px var(--shadow);
+    padding: 16px 18px;
+    transition: all 0.4s;
+    border: 2px solid transparent;
+  }
+  .word-section.correct {
+    border-color: var(--green);
+    background: #f0fff6;
+  }
+  .word-section.error-shake {
+    animation: shake 0.4s;
+  }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-6px)}
+    40%{transform:translateX(6px)}
+    60%{transform:translateX(-4px)}
+    80%{transform:translateX(4px)}
+  }
+
+  .word-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .country-badge {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--brand2);
+    background: #fdecea;
+    border: 2px solid #f5b7b1;
+    border-radius: 10px;
+    padding: 3px 12px;
+  }
+  .arrow-hint { color: #bbb; font-size: 1.1rem; }
+  .result-badge {
+    font-weight: 800;
+    font-size: 0.95rem;
+    border-radius: 30px;
+    padding: 3px 14px;
+    display: none;
+  }
+  .result-badge.correct-badge {
+    display: inline-block;
+    background: #d5f5e3;
+    color: #1a6640;
+  }
+  .result-badge.error-badge {
+    display: inline-block;
+    background: #fdecea;
+    color: #922b21;
+  }
+
+  /* ── PIECES (syllables) ── */
+  .pieces-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    min-height: 44px;
+    padding: 8px;
+    background: #f7f9fc;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border: 1.5px dashed #c8d8e8;
+  }
+
+  .piece {
+    background: var(--piece-bg);
+    border: 2px solid var(--piece-border);
+    border-radius: 10px;
+    padding: 7px 14px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a4a6e;
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+    box-shadow: 0 3px 8px rgba(100,160,220,0.18);
+    touch-action: none;
+  }
+  .piece:active { cursor: grabbing; }
+  .piece.dragging {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+  .piece.ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.85;
+    transform: scale(1.08) rotate(-2deg);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    transition: none;
+  }
+
+  /* ── DROP ZONE ── */
+  .drop-zone {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    min-height: 52px;
+    background: var(--zone-bg);
+    border: 2.5px dashed var(--zone-border);
+    border-radius: 12px;
+    padding: 8px;
+    transition: background 0.2s, border-color 0.2s;
+    position: relative;
+  }
+  .drop-zone.drag-over {
+    background: #fff8e1;
+    border-color: #f39c12;
+  }
+  .drop-zone::before {
+    content: 'Arrastra las sílabas aquí ✦';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c8a060;
+    font-size: 0.8rem;
+    font-weight: 600;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.2s;
+  }
+  .drop-zone.has-pieces::before { opacity: 0; }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.88rem;
+    border: none;
+    border-radius: 30px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all 0.18s;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+  }
+  .btn:active { transform: scale(0.95); }
+  .btn-check {
+    background: linear-gradient(135deg, #f39c12, #e07b39);
+    color: #fff;
+  }
+  .btn-check:hover { filter: brightness(1.08); }
+  .btn-clear {
+    background: #f5f5f5;
+    color: #666;
+    border: 1.5px solid #ddd;
+  }
+  .btn-clear:hover { background: #ebebeb; }
+  .btn-check:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  /* ── MOTIVATOR ── */
+  #motivator {
+    display: none;
+    background: linear-gradient(135deg, #fffde7, #fff9c4);
+    border: 2px solid #f9ca24;
+    border-radius: 18px;
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #7d5a00;
+    box-shadow: 0 4px 14px rgba(249,202,36,0.25);
+    animation: pop 0.4s;
+  }
+  @keyframes pop {
+    0%{transform:scale(0.8);opacity:0}
+    100%{transform:scale(1);opacity:1}
+  }
+
+  /* ── FINAL SCREEN ── */
+  #final-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,10,5,0.85);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 30px;
+  }
+  #final-screen.show { display: flex; }
+  #final-box {
+    background: #fff;
+    border-radius: 28px;
+    padding: 36px 32px 28px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    animation: pop 0.5s;
+    position: relative;
+    overflow: hidden;
+  }
+  #final-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #f39c12, #e07b39, #e74c3c, #9b59b6, #3498db, #2ecc71);
+  }
+  #final-emoji { font-size: 3.5rem; margin-bottom: 10px; }
+  #final-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--brand2);
+    margin-bottom: 8px;
+  }
+  #final-sub {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  #final-credit {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--brand);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+  #btn-replay {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.1rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #f39c12, #e07b39);
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    padding: 12px 34px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(224,123,57,0.35);
+    transition: all 0.2s;
+  }
+  #btn-replay:hover { filter: brightness(1.08); transform: translateY(-2px); }
+
+  /* ── WATERMARK ── */
+  #watermark {
+    position: fixed;
+    bottom: 14px;
+    right: 16px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.78rem;
+    color: rgba(200,120,60,0.42);
+    pointer-events: none;
+    z-index: 500;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── CONFETTI ── */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    border-radius: 2px;
+    animation: fall linear forwards;
+    z-index: 999;
+    pointer-events: none;
+  }
+  @keyframes fall {
+    0%  { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100%{ transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  .balloon {
+    position: fixed;
+    font-size: 2.2rem;
+    animation: rise linear forwards;
+    z-index: 998;
+    pointer-events: none;
+  }
+  @keyframes rise {
+    0%  { transform: translateY(0) rotate(-5deg); opacity: 1; }
+    100%{ transform: translateY(-120vh) rotate(5deg); opacity: 0; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 520px) {
+    .piece { font-size: 0.92rem; padding: 6px 11px; }
+    .country-badge { font-size: 0.9rem; }
+    #final-box { padding: 24px 16px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header>
+    <h1>🌎 Construye Nacionalidades</h1>
+    <div class="subtitle">PaoSpanishTeacher</div>
+    <div class="flag-row">🇲🇽🇨🇴🇦🇷🇵🇪🇨🇱🇪🇨🇻🇪</div>
+  </header>
+
+  <div id="progress-wrap">
+    <span class="label">Progreso</span>
+    <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+    <span id="progress-count">0 / 7</span>
+  </div>
+
+  <div id="motivator">👨‍🏫 ¡Sigue, tú puedes! ¡Vas muy bien!</div>
+
+  <div id="countries-panel">
+    <h2>🗺️ Países de esta partida</h2>
+    <div id="countries-list"></div>
+  </div>
+
+  <div id="words-container"></div>
+</div>
+
+<!-- FINAL SCREEN -->
+<div id="final-screen">
+  <div id="final-box">
+    <div id="final-emoji">🎉</div>
+    <div id="final-title">¡Excelente trabajo!</div>
+    <div id="final-sub">¡Qué bien! Sigue aprendiendo español.</div>
+    <div id="final-credit">Juego creado por PaoSpanishTeacher</div>
+    <button id="btn-replay">🔄 Jugar otra vez</button>
+  </div>
+</div>
+
+<div id="watermark">PaoSpanishTeacher</div>
+
+<!-- SOUNDS via Web Audio API -->
+<script>
+// ─────────────────────────────────────────────
+// AUDIO SYNTHESIS
+// ─────────────────────────────────────────────
+const AC = new (window.AudioContext || window.webkitAudioContext)();
+
+function playTone(freq, dur, type='sine', vol=0.25) {
+  try {
+    const o = AC.createOscillator();
+    const g = AC.createGain();
+    o.connect(g); g.connect(AC.destination);
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur);
+    o.start(); o.stop(AC.currentTime + dur);
+  } catch(e){}
+}
+
+function soundCorrect() {
+  playTone(523, 0.12, 'sine', 0.22);
+  setTimeout(()=>playTone(659, 0.12, 'sine', 0.22), 120);
+  setTimeout(()=>playTone(784, 0.22, 'sine', 0.22), 240);
+}
+
+function soundError() {
+  playTone(280, 0.15, 'triangle', 0.15);
+  setTimeout(()=>playTone(220, 0.18, 'triangle', 0.15), 160);
+}
+
+function soundMotivate() {
+  [392,440,494,523].forEach((f,i)=>setTimeout(()=>playTone(f,0.14,'sine',0.18),i*90));
+}
+
+let winInterval = null;
+function soundWin() {
+  const melody = [523,659,784,1047,784,1047,1319];
+  melody.forEach((f,i)=>setTimeout(()=>playTone(f,0.18,'sine',0.25),i*130));
+}
+function stopWinSound() {
+  if (winInterval) { clearInterval(winInterval); winInterval = null; }
+}
+
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
+const COUNTRIES = [
+  { name:'México',               nationality:'mexicano',       syllables:['me','xi','ca','no'] },
+  { name:'Colombia',             nationality:'colombiano',     syllables:['co','lom','bia','no'] },
+  { name:'Argentina',            nationality:'argentino',      syllables:['ar','gen','ti','no'] },
+  { name:'Perú',                 nationality:'peruano',        syllables:['pe','rua','no'] },
+  { name:'Chile',                nationality:'chileno',        syllables:['chi','le','no'] },
+  { name:'Ecuador',              nationality:'ecuatoriano',    syllables:['e','cua','to','ria','no'] },
+  { name:'Venezuela',            nationality:'venezolano',     syllables:['ve','ne','zo','la','no'] },
+  { name:'Bolivia',              nationality:'boliviano',      syllables:['bo','li','via','no'] },
+  { name:'Uruguay',              nationality:'uruguayo',       syllables:['u','ru','gua','yo'] },
+  { name:'Paraguay',             nationality:'paraguayo',      syllables:['pa','ra','gua','yo'] },
+  { name:'Cuba',                 nationality:'cubano',         syllables:['cu','ba','no'] },
+  { name:'Guatemala',            nationality:'guatemalteco',   syllables:['gua','te','mal','te','co'] },
+  { name:'Honduras',             nationality:'hondureño',      syllables:['hon','du','re','ño'] },
+  { name:'El Salvador',          nationality:'salvadoreño',    syllables:['sal','va','do','re','ño'] },
+  { name:'Nicaragua',            nationality:'nicaragüense',   syllables:['ni','ca','ra','güen','se'] },
+  { name:'Costa Rica',           nationality:'costarricense',  syllables:['cos','ta','rri','cen','se'] },
+  { name:'Panamá',               nationality:'panameño',       syllables:['pa','na','me','ño'] },
+  { name:'República Dominicana', nationality:'dominicano',     syllables:['do','mi','ni','ca','no'] },
+];
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let selected = [];
+let completed = 0;
+let motivShown = false;
+let dragData = { pieceEl: null, ghost: null, sourceSection: null };
+
+// ─────────────────────────────────────────────
+// SHUFFLE
+// ─────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function pickCountries() {
+  return shuffle(COUNTRIES).slice(0,7);
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+function init() {
+  stopWinSound();
+  document.getElementById('final-screen').classList.remove('show');
+  selected = pickCountries();
+  completed = 0;
+  motivShown = false;
+  updateProgress();
+  renderCountriesList();
+  renderWords();
+}
+
+function updateProgress() {
+  const pct = (completed/7)*100;
+  document.getElementById('progress-bar').style.width = pct+'%';
+  document.getElementById('progress-count').textContent = `${completed} / 7`;
+  const motiv = document.getElementById('motivator');
+  if (completed >= 4 && !motivShown) {
+    motivShown = true;
+    motiv.style.display = 'block';
+    soundMotivate();
+    setTimeout(()=>{ motiv.style.display='none'; }, 3000);
+  }
+  if (completed === 7) triggerWin();
+}
+
+// ─────────────────────────────────────────────
+// RENDER COUNTRIES LIST
+// ─────────────────────────────────────────────
+function renderCountriesList() {
+  const list = document.getElementById('countries-list');
+  list.innerHTML = '';
+  selected.forEach((c,i) => {
+    const pill = document.createElement('div');
+    pill.className = 'country-pill';
+    pill.id = `pill-${i}`;
+    pill.innerHTML = `<span class="check">✔</span> ${c.name}`;
+    list.appendChild(pill);
+  });
+}
+
+// ─────────────────────────────────────────────
+// RENDER WORD SECTIONS
+// ─────────────────────────────────────────────
+function renderWords() {
+  const container = document.getElementById('words-container');
+  container.innerHTML = '';
+  selected.forEach((c,i) => {
+    const section = document.createElement('div');
+    section.className = 'word-section';
+    section.id = `section-${i}`;
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'word-section-header';
+    header.innerHTML = `
+      <span class="country-badge">🌍 ${c.name}</span>
+      <span class="arrow-hint">→</span>
+      <span class="result-badge" id="result-${i}"></span>
+    `;
+    section.appendChild(header);
+
+    // Pool label
+    const poolLabel = document.createElement('div');
+    poolLabel.style.cssText = 'font-size:0.78rem;font-weight:700;color:#888;margin-bottom:4px;';
+    poolLabel.textContent = '📦 Sílabas disponibles:';
+    section.appendChild(poolLabel);
+
+    // Pool
+    const pool = document.createElement('div');
+    pool.className = 'pieces-pool';
+    pool.id = `pool-${i}`;
+    const shuffled = shuffle(c.syllables);
+    shuffled.forEach(syl => {
+      pool.appendChild(createPiece(syl, i));
+    });
+    section.appendChild(pool);
+
+    // Zone label
+    const zoneLabel = document.createElement('div');
+    zoneLabel.style.cssText = 'font-size:0.78rem;font-weight:700;color:#888;margin:8px 0 4px;';
+    zoneLabel.textContent = '🏗️ Construye aquí:';
+    section.appendChild(zoneLabel);
+
+    // Drop zone
+    const zone = document.createElement('div');
+    zone.className = 'drop-zone';
+    zone.id = `zone-${i}`;
+    zone.dataset.idx = i;
+    setupDropZone(zone);
+    section.appendChild(zone);
+
+    // Buttons
+    const btnRow = document.createElement('div');
+    btnRow.className = 'btn-row';
+
+    const btnCheck = document.createElement('button');
+    btnCheck.className = 'btn btn-check';
+    btnCheck.textContent = '✔ Verificar';
+    btnCheck.onclick = () => checkWord(i);
+    btnCheck.id = `btn-check-${i}`;
+
+    const btnClear = document.createElement('button');
+    btnClear.className = 'btn btn-clear';
+    btnClear.textContent = '🗑 Limpiar';
+    btnClear.onclick = () => clearWord(i);
+
+    btnRow.appendChild(btnCheck);
+    btnRow.appendChild(btnClear);
+    section.appendChild(btnRow);
+
+    container.appendChild(section);
+  });
+}
+
+// ─────────────────────────────────────────────
+// CREATE PIECE
+// ─────────────────────────────────────────────
+function createPiece(text, sectionIdx) {
+  const piece = document.createElement('div');
+  piece.className = 'piece';
+  piece.textContent = text;
+  piece.dataset.text = text;
+  piece.dataset.section = sectionIdx;
+  piece.draggable = true;
+
+  // Mouse drag
+  piece.addEventListener('dragstart', onDragStart);
+  piece.addEventListener('dragend', onDragEnd);
+
+  // Touch drag
+  piece.addEventListener('touchstart', onTouchStart, {passive:false});
+  piece.addEventListener('touchmove', onTouchMove, {passive:false});
+  piece.addEventListener('touchend', onTouchEnd);
+
+  // Click to move to zone (fallback)
+  piece.addEventListener('click', onPieceClick);
+
+  return piece;
+}
+
+// ─────────────────────────────────────────────
+// CLICK TO MOVE (mobile fallback)
+// ─────────────────────────────────────────────
+function onPieceClick(e) {
+  const piece = e.currentTarget;
+  const idx = piece.dataset.section;
+  const zone = document.getElementById(`zone-${idx}`);
+  const pool = document.getElementById(`pool-${idx}`);
+  if (piece.parentElement === pool) {
+    zone.appendChild(piece);
+  } else {
+    pool.appendChild(piece);
+  }
+  updateZoneState(zone);
+}
+
+// ─────────────────────────────────────────────
+// DRAG & DROP (mouse)
+// ─────────────────────────────────────────────
+function onDragStart(e) {
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', e.target.dataset.section+'|'+e.target.dataset.text);
+  dragData.pieceEl = e.target;
+  setTimeout(()=> e.target.classList.add('dragging'), 0);
+}
+function onDragEnd(e) {
+  e.target.classList.remove('dragging');
+  dragData.pieceEl = null;
+}
+
+function setupDropZone(zone) {
+  zone.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    zone.classList.add('drag-over');
+  });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    if (dragData.pieceEl) {
+      zone.appendChild(dragData.pieceEl);
+      updateZoneState(zone);
+    }
+  });
+
+  // Also allow pieces inside zone to be dragged back to pool
+  zone.addEventListener('dragover', e => e.preventDefault());
+}
+
+// ─────────────────────────────────────────────
+// TOUCH DRAG
+// ─────────────────────────────────────────────
+let touchGhost = null;
+let touchPiece = null;
+
+function onTouchStart(e) {
+  e.preventDefault();
+  touchPiece = e.currentTarget;
+  const touch = e.touches[0];
+  touchGhost = touchPiece.cloneNode(true);
+  touchGhost.classList.add('ghost');
+  touchGhost.style.left = (touch.clientX - 40)+'px';
+  touchGhost.style.top  = (touch.clientY - 24)+'px';
+  document.body.appendChild(touchGhost);
+  touchPiece.style.opacity = '0.35';
+}
+function onTouchMove(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  if (touchGhost) {
+    touchGhost.style.left = (touch.clientX - 40)+'px';
+    touchGhost.style.top  = (touch.clientY - 24)+'px';
+  }
+}
+function onTouchEnd(e) {
+  if (!touchGhost) return;
+  const touch = e.changedTouches[0];
+  touchGhost.remove(); touchGhost = null;
+  touchPiece.style.opacity = '';
+
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  const zone = el && (el.classList.contains('drop-zone') ? el : el.closest('.drop-zone'));
+  const pool = el && (el.classList.contains('pieces-pool') ? el : el.closest('.pieces-pool'));
+
+  if (zone) {
+    zone.appendChild(touchPiece);
+    updateZoneState(zone);
+  } else if (pool) {
+    pool.appendChild(touchPiece);
+    const zoneEl = document.getElementById(`zone-${touchPiece.dataset.section}`);
+    if (zoneEl) updateZoneState(zoneEl);
+  }
+  touchPiece = null;
+}
+
+function updateZoneState(zone) {
+  if (zone.children.length > 0) zone.classList.add('has-pieces');
+  else zone.classList.remove('has-pieces');
+}
+
+// ─────────────────────────────────────────────
+// CHECK WORD
+// ─────────────────────────────────────────────
+function checkWord(i) {
+  const zone = document.getElementById(`zone-${i}`);
+  const pieces = [...zone.querySelectorAll('.piece')];
+  const built = pieces.map(p=>p.dataset.text).join('');
+  const correct = selected[i].nationality;
+  const resultEl = document.getElementById(`result-${i}`);
+  const section = document.getElementById(`section-${i}`);
+
+  if (built === correct) {
+    // CORRECT
+    soundCorrect();
+    resultEl.className = 'result-badge correct-badge';
+    resultEl.textContent = '✔ ¡Correcto!';
+    section.classList.add('correct');
+    document.getElementById(`btn-check-${i}`).disabled = true;
+    document.getElementById(`pill-${i}`).classList.add('done');
+    // lock pieces
+    pieces.forEach(p => {
+      p.draggable = false;
+      p.style.cursor = 'default';
+      p.onclick = null;
+      p.style.background = '#d5f5e3';
+      p.style.borderColor = '#2ecc71';
+      p.style.color = '#1a6640';
+    });
+    completed++;
+    updateProgress();
+  } else {
+    // INCORRECT
+    soundError();
+    resultEl.className = 'result-badge error-badge';
+    resultEl.textContent = '✖ Intenta otra vez';
+    section.classList.remove('error-shake');
+    void section.offsetWidth; // reflow
+    section.classList.add('error-shake');
+    setTimeout(()=>section.classList.remove('error-shake'),500);
+    setTimeout(()=>{ resultEl.className='result-badge'; resultEl.textContent=''; }, 2200);
+  }
+}
+
+// ─────────────────────────────────────────────
+// CLEAR WORD
+// ─────────────────────────────────────────────
+function clearWord(i) {
+  const zone = document.getElementById(`zone-${i}`);
+  const pool = document.getElementById(`pool-${i}`);
+  [...zone.querySelectorAll('.piece')].forEach(p => pool.appendChild(p));
+  updateZoneState(zone);
+  const resultEl = document.getElementById(`result-${i}`);
+  resultEl.className = 'result-badge'; resultEl.textContent = '';
+}
+
+// ─────────────────────────────────────────────
+// WIN
+// ─────────────────────────────────────────────
+function triggerWin() {
+  soundWin();
+  launchConfetti();
+  launchBalloons();
+  setTimeout(()=>{
+    document.getElementById('final-screen').classList.add('show');
+  }, 900);
+}
+
+function launchConfetti() {
+  const colors = ['#f39c12','#e74c3c','#3498db','#2ecc71','#9b59b6','#1abc9c','#e67e22','#f1c40f'];
+  for (let i=0; i<80; i++) {
+    setTimeout(()=>{
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.left = Math.random()*100+'vw';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.width = (8+Math.random()*10)+'px';
+      c.style.height = (8+Math.random()*10)+'px';
+      c.style.borderRadius = Math.random()>0.5?'50%':'2px';
+      const dur = 2+Math.random()*2;
+      c.style.animationDuration = dur+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(), dur*1000);
+    }, Math.random()*1200);
+  }
+}
+
+function launchBalloons() {
+  const emojis = ['🎈','🎉','🎊','🥳','🌟','⭐'];
+  for (let i=0;i<12;i++) {
+    setTimeout(()=>{
+      const b = document.createElement('div');
+      b.className = 'balloon';
+      b.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      b.style.left = (5+Math.random()*85)+'vw';
+      b.style.bottom = '-40px';
+      const dur = 3+Math.random()*3;
+      b.style.animationDuration = dur+'s';
+      document.body.appendChild(b);
+      setTimeout(()=>b.remove(), dur*1000);
+    }, Math.random()*1500);
+  }
+}
+
+// ─────────────────────────────────────────────
+// REPLAY
+// ─────────────────────────────────────────────
+document.getElementById('btn-replay').addEventListener('click', ()=>{
+  // resume audio ctx on user gesture
+  if (AC.state === 'suspended') AC.resume();
+  init();
+});
+
+// ─────────────────────────────────────────────
+// START
+// ─────────────────────────────────────────────
+window.addEventListener('click', ()=>{ if(AC.state==='suspended') AC.resume(); }, {once:true});
+window.addEventListener('touchstart', ()=>{ if(AC.state==='suspended') AC.resume(); }, {once:true});
+init();
+</script>
+</body>
+</html>

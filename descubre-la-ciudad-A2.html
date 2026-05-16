@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Descubre la Ciudad – PaoSpanishTeacher</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sky:#d6eeff;
+  --brand:#e07b39;
+  --brand2:#c0392b;
+  --green:#27ae60;
+  --red:#e74c3c;
+  --text:#2c3e50;
+  --card:#fff;
+  --shadow:rgba(0,0,0,0.10);
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--sky);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ── CITY BACKGROUND ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    linear-gradient(180deg, #cde9ff 0%, #e8f4ff 55%, #f5f0e8 55.1%, #f5f0e8 100%);
+  pointer-events:none;z-index:0;
+}
+
+/* SVG city silhouette */
+#cityscape{
+  position:fixed;bottom:0;left:0;right:0;
+  height:200px;pointer-events:none;z-index:0;
+  overflow:hidden;
+}
+
+#app{
+  position:relative;z-index:1;
+  max-width:780px;margin:0 auto;
+  padding:16px 14px 90px;
+}
+
+/* ── HEADER ── */
+header{text-align:center;margin-bottom:16px;}
+header h1{
+  font-family:'Baloo 2',cursive;
+  font-size:clamp(1.6rem,5vw,2.6rem);
+  font-weight:800;color:var(--brand2);
+  text-shadow:2px 3px 0 rgba(192,57,43,0.13);
+  line-height:1.1;
+}
+header .brand-sub{
+  font-family:'Playfair Display',serif;
+  font-style:italic;color:var(--brand);
+  font-size:clamp(0.88rem,2.5vw,1.1rem);margin-top:2px;
+}
+header .icon-row{font-size:1.5rem;margin-top:5px;letter-spacing:4px;}
+
+/* ── PROGRESS ── */
+#progress-wrap{
+  background:#fff;border-radius:40px;
+  box-shadow:0 2px 10px var(--shadow);
+  padding:8px 18px;margin-bottom:14px;
+  display:flex;align-items:center;gap:12px;
+}
+#progress-wrap .plabel{font-size:0.82rem;font-weight:700;color:var(--brand);white-space:nowrap;}
+#prog-bg{flex:1;height:14px;background:#f0e6d3;border-radius:40px;overflow:hidden;}
+#prog-bar{height:100%;background:linear-gradient(90deg,#f39c12,#e07b39);border-radius:40px;width:0%;transition:width .5s ease;}
+#prog-count{font-size:0.85rem;font-weight:800;color:var(--brand2);min-width:44px;text-align:right;}
+
+/* ── MOTIVATOR ── */
+#motivator{
+  display:none;
+  background:linear-gradient(135deg,#fffde7,#fff9c4);
+  border:2px solid #f9ca24;border-radius:18px;
+  padding:11px 18px;margin-bottom:14px;
+  text-align:center;font-size:1rem;font-weight:700;
+  color:#7d5a00;box-shadow:0 4px 14px rgba(249,202,36,.22);
+  animation:pop .4s;
+}
+
+/* ── TEXT CARD ── */
+#text-card{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:0 6px 24px var(--shadow);
+  padding:24px 26px;margin-bottom:20px;
+  line-height:2.0;font-size:clamp(0.97rem,2.5vw,1.08rem);
+  color:var(--text);
+}
+
+/* ── BLANK BUTTON (inline) ── */
+.blank-btn{
+  display:inline-block;
+  min-width:110px;
+  background:#eaf4ff;
+  border:2.5px dashed #7eb8e8;
+  border-radius:10px;
+  padding:3px 10px;
+  font-family:'Baloo 2',cursive;
+  font-size:1rem;font-weight:700;
+  color:#1a4a6e;
+  cursor:pointer;
+  vertical-align:middle;
+  margin:0 3px;
+  transition:all .2s;
+  position:relative;
+  white-space:nowrap;
+}
+.blank-btn:hover{background:#d6ecff;border-color:#3498db;}
+.blank-btn.correct{
+  background:#d5f5e3;border:2.5px solid #27ae60;
+  color:#1a6640;cursor:default;
+  animation:popSmall .35s;
+}
+.blank-btn.error{
+  background:#fdecea;border-color:#e74c3c;color:#922b21;
+  animation:shake .35s;
+}
+.blank-btn .article-prefix{
+  font-family:'Nunito',sans-serif;
+  font-size:0.85rem;font-weight:600;color:#888;
+  margin-right:2px;
+}
+
+/* ── OPTIONS PANEL ── */
+#options-panel{
+  background:var(--card);border-radius:var(--radius);
+  box-shadow:0 4px 18px var(--shadow);
+  padding:18px 20px;margin-bottom:18px;
+}
+#options-panel h2{
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;
+  color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:6px;
+}
+#options-grid{display:flex;flex-wrap:wrap;gap:10px;}
+
+.opt-btn{
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;
+  background:#fdf1e5;border:2px solid #f0c070;
+  border-radius:30px;padding:7px 20px;
+  color:#7a4f1a;cursor:pointer;
+  transition:all .18s;box-shadow:0 2px 8px rgba(240,192,112,.18);
+  user-select:none;
+}
+.opt-btn:hover{background:#fde8c8;border-color:#e07b39;transform:translateY(-2px);}
+.opt-btn.selected{
+  background:linear-gradient(135deg,#f39c12,#e07b39);
+  border-color:#e07b39;color:#fff;
+  box-shadow:0 4px 14px rgba(224,123,57,.35);
+}
+
+/* ── FEEDBACK TOAST ── */
+#toast{
+  position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);
+  background:#fff;border-radius:40px;padding:10px 26px;
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;
+  box-shadow:0 6px 24px rgba(0,0,0,.16);z-index:600;
+  transition:transform .3s cubic-bezier(.4,1.4,.6,1);
+  pointer-events:none;white-space:nowrap;
+}
+#toast.show{transform:translateX(-50%) translateY(0);}
+#toast.ok{color:var(--green);}
+#toast.err{color:var(--red);}
+
+/* ── COMPLETED TEXT ── */
+#completed-text{
+  display:none;
+  background:linear-gradient(135deg,#f0fff6,#e8f8ff);
+  border:2px solid #27ae60;border-radius:var(--radius);
+  padding:20px 24px;margin-bottom:18px;
+  font-size:1rem;line-height:1.9;color:var(--text);
+  box-shadow:0 4px 18px rgba(39,174,96,.12);
+}
+#completed-text h3{
+  font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;
+  color:var(--green);margin-bottom:10px;
+}
+
+/* ── FINAL SCREEN ── */
+#final-screen{
+  display:none;position:fixed;inset:0;
+  background:rgba(15,8,3,.88);z-index:1000;
+  align-items:center;justify-content:center;
+  flex-direction:column;padding:30px;
+}
+#final-screen.show{display:flex;}
+#final-box{
+  background:#fff;border-radius:28px;
+  padding:36px 30px 28px;max-width:420px;width:100%;
+  text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);
+  animation:pop .5s cubic-bezier(.4,1.4,.6,1);
+  position:relative;overflow:hidden;
+}
+#final-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,#f1c40f,#e74c3c,#9b59b6,#3498db,#2ecc71,#e07b39);
+}
+#final-teacher{font-size:3.8rem;margin-bottom:8px;}
+#final-title{
+  font-family:'Baloo 2',cursive;font-size:1.75rem;font-weight:800;
+  color:var(--brand2);margin-bottom:8px;
+}
+#final-sub{font-size:1rem;color:#555;margin-bottom:6px;line-height:1.5;}
+#final-credit{
+  font-family:'Playfair Display',serif;font-style:italic;
+  color:var(--brand);font-size:0.95rem;margin-bottom:20px;
+}
+#btn-replay{
+  font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;
+  background:linear-gradient(135deg,#f39c12,#e07b39);
+  color:#fff;border:none;border-radius:40px;
+  padding:12px 34px;cursor:pointer;
+  box-shadow:0 6px 20px rgba(224,123,57,.35);transition:all .2s;
+}
+#btn-replay:hover{filter:brightness(1.08);transform:translateY(-2px);}
+
+/* ── WATERMARK ── */
+#watermark{
+  position:fixed;bottom:12px;right:14px;
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:0.76rem;color:rgba(200,120,60,.38);
+  pointer-events:none;z-index:500;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes pop{0%{transform:scale(.75);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes popSmall{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.confetti-p{
+  position:fixed;width:9px;height:9px;top:-9px;border-radius:2px;
+  animation:cfall linear forwards;pointer-events:none;z-index:900;
+}
+@keyframes cfall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(110vh) rotate(720deg)}}
+.balloon{position:fixed;font-size:2.2rem;animation:brise linear forwards;pointer-events:none;z-index:898;}
+@keyframes brise{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-120vh)}}
+</style>
+</head>
+<body>
+
+<!-- CITY SVG BACKGROUND -->
+<svg id="cityscape" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+  <!-- sky gradient layer -->
+  <defs>
+    <linearGradient id="roadG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c9c9c9"/>
+      <stop offset="100%" stop-color="#b0b0b0"/>
+    </linearGradient>
+  </defs>
+  <!-- buildings back -->
+  <rect x="0"   y="110" width="80"  height="90" fill="#9daec2"/>
+  <rect x="10"  y="90"  width="20"  height="20" fill="#9daec2"/>
+  <rect x="35"  y="80"  width="20"  height="30" fill="#8fa0b8"/>
+  <rect x="85"  y="100" width="60"  height="100" fill="#b0bfcc"/>
+  <rect x="100" y="75"  width="15"  height="25" fill="#a0b0be"/>
+  <rect x="150" y="95"  width="50"  height="105" fill="#9aaab8"/>
+  <rect x="155" y="65"  width="12"  height="30" fill="#8899aa"/>
+  <rect x="205" y="85"  width="70"  height="115" fill="#bccad6"/>
+  <rect x="215" y="60"  width="18"  height="25" fill="#aabbc8"/>
+  <rect x="280" y="105" width="45"  height="95" fill="#9daec2"/>
+  <rect x="330" y="90"  width="55"  height="110" fill="#b0bfcc"/>
+  <rect x="340" y="65"  width="14"  height="25" fill="#9aaab8"/>
+  <rect x="390" y="100" width="40"  height="100" fill="#9daec2"/>
+  <rect x="435" y="80"  width="65"  height="120" fill="#bccad6"/>
+  <rect x="445" y="55"  width="16"  height="25" fill="#aabbc8"/>
+  <rect x="505" y="95"  width="50"  height="105" fill="#9aaab8"/>
+  <rect x="560" y="85"  width="60"  height="115" fill="#b0bfcc"/>
+  <rect x="570" y="60"  width="14"  height="25" fill="#a0b0be"/>
+  <rect x="625" y="105" width="45"  height="95" fill="#9daec2"/>
+  <rect x="675" y="90"  width="55"  height="110" fill="#bccad6"/>
+  <rect x="685" y="65"  width="16"  height="25" fill="#9aaab8"/>
+  <rect x="735" y="80"  width="65"  height="120" fill="#9aaab8"/>
+  <rect x="800" y="100" width="50"  height="100" fill="#b0bfcc"/>
+  <rect x="810" y="70"  width="14"  height="30" fill="#aabbc8"/>
+  <rect x="855" y="90"  width="60"  height="110" fill="#9daec2"/>
+  <rect x="865" y="62"  width="16"  height="28" fill="#8fa0b8"/>
+  <rect x="920" y="105" width="45"  height="95" fill="#bccad6"/>
+  <rect x="970" y="85"  width="70"  height="115" fill="#9aaab8"/>
+  <rect x="980" y="58"  width="18"  height="27" fill="#a0b0be"/>
+  <rect x="1045" y="95" width="55"  height="105" fill="#b0bfcc"/>
+  <rect x="1105" y="80" width="95"  height="120" fill="#9daec2"/>
+  <rect x="1115" y="55" width="20"  height="25" fill="#8fa0b8"/>
+  <!-- windows (small yellow) -->
+  <rect x="92"  y="108" width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="105" y="108" width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="92"  y="120" width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="160" y="100" width="7" height="5" fill="#fff9c4" opacity=".7"/>
+  <rect x="173" y="100" width="7" height="5" fill="#fff9c4" opacity=".7"/>
+  <rect x="160" y="112" width="7" height="5" fill="#fff9c4" opacity=".7"/>
+  <rect x="215" y="90"  width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="228" y="90"  width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="240" y="90"  width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="440" y="90"  width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="455" y="90"  width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="440" y="102" width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="565" y="92"  width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="578" y="92"  width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="740" y="88"  width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="753" y="88"  width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="975" y="92"  width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <rect x="990" y="92"  width="8" height="6" fill="#fff9c4" opacity=".7"/>
+  <!-- road -->
+  <rect x="0" y="175" width="1200" height="25" fill="url(#roadG)"/>
+  <rect x="0" y="183" width="1200" height="4"  fill="#a0a0a0"/>
+  <!-- dashes -->
+  <rect x="50"  y="184" width="40" height="2" fill="#fff" opacity=".6"/>
+  <rect x="160" y="184" width="40" height="2" fill="#fff" opacity=".6"/>
+  <rect x="270" y="184" width="40" height="2" fill="#fff" opacity=".6"/>
+  <rect x="380" y="184" width="40" height="2" fill="#fff" opacity=".6"/>
+  <rect x="490" y="184" width="40" height="2" fill="#fff" opacity=".6"/>
+  <rect x="600" y="184" width="40" height="2" fill="#fff" opacity=".6"/>
+  <rect x="710" y="184" width="40" height="2" fill="#fff" opacity=".6"/>
+  <rect x="820" y="184" width="40" height="2" fill="#fff" opacity=".6"/>
+  <rect x="930" y="184" width="40" height="2" fill="#fff" opacity=".6"/>
+  <rect x="1040" y="184" width="40" height="2" fill="#fff" opacity=".6"/>
+  <rect x="1150" y="184" width="40" height="2" fill="#fff" opacity=".6"/>
+  <!-- sidewalk -->
+  <rect x="0" y="170" width="1200" height="5" fill="#d0c8b8"/>
+  <!-- trees -->
+  <rect x="128" y="152" width="6" height="20" fill="#8B6340"/>
+  <circle cx="131" cy="150" r="12" fill="#27ae60" opacity=".85"/>
+  <rect x="460" y="152" width="6" height="20" fill="#8B6340"/>
+  <circle cx="463" cy="150" r="12" fill="#2ecc71" opacity=".85"/>
+  <rect x="820" y="152" width="6" height="20" fill="#8B6340"/>
+  <circle cx="823" cy="150" r="12" fill="#27ae60" opacity=".85"/>
+  <rect x="1060" y="152" width="6" height="20" fill="#8B6340"/>
+  <circle cx="1063" cy="150" r="12" fill="#2ecc71" opacity=".85"/>
+</svg>
+
+<div id="app">
+  <header>
+    <h1>🏙️ Descubre la Ciudad</h1>
+    <div class="brand-sub">PaoSpanishTeacher</div>
+    <div class="icon-row">🏛️🎬📚🌳</div>
+  </header>
+
+  <div id="progress-wrap">
+    <span class="plabel">Progreso</span>
+    <div id="prog-bg"><div id="prog-bar"></div></div>
+    <span id="prog-count">0 / 0</span>
+  </div>
+
+  <div id="motivator">👨‍🏫 ¡Vas muy bien! ¡Sigue así!</div>
+
+  <div id="text-card"></div>
+
+  <div id="completed-text"><h3>✅ Texto completo</h3><div id="completed-body"></div></div>
+
+  <div id="options-panel">
+    <h2>🗂️ Elige la palabra correcta:</h2>
+    <div id="options-grid"></div>
+  </div>
+</div>
+
+<div id="toast">¡Correcto!</div>
+
+<div id="final-screen">
+  <div id="final-box">
+    <div id="final-teacher">👨‍🏫</div>
+    <div id="final-title">¡Felicitaciones!</div>
+    <div id="final-sub">¡Excelente! Has completado el texto sobre la ciudad.</div>
+    <div id="final-credit">Juego creado por PaoSpanishTeacher</div>
+    <button id="btn-replay">🔄 Jugar otra vez</button>
+  </div>
+</div>
+
+<div id="watermark">PaoSpanishTeacher</div>
+
+<script>
+// ─────────────────────────────────────────────
+// AUDIO
+// ─────────────────────────────────────────────
+const AC = new (window.AudioContext || window.webkitAudioContext)();
+function resumeAC(){ if(AC.state==='suspended') AC.resume(); }
+['click','touchstart'].forEach(ev=>window.addEventListener(ev,resumeAC,{once:true}));
+
+function tone(freq,dur,type='sine',vol=0.22,delay=0){
+  try{
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.connect(g);g.connect(AC.destination);
+    o.type=type;o.frequency.value=freq;
+    const t=AC.currentTime+delay;
+    g.gain.setValueAtTime(vol,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.start(t);o.stop(t+dur);
+  }catch(e){}
+}
+function soundCorrect(){ [523,659,784].forEach((f,i)=>tone(f,0.14,'sine',0.2,i*0.1)); }
+function soundWrong()  { tone(280,0.14,'triangle',0.15); tone(220,0.17,'triangle',0.13,0.15); }
+function soundMotiv()  { [392,440,494,523].forEach((f,i)=>tone(f,0.13,'sine',0.18,i*0.09)); }
+function soundWin()    { [523,587,659,784,880,1047].forEach((f,i)=>tone(f,0.18,'sine',0.22,i*0.11)); }
+
+// ─────────────────────────────────────────────
+// TEXT VARIANTS – 8 párrafos nivel B1
+// Cada uno tiene orden de blancos diferente
+// ─────────────────────────────────────────────
+const VARIANTS = [
+  // 1. parque · restaurante · biblioteca · cine
+  { segments:[
+    "Los fines de semana, Lucía tiene una rutina especial. Por la mañana, va al ",
+    {id:0,answer:"parque"},
+    " a caminar durante una hora. Después, si tiene hambre, busca un buen ",
+    {id:1,answer:"restaurante"},
+    " cerca de su casa para desayunar con tranquilidad. Por la tarde, le gusta visitar la ",
+    {id:2,answer:"biblioteca"},
+    " del barrio, donde pasa horas leyendo novelas. Por la noche, queda con sus amigos para ir al ",
+    {id:3,answer:"cine"},
+    " y ver la última película en cartelera. Sin duda, Lucía sabe perfectamente cómo disfrutar la ciudad."
+  ]},
+  // 2. cine · parque · restaurante · biblioteca
+  { segments:[
+    "El sábado pasado fue un día muy agradable. Por la tarde fui al ",
+    {id:0,answer:"cine"},
+    " a ver una película de aventuras con mi mejor amigo. Antes de entrar compramos palomitas y refrescos. Por la noche dimos un paseo largo por el ",
+    {id:1,answer:"parque"},
+    " que está junto al río, donde hay fuentes iluminadas muy bonitas. Al día siguiente, el domingo, quedamos en un ",
+    {id:2,answer:"restaurante"},
+    " del centro para comer juntos en familia. Por la tarde, los niños fueron a la ",
+    {id:3,answer:"biblioteca"},
+    " a buscar libros de ciencias para un proyecto escolar. Fue un fin de semana perfecto."
+  ]},
+  // 3. restaurante · biblioteca · parque · cine
+  { segments:[
+    "Vivir en la ciudad tiene muchas ventajas. Por ejemplo, esta mañana fui al ",
+    {id:0,answer:"restaurante"},
+    " italiano que abrieron cerca del metro y el almuerzo estuvo delicioso. Luego, aproveché para pasar por la ",
+    {id:1,answer:"biblioteca"},
+    " y devolver los libros que tenía prestados desde hace dos semanas. Al salir, me senté un rato en el ",
+    {id:2,answer:"parque"},
+    " central a leer el periódico y tomar el sol. Por la noche, unos amigos me invitaron al ",
+    {id:3,answer:"cine"},
+    " a ver una comedia nueva. Fue un día perfecto sin salir del barrio."
+  ]},
+  // 4. biblioteca · cine · parque · restaurante
+  { segments:[
+    "Ana es estudiante universitaria y organiza muy bien su tiempo libre. Los martes por la tarde siempre va a la ",
+    {id:0,answer:"biblioteca"},
+    " de la facultad para estudiar en silencio y concentrarse mejor. Los miércoles por la noche va al ",
+    {id:1,answer:"cine"},
+    " con sus compañeros de clase, porque les gusta ver películas en versión original. Los sábados por la mañana camina por el ",
+    {id:2,answer:"parque"},
+    " que hay cerca de su residencia y escucha música. Los domingos, su familia la lleva a un ",
+    {id:3,answer:"restaurante"},
+    " típico de la ciudad donde preparan los mejores platos regionales. Ana dice que la ciudad le da todo lo que necesita."
+  ]},
+  // 5. restaurante · cine · biblioteca · parque
+  { segments:[
+    "Cuando tengo un día libre en la ciudad, me gusta aprovecharlo al máximo. Primero quedo con mis amigos en un ",
+    {id:0,answer:"restaurante"},
+    " del mercado para tomar un brunch tranquilo y conversar. Después, si hay una buena película, vamos al ",
+    {id:1,answer:"cine"},
+    " del centro comercial que tiene las salas más modernas. Si me sobra tiempo por la tarde, paso por la ",
+    {id:2,answer:"biblioteca"},
+    " pública a buscar algún libro interesante o revisar las novedades literarias. Y para terminar el día, doy un paseo relajante por el ",
+    {id:3,answer:"parque"},
+    " antes de volver a casa. Así es como disfruto mejor mi tiempo libre."
+  ]},
+  // 6. cine · biblioteca · restaurante · parque
+  { segments:[
+    "Este fin de semana la ciudad estaba muy animada. El viernes por la noche, mis vecinos me invitaron al ",
+    {id:0,answer:"cine"},
+    " a ver el estreno más esperado del año. El sábado por la mañana fui a la ",
+    {id:1,answer:"biblioteca"},
+    " para devolver unos libros y aproveché para asistir a un taller de escritura gratuito. Por la tarde, reservé una mesa en un ",
+    {id:2,answer:"restaurante"},
+    " nuevo que había visto en una revista de gastronomía, y la comida superó todas mis expectativas. El domingo me desperté tarde y fui a leer al ",
+    {id:3,answer:"parque"},
+    " durante un par de horas, disfrutando del sol y del aire fresco. Sin duda, fue un fin de semana inolvidable."
+  ]},
+  // 7. biblioteca · restaurante · cine · parque
+  { segments:[
+    "Cuando era pequeña, los sábados eran mis días favoritos. Mi madre me llevaba primero a la ",
+    {id:0,answer:"biblioteca"},
+    " infantil, donde elegía tres libros para leer durante la semana. Después, como recompensa, íbamos a un ",
+    {id:1,answer:"restaurante"},
+    " de hamburguesas que estaba cerca de la plaza principal. Por la tarde, si me había portado bien, mi padre nos llevaba al ",
+    {id:2,answer:"cine"},
+    " a ver alguna película de animación. Y para terminar el día, jugábamos en el ",
+    {id:3,answer:"parque"},
+    " hasta que se ponía el sol. Ahora que soy mayor, sigo amando esa rutina familiar."
+  ]},
+  // 8. parque · cine · biblioteca · restaurante
+  { segments:[
+    "Esta semana he descubierto lo mucho que me gusta explorar mi ciudad. El lunes por la mañana fui a correr al ",
+    {id:0,answer:"parque"},
+    " y encontré una zona con árboles muy bonita que no conocía. El miércoles por la noche, casi por casualidad, entré al ",
+    {id:1,answer:"cine"},
+    " de arte y ensayo del barrio antiguo y vi una película francesa fascinante. El jueves aproveché para ir a la ",
+    {id:2,answer:"biblioteca"},
+    " y sacar tres novelas que tenía pendientes desde hacía meses. El viernes, para celebrar la semana, cené con mis amigos en un ",
+    {id:3,answer:"restaurante"},
+    " con terraza donde se veían las luces de toda la ciudad. Me siento muy afortunada de vivir aquí."
+  ]}
+];
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+const WORDS = ['restaurante','cine','biblioteca','parque'];
+let variant, blanks, completed, motivShown, selectedOpt, currentBlankId;
+let lastVariantIndex = -1;
+
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+function init(){
+  document.getElementById('final-screen').classList.remove('show');
+  document.getElementById('completed-text').style.display='none';
+  document.getElementById('motivator').style.display='none';
+  completed=0; motivShown=false; selectedOpt=null; currentBlankId=null;
+
+  // pick a variant different from the last one
+  let idx;
+  do { idx = Math.floor(Math.random()*VARIANTS.length); } while(idx===lastVariantIndex && VARIANTS.length>1);
+  lastVariantIndex = idx;
+  variant = VARIANTS[idx];
+  blanks = variant.segments.filter(s=>typeof s==='object');
+
+  updateProgress();
+  renderText();
+  renderOptions();
+  selectFirstBlank();
+}
+
+// ─────────────────────────────────────────────
+// RENDER TEXT
+// ─────────────────────────────────────────────
+function renderText(){
+  const card = document.getElementById('text-card');
+  card.innerHTML='';
+  variant.segments.forEach(seg=>{
+    if(typeof seg==='string'){
+      card.appendChild(document.createTextNode(seg));
+    } else {
+      const btn = document.createElement('span');
+      btn.className='blank-btn';
+      btn.id=`blank-${seg.id}`;
+      btn.dataset.id=seg.id;
+      btn.dataset.answer=seg.answer;
+
+      const label=document.createElement('span');
+      label.className='blank-label';
+      label.textContent='___';
+      btn.appendChild(label);
+
+      btn.addEventListener('click',()=>selectBlank(seg.id));
+      card.appendChild(btn);
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+// RENDER OPTIONS
+// ─────────────────────────────────────────────
+function renderOptions(){
+  const grid=document.getElementById('options-grid');
+  grid.innerHTML='';
+  const shuffled=shuffle(WORDS);
+  shuffled.forEach(w=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.textContent=w;
+    btn.dataset.word=w;
+    btn.addEventListener('click',()=>selectOption(w,btn));
+    grid.appendChild(btn);
+  });
+}
+
+// ─────────────────────────────────────────────
+// SELECT FIRST UNANSWERED BLANK
+// ─────────────────────────────────────────────
+function selectFirstBlank(){
+  const first=blanks.find(b=>{
+    const el=document.getElementById(`blank-${b.id}`);
+    return el && !el.classList.contains('correct');
+  });
+  if(first) selectBlank(first.id);
+}
+
+// ─────────────────────────────────────────────
+// SELECT BLANK (highlight active)
+// ─────────────────────────────────────────────
+function selectBlank(id){
+  // deselect all blanks visual
+  blanks.forEach(b=>{
+    const el=document.getElementById(`blank-${b.id}`);
+    if(el && !el.classList.contains('correct')){
+      el.style.borderStyle='dashed';
+      el.style.borderColor='#7eb8e8';
+      el.style.background='#eaf4ff';
+    }
+  });
+  currentBlankId=id;
+  const el=document.getElementById(`blank-${id}`);
+  if(el && !el.classList.contains('correct')){
+    el.style.borderStyle='solid';
+    el.style.borderColor='#f39c12';
+    el.style.background='#fff8e1';
+  }
+  selectedOpt=null;
+  document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+}
+
+// ─────────────────────────────────────────────
+// SELECT OPTION
+// ─────────────────────────────────────────────
+function selectOption(word,btn){
+  resumeAC();
+  if(currentBlankId===null) return;
+  const blankEl=document.getElementById(`blank-${currentBlankId}`);
+  if(!blankEl||blankEl.classList.contains('correct')) return;
+
+  document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedOpt=word;
+
+  // auto check
+  checkAnswer(word);
+}
+
+// ─────────────────────────────────────────────
+// CHECK
+// ─────────────────────────────────────────────
+function checkAnswer(word){
+  const blankDef=blanks.find(b=>b.id===currentBlankId);
+  if(!blankDef) return;
+  const blankEl=document.getElementById(`blank-${currentBlankId}`);
+
+  if(word===blankDef.answer){
+    // CORRECT
+    soundCorrect();
+    blankEl.classList.remove('error');
+    blankEl.classList.add('correct');
+    blankEl.style.borderStyle='solid';
+    blankEl.style.borderColor='#27ae60';
+    blankEl.style.background='#d5f5e3';
+    // update label
+    const lbl=blankEl.querySelector('.blank-label');
+    if(lbl){ lbl.textContent=word; lbl.style.color='#1a6640'; }
+    blankEl.style.cursor='default';
+    blankEl.onclick=null;
+
+    completed++;
+    updateProgress();
+    showToast('¡Correcto! ✔','ok');
+
+    document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+    selectedOpt=null;
+
+    // move to next blank
+    setTimeout(()=>{
+      if(completed<blanks.length) selectFirstBlank();
+      else triggerWin();
+    },400);
+  } else {
+    // WRONG
+    soundWrong();
+    blankEl.classList.add('error');
+    setTimeout(()=>blankEl.classList.remove('error'),400);
+    showToast('Intenta otra vez 🔁','err');
+    document.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+  }
+}
+
+// ─────────────────────────────────────────────
+// PROGRESS
+// ─────────────────────────────────────────────
+function updateProgress(){
+  const total=blanks.length||4;
+  const pct=(completed/total)*100;
+  document.getElementById('prog-bar').style.width=pct+'%';
+  document.getElementById('prog-count').textContent=`${completed} / ${total}`;
+
+  if(completed>=Math.ceil(total/2)&&!motivShown){
+    motivShown=true;
+    const m=document.getElementById('motivator');
+    m.style.display='block'; soundMotiv();
+    setTimeout(()=>m.style.display='none',2800);
+  }
+}
+
+// ─────────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────────
+let toastTimer=null;
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='show '+type;
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='',1400);
+}
+
+// ─────────────────────────────────────────────
+// WIN
+// ─────────────────────────────────────────────
+function triggerWin(){
+  soundWin();
+  showCompletedText();
+  confetti(); balloons();
+  setTimeout(()=>document.getElementById('final-screen').classList.add('show'),900);
+}
+
+function showCompletedText(){
+  const box=document.getElementById('completed-text');
+  const body=document.getElementById('completed-body');
+  body.innerHTML='';
+  variant.segments.forEach(seg=>{
+    if(typeof seg==='string'){
+      body.appendChild(document.createTextNode(seg));
+    } else {
+      const sp=document.createElement('strong');
+      sp.style.color='#27ae60';
+      sp.textContent=seg.answer;
+      body.appendChild(sp);
+    }
+  });
+  box.style.display='block';
+}
+
+function confetti(){
+  const colors=['#f1c40f','#e74c3c','#9b59b6','#3498db','#2ecc71','#e07b39','#1abc9c'];
+  for(let i=0;i<90;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='confetti-p';
+      c.style.left=Math.random()*100+'vw';
+      c.style.background=colors[Math.floor(Math.random()*colors.length)];
+      const sz=8+Math.random()*9;
+      c.style.width=sz+'px'; c.style.height=sz+'px';
+      c.style.borderRadius=Math.random()>.5?'50%':'3px';
+      const dur=2+Math.random()*2;
+      c.style.animationDuration=dur+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),dur*1000);
+    },Math.random()*1500);
+  }
+}
+function balloons(){
+  const emojis=['🎈','🎉','🎊','🥳','🌟','⭐','🏙️'];
+  for(let i=0;i<12;i++){
+    setTimeout(()=>{
+      const b=document.createElement('div');
+      b.className='balloon';
+      b.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      b.style.left=(3+Math.random()*88)+'vw';
+      b.style.bottom='-40px';
+      const dur=3+Math.random()*3;
+      b.style.animationDuration=dur+'s';
+      document.body.appendChild(b);
+      setTimeout(()=>b.remove(),dur*1000);
+    },Math.random()*1800);
+  }
+}
+
+// ─────────────────────────────────────────────
+// REPLAY
+// ─────────────────────────────────────────────
+document.getElementById('btn-replay').addEventListener('click',()=>{ resumeAC(); init(); });
+
+// ─────────────────────────────────────────────
+// START
+// ─────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

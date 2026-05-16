@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sopa de Letras – La Familia | Pao Spanish Teacher</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FDF8F2;
+    --green: #4A7C59;
+    --green-light: #7BAD8A;
+    --green-pale: #D6EAD9;
+    --pink: #E8527A;
+    --pink-light: #F9A8C0;
+    --pink-pale: #FCE4EC;
+    --text: #2D2D2D;
+    --shadow: rgba(74,124,89,0.18);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--cream);
+    font-family: 'Nunito', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(123,173,138,0.12) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(232,82,122,0.08) 0%, transparent 50%);
+  }
+
+  /* HEADER */
+  header {
+    background: var(--green);
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    box-shadow: 0 4px 16px var(--shadow);
+    position: sticky; top: 0; z-index: 50;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--cream); border: 3px solid var(--pink);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; flex-shrink: 0;
+  }
+  .brand-text h1 { font-family: 'Fredoka One', cursive; color: #fff; font-size: clamp(15px,4vw,22px); line-height: 1.1; }
+  .brand-text span { color: var(--pink-light); font-size: clamp(10px,2.5vw,13px); font-weight: 600; }
+  .level-badge {
+    background: var(--pink); color: #fff;
+    font-family: 'Fredoka One', cursive; font-size: 14px;
+    padding: 6px 14px; border-radius: 20px; white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(232,82,122,0.35);
+  }
+
+  /* MAIN */
+  main { max-width: 860px; margin: 0 auto; padding: 20px 16px 40px; display: flex; flex-direction: column; gap: 18px; }
+
+  .title-card {
+    background: #fff; border-radius: 20px; padding: 16px 20px;
+    border-left: 6px solid var(--pink); box-shadow: 0 4px 16px var(--shadow);
+  }
+  .title-card h2 { font-family: 'Fredoka One', cursive; color: var(--green); font-size: clamp(18px,5vw,26px); }
+  .title-card p { font-size: 13px; color: #666; margin-top: 4px; line-height: 1.5; }
+
+  /* STATS */
+  .stats-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .stat-chip {
+    background: #fff; border-radius: 14px; padding: 10px 14px;
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 700; font-size: 14px;
+    box-shadow: 0 3px 10px var(--shadow); flex: 1; min-width: 90px;
+  }
+  .stat-chip .icon { font-size: 18px; }
+  .stat-chip .label { color: #999; font-size: 10px; font-weight: 600; display: block; }
+  .stat-chip .value { color: var(--green); font-size: 17px; font-family: 'Fredoka One', cursive; }
+
+  /* GAME AREA */
+  .game-area { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; }
+  .grid-wrapper {
+    background: #fff; border-radius: 20px; padding: 14px;
+    box-shadow: 0 4px 16px var(--shadow); overflow-x: auto;
+  }
+  #word-grid {
+    display: grid; gap: 4px; margin: 0 auto;
+    width: fit-content; user-select: none; -webkit-user-select: none;
+  }
+
+  /* ── CELL: Nunito font, lowercase ── */
+  .cell {
+    width: clamp(30px, 6vw, 40px);
+    height: clamp(30px, 6vw, 40px);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: clamp(14px, 3vw, 19px);
+    border-radius: 8px; cursor: pointer; transition: all 0.15s ease;
+    background: var(--green-pale); color: var(--green);
+    border: 2px solid transparent; touch-action: none;
+    line-height: 1;
+  }
+  .cell:hover { background: var(--pink-pale); border-color: var(--pink-light); }
+  .cell.selecting { background: var(--pink-light); color: #fff; transform: scale(1.1); }
+  .cell.found {
+    background: var(--green); color: #fff;
+    border-color: var(--green); animation: pop 0.35s ease;
+  }
+  @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.22)} 100%{transform:scale(1)} }
+
+  /* WORD LIST */
+  .word-list-panel {
+    background: #fff; border-radius: 20px; padding: 14px;
+    box-shadow: 0 4px 16px var(--shadow); min-width: 155px; max-width: 195px;
+  }
+  .word-list-panel h3 {
+    font-family: 'Fredoka One', cursive; color: var(--green);
+    font-size: 14px; margin-bottom: 10px;
+    border-bottom: 2px dashed var(--green-pale); padding-bottom: 6px;
+  }
+  .word-item {
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 7px; border-radius: 10px; margin-bottom: 4px;
+    transition: all 0.3s ease; font-size: clamp(11px,2.3vw,13px);
+  }
+  .word-item.pending { background: var(--green-pale); color: var(--green); font-weight: 800; }
+  .word-item.found-word { background: var(--green); color: #fff; text-decoration: line-through; font-weight: 700; }
+  .word-item .translation { color: #999; font-size: 10px; font-style: italic; display: block; font-weight: 600; }
+  .word-item.found-word .translation { color: rgba(255,255,255,0.65); }
+
+  /* BRAVO TOAST */
+  #bravo-toast {
+    position: fixed; top: 85px; left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: var(--green); color: #fff;
+    font-family: 'Fredoka One', cursive; font-size: clamp(18px,5vw,26px);
+    padding: 11px 28px; border-radius: 50px;
+    box-shadow: 0 8px 30px rgba(74,124,89,0.5);
+    z-index: 300; pointer-events: none;
+    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), opacity 0.25s ease;
+    opacity: 0; white-space: nowrap;
+  }
+  #bravo-toast.show { transform: translateX(-50%) scale(1); opacity: 1; }
+
+  /* CONFETTI */
+  #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 90; display: none; }
+  #confetti-canvas.show { display: block; }
+
+  /* WIN OVERLAY */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.62); z-index: 100;
+    align-items: center; justify-content: center;
+    padding: 16px; overflow-y: auto;
+  }
+  .overlay.show { display: flex; }
+
+  .win-card {
+    background: var(--cream); border-radius: 26px;
+    padding: 24px 22px; text-align: center;
+    max-width: 430px; width: 100%;
+    animation: slideUp 0.45s cubic-bezier(.34,1.56,.64,1);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+    border: 4px solid var(--green);
+  }
+  @keyframes slideUp { from{transform:translateY(50px) scale(0.9);opacity:0} to{transform:translateY(0) scale(1);opacity:1} }
+
+  .teacher-bubble {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--green-pale); border-radius: 18px;
+    padding: 14px 16px; margin-bottom: 16px; text-align: left;
+  }
+  .teacher-avatar {
+    width: 54px; height: 54px; border-radius: 50%;
+    background: var(--green); border: 3px solid var(--pink);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; flex-shrink: 0;
+  }
+  .teacher-msg { font-size: 13px; line-height: 1.65; color: var(--text); }
+  .teacher-msg strong { font-family: 'Fredoka One', cursive; color: var(--green); font-size: 16px; display: block; margin-bottom: 3px; }
+  .teacher-msg em { font-size: 11px; color: #888; }
+
+  .win-stats { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
+  .win-stat { background: var(--green-pale); border-radius: 14px; padding: 9px 16px; font-family: 'Fredoka One', cursive; color: var(--green); font-size: 18px; }
+  .win-stat span { display: block; font-family: 'Nunito', sans-serif; font-size: 10px; color: #888; }
+
+  .grammar-note {
+    background: #fff; border-radius: 16px;
+    border-left: 5px solid var(--pink);
+    padding: 13px 15px; margin-bottom: 16px; text-align: left;
+  }
+  .grammar-note h4 { font-family: 'Fredoka One', cursive; color: var(--pink); font-size: 14px; margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
+  .grammar-note p { font-size: 12px; color: #555; line-height: 1.7; }
+  .grammar-note .examples { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .grammar-note .ex-chip { background: var(--pink-pale); color: var(--pink); font-weight: 700; font-size: 11px; padding: 3px 9px; border-radius: 20px; }
+
+  .btn-play {
+    background: var(--pink); color: #fff; border: none;
+    font-family: 'Fredoka One', cursive; font-size: 17px;
+    padding: 13px 28px; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(232,82,122,0.4);
+    transition: all 0.2s ease; width: 100%; margin-bottom: 10px;
+  }
+  .btn-play:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,82,122,0.5); }
+  .btn-play:active { transform: translateY(0); }
+  .brand-footer { font-size: 11px; color: #bbb; font-weight: 700; }
+
+  /* RESPONSIVE */
+  @media (max-width: 620px) {
+    .game-area { grid-template-columns: 1fr; }
+    .word-list-panel { max-width: 100%; display: grid; grid-template-columns: repeat(2,1fr); gap: 4px; }
+    .word-list-panel h3 { grid-column: 1/-1; }
+  }
+
+  .deco { position: fixed; pointer-events: none; opacity: 0.09; font-size: 80px; z-index: 0; }
+  .deco-1 { bottom: 20px; left: 8px; }
+  .deco-2 { top: 80px; right: 8px; }
+</style>
+</head>
+<body>
+
+<div class="deco deco-1">🌿</div>
+<div class="deco deco-2">🪴</div>
+<canvas id="confetti-canvas"></canvas>
+<div id="bravo-toast">⭐ ¡Muy bien!</div>
+
+<!-- HEADER -->
+<header>
+  <div class="brand">
+    <div class="avatar">👩🏻‍🏫</div>
+    <div class="brand-text">
+      <h1>Pao Spanish Teacher</h1>
+      <span>¡Aprende español con amor! ♥</span>
+    </div>
+  </div>
+  <div class="level-badge">Nivel A2</div>
+</header>
+
+<!-- MAIN -->
+<main>
+  <div class="title-card">
+    <h2>🔤 Sopa de letras — La familia</h2>
+    <p>Find 8 family words hidden in the grid! · ¡Encuentra 8 palabras de la familia en la cuadrícula!</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-chip">
+      <span class="icon">🎯</span>
+      <div><span class="label">Found / Encontradas</span><span class="value" id="found-count">0 / 8</span></div>
+    </div>
+    <div class="stat-chip">
+      <span class="icon">⏱️</span>
+      <div><span class="label">Time / Tiempo</span><span class="value" id="timer">0:00</span></div>
+    </div>
+    <div class="stat-chip">
+      <span class="icon">🏆</span>
+      <div><span class="label">Round / Ronda</span><span class="value" id="round-num">1</span></div>
+    </div>
+  </div>
+
+  <div class="game-area">
+    <div class="grid-wrapper">
+      <div id="word-grid"></div>
+    </div>
+    <div class="word-list-panel">
+      <h3>🔍 Find / Busca</h3>
+      <div id="word-list"></div>
+    </div>
+  </div>
+</main>
+
+<!-- WIN OVERLAY -->
+<div class="overlay" id="win-overlay">
+  <div class="win-card">
+    <div class="teacher-bubble">
+      <div class="teacher-avatar">👩🏻‍🏫</div>
+      <div class="teacher-msg">
+        <strong>🎉 ¡Felicidades, lo lograste!</strong>
+        Encontraste todas las palabras. ¡Sigue así, cada día hablas mejor español! ♥<br>
+        <em>You found them all! Keep going — every day your Spanish gets better!</em>
+      </div>
+    </div>
+
+    <div class="win-stats">
+      <div class="win-stat" id="ws-time">0:00<span>Tiempo / Time</span></div>
+      <div class="win-stat" id="ws-round">1<span>Ronda / Round</span></div>
+    </div>
+
+    <div class="grammar-note">
+      <h4>📚 Nota gramatical · Grammar tip</h4>
+      <p>
+        En español, los sustantivos de familia forman el <strong>plural</strong> añadiendo <strong>-s</strong> o <strong>-es</strong>.
+        ¡El plural masculino también puede incluir a hombres y mujeres juntos! 🌟<br>
+        <em style="font-size:11px;">In Spanish, family nouns form the plural with -s or -es. The masculine plural can also refer to mixed groups!</em>
+      </p>
+      <div class="examples">
+        <span class="ex-chip">hermano → hermanos</span>
+        <span class="ex-chip">abuelo → abuelos</span>
+        <span class="ex-chip">tío → tíos</span>
+        <span class="ex-chip">padre + madre = padres 👨‍👩</span>
+        <span class="ex-chip">abuelo + abuela = abuelos 👴👵</span>
+        <span class="ex-chip">hijo + hija = hijos 👦👧</span>
+      </div>
+    </div>
+
+    <button class="btn-play" onclick="nextRound()">▶ ¡Jugar de nuevo! / Play again!</button>
+    <div class="brand-footer">🌿 Pao Spanish Teacher ♥ paospanishteacher.com</div>
+  </div>
+</div>
+
+<script>
+// ── AUDIO ──
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+function getCtx() { if (!actx) actx = new AudioCtx(); return actx; }
+
+function playCorrect() {
+  try {
+    const ctx = getCtx();
+    [523,659,784,1047].forEach((f,i) => {
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type='sine'; o.frequency.value=f;
+      const t=ctx.currentTime+i*0.1;
+      g.gain.setValueAtTime(0.22,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.32);
+      o.start(t); o.stop(t+0.32);
+    });
+  } catch(e){}
+}
+
+function playCelebration() {
+  try {
+    const ctx = getCtx();
+    [523,587,659,698,784,880,988,1047,1175].forEach((f,i) => {
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type='triangle'; o.frequency.value=f;
+      const t=ctx.currentTime+i*0.11;
+      g.gain.setValueAtTime(0.18,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.38);
+      o.start(t); o.stop(t+0.38);
+    });
+  } catch(e){}
+}
+
+// ── BRAVO ──
+const BRAVOS = ['⭐ ¡Muy bien!','🌟 ¡Excelente!','💚 ¡Perfecto!','🎯 ¡Correcto!','✨ ¡Genial!','🏆 ¡Bravo!','🌿 ¡Increíble!'];
+let bravoIdx=0, bravoTO=null;
+function showBravo() {
+  const t=document.getElementById('bravo-toast');
+  t.textContent=BRAVOS[bravoIdx%BRAVOS.length]; bravoIdx++;
+  t.classList.add('show');
+  clearTimeout(bravoTO);
+  bravoTO=setTimeout(()=>t.classList.remove('show'),1500);
+}
+
+// ── CONFETTI ──
+let confAnim=null;
+const COLS=['#4A7C59','#E8527A','#F9A8C0','#7BAD8A','#FFD700','#FF8C42','#A8DAFF','#ffffff'];
+let particles=[];
+function launchConfetti() {
+  const cv=document.getElementById('confetti-canvas');
+  cv.classList.add('show');
+  cv.width=window.innerWidth; cv.height=window.innerHeight;
+  const ctx=cv.getContext('2d');
+  particles=[];
+  for(let i=0;i<160;i++){
+    particles.push({
+      x:Math.random()*cv.width, y:-30-Math.random()*200,
+      w:7+Math.random()*9, h:4+Math.random()*5,
+      color:COLS[Math.floor(Math.random()*COLS.length)],
+      angle:Math.random()*Math.PI*2,
+      spin:(Math.random()-0.5)*0.22,
+      vx:(Math.random()-0.5)*3.5, vy:2.5+Math.random()*4,
+      opacity:1
+    });
+  }
+  cancelAnimationFrame(confAnim);
+  animConf(ctx,cv);
+  setTimeout(()=>{ cancelAnimationFrame(confAnim); cv.classList.remove('show'); },5000);
+}
+function animConf(ctx,cv){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  particles.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.angle+=p.spin; p.vy+=0.07; p.opacity-=0.0035;
+    ctx.save(); ctx.globalAlpha=Math.max(0,p.opacity);
+    ctx.translate(p.x,p.y); ctx.rotate(p.angle);
+    ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    ctx.restore();
+  });
+  particles=particles.filter(p=>p.opacity>0&&p.y<cv.height+30);
+  if(particles.length>0) confAnim=requestAnimationFrame(()=>animConf(ctx,cv));
+  else cv.classList.remove('show');
+}
+
+// ── WORD BANK (lowercase display, uppercase internal for matching) ──
+const ALL_WORDS=[
+  {word:"madre",en:"mother"},{word:"padre",en:"father"},
+  {word:"hijo",en:"son"},{word:"hija",en:"daughter"},
+  {word:"hermano",en:"brother"},{word:"hermana",en:"sister"},
+  {word:"abuelo",en:"grandfather"},{word:"abuela",en:"grandmother"},
+  {word:"tio",en:"uncle"},{word:"tia",en:"aunt"},
+  {word:"primo",en:"cousin (m)"},{word:"prima",en:"cousin (f)"},
+  {word:"sobrino",en:"nephew"},{word:"sobrina",en:"niece"},
+  {word:"nieto",en:"grandson"},{word:"nieta",en:"granddaughter"},
+  {word:"esposo",en:"husband"},{word:"esposa",en:"wife"},
+  {word:"cunado",en:"brother-in-law"},{word:"cunada",en:"sister-in-law"},
+  {word:"suegro",en:"father-in-law"},{word:"suegra",en:"mother-in-law"},
+  {word:"nuera",en:"daughter-in-law"},{word:"yerno",en:"son-in-law"},
+  {word:"bisabuelo",en:"great-grandfather"},{word:"bisabuela",en:"great-grandmother"},
+  {word:"gemelo",en:"twin (m)"},{word:"gemela",en:"twin (f)"},
+  {word:"padrastro",en:"stepfather"},{word:"madrastra",en:"stepmother"},
+  {word:"hijastro",en:"stepson"},{word:"hijastra",en:"stepdaughter"},
+];
+
+const GRID_SIZE=13, WPR=8;
+const DIRS=[[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
+let grid=[],placed=[],selecting=false,startCell=null,selectedCells=[];
+let foundWords=0,timerInterval,seconds=0,round=1,usedIdx=[];
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function pickWords(){
+  if(usedIdx.length+WPR>ALL_WORDS.length) usedIdx=[];
+  const avail=ALL_WORDS.map((_,i)=>i).filter(i=>!usedIdx.includes(i));
+  const picked=shuffle(avail).slice(0,WPR);
+  usedIdx.push(...picked);
+  return picked.map(i=>ALL_WORDS[i]);
+}
+
+function buildGrid(){
+  grid=[];
+  for(let r=0;r<GRID_SIZE;r++){grid[r]=[];for(let c=0;c<GRID_SIZE;c++)grid[r][c]='';}
+}
+
+function placeWord(wo){
+  // work in lowercase
+  const w=wo.word;
+  for(const [dr,dc] of shuffle(DIRS)){
+    for(let a=0;a<50;a++){
+      const r=Math.floor(Math.random()*GRID_SIZE),c=Math.floor(Math.random()*GRID_SIZE);
+      let ok=true; const cells=[];
+      for(let i=0;i<w.length;i++){
+        const nr=r+dr*i,nc=c+dc*i;
+        if(nr<0||nr>=GRID_SIZE||nc<0||nc>=GRID_SIZE){ok=false;break;}
+        if(grid[nr][nc]!==''&&grid[nr][nc]!==w[i]){ok=false;break;}
+        cells.push([nr,nc]);
+      }
+      if(ok){cells.forEach(([nr,nc],i)=>grid[nr][nc]=w[i]);return cells;}
+    }
+  }
+  return null;
+}
+
+function fillRandom(){
+  // Use only lowercase letters that are easy to distinguish
+  const L='abcdefghijklmnoprstuy';
+  for(let r=0;r<GRID_SIZE;r++)
+    for(let c=0;c<GRID_SIZE;c++)
+      if(grid[r][c]==='') grid[r][c]=L[Math.floor(Math.random()*L.length)];
+}
+
+function initGame(){
+  buildGrid(); placed=[]; foundWords=0;
+  const cw=pickWords();
+  for(const w of cw){ const cells=placeWord(w); placed.push({...w,cells,found:false}); }
+  fillRandom(); renderGrid(); renderWordList(); updateStats(); startTimer();
+}
+
+function renderGrid(){
+  const cont=document.getElementById('word-grid');
+  cont.style.gridTemplateColumns=`repeat(${GRID_SIZE},1fr)`;
+  cont.innerHTML='';
+  for(let r=0;r<GRID_SIZE;r++) for(let c=0;c<GRID_SIZE;c++){
+    const el=document.createElement('div');
+    el.className='cell';
+    el.textContent=grid[r][c]; // already lowercase
+    el.dataset.r=r; el.dataset.c=c;
+    cont.appendChild(el);
+  }
+  addEvents();
+}
+
+function renderWordList(){
+  const list=document.getElementById('word-list'); list.innerHTML='';
+  for(const p of placed){
+    const d=document.createElement('div');
+    d.className=`word-item ${p.found?'found-word':'pending'}`;
+    d.innerHTML=`<span>${p.found?'✅':'🔍'}</span><div><strong>${p.word}</strong><span class="translation">${p.en}</span></div>`;
+    list.appendChild(d);
+  }
+}
+
+function addEvents(){
+  const cont=document.getElementById('word-grid');
+  const gc=el=>el&&el.closest?el.closest('.cell'):null;
+  const onS=(e)=>{
+    e.preventDefault();
+    const pt=e.touches?e.touches[0]:e;
+    const t=document.elementFromPoint(pt.clientX,pt.clientY);
+    const c=gc(t); if(!c)return;
+    selecting=true; startCell=c; selectedCells=[c]; hl();
+  };
+  const onM=(e)=>{
+    if(!selecting)return; e.preventDefault();
+    const pt=e.touches?e.touches[0]:e;
+    const t=document.elementFromPoint(pt.clientX,pt.clientY);
+    const c=gc(t); if(!c||!startCell)return;
+    selectedCells=getLine(+startCell.dataset.r,+startCell.dataset.c,+c.dataset.r,+c.dataset.c);
+    hl();
+  };
+  const onE=()=>{ if(!selecting)return; selecting=false; checkSel(); clrHl(); selectedCells=[]; startCell=null; };
+  cont.addEventListener('mousedown',onS);
+  cont.addEventListener('mousemove',onM);
+  document.addEventListener('mouseup',onE);
+  cont.addEventListener('touchstart',onS,{passive:false});
+  cont.addEventListener('touchmove',onM,{passive:false});
+  cont.addEventListener('touchend',onE,{passive:false});
+}
+
+function getLine(r0,c0,r1,c1){
+  const dr=r1-r0,dc=c1-c0,len=Math.max(Math.abs(dr),Math.abs(dc));
+  if(len===0)return[gce(r0,c0)];
+  if(Math.abs(dr)!==Math.abs(dc)&&dr!==0&&dc!==0)return[gce(r0,c0)];
+  const sr=Math.round(dr/len),sc=Math.round(dc/len),cells=[];
+  for(let i=0;i<=len;i++)cells.push(gce(r0+sr*i,c0+sc*i));
+  return cells.filter(Boolean);
+}
+function gce(r,c){return document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);}
+function hl(){
+  document.querySelectorAll('.cell.selecting').forEach(c=>c.classList.remove('selecting'));
+  selectedCells.forEach(c=>c&&!c.classList.contains('found')&&c.classList.add('selecting'));
+}
+function clrHl(){ document.querySelectorAll('.cell.selecting').forEach(c=>c.classList.remove('selecting')); }
+
+function checkSel(){
+  if(!selectedCells.length)return;
+  const sel=selectedCells.map(c=>grid[+c.dataset.r][+c.dataset.c]).join('');
+  const selR=[...sel].reverse().join('');
+  for(const p of placed){
+    if(p.found)continue;
+    const w=p.word;
+    if(sel===w||selR===w){
+      p.found=true; foundWords++;
+      p.cells.forEach(([r,c])=>{
+        const el=gce(r,c);
+        if(el){ el.classList.remove('selecting'); el.classList.add('found'); }
+      });
+      playCorrect(); showBravo(); renderWordList(); updateStats();
+      if(foundWords===WPR) setTimeout(showWin,850);
+      return;
+    }
+  }
+}
+
+function updateStats(){
+  document.getElementById('found-count').textContent=`${foundWords} / ${WPR}`;
+  document.getElementById('round-num').textContent=round;
+}
+
+function startTimer(){
+  clearInterval(timerInterval); seconds=0; updT();
+  timerInterval=setInterval(()=>{seconds++;updT();},1000);
+}
+function updT(){
+  const m=Math.floor(seconds/60),s=seconds%60;
+  document.getElementById('timer').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+}
+
+function showWin(){
+  clearInterval(timerInterval);
+  const m=Math.floor(seconds/60),s=seconds%60,ts=`${m}:${s.toString().padStart(2,'0')}`;
+  document.getElementById('ws-time').childNodes[0].textContent=ts;
+  document.getElementById('ws-round').childNodes[0].textContent=round;
+  playCelebration();
+  launchConfetti();
+  setTimeout(()=>document.getElementById('win-overlay').classList.add('show'),350);
+}
+
+function nextRound(){
+  round++;
+  document.getElementById('win-overlay').classList.remove('show');
+  initGame();
+}
+
+initGame();
+</script>
+</body>
+</html>
