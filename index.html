@@ -1,34 +1,431 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spanish Games — Pao Spanish Teacher</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --verde: #2E6F40; --fucsia: #E0218A; --fondo: #FDFBF7; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background: var(--fondo); color: #2B2A27; }
-        header { background: #fff; padding: 20px; text-align: center; border-bottom: 3px solid var(--verde); }
-        .logo { font-size: 24px; font-weight: 700; color: var(--verde); text-decoration: none; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: #fff; border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .btn { display: inline-block; background: var(--verde); color: #fff; padding: 10px 20px; border-radius: 25px; text-decoration: none; font-weight: 600; margin-top: 15px; }
-        .btn:hover { background: var(--fucsia); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Spanish Games — Pao Spanish Teacher</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green-dark: #2d6a4f;
+      --green-mid: #52b788;
+      --green-light: #b7e4c7;
+      --pink: #e84393;
+      --pink-light: #ffd6ec;
+      --cream: #fdf6ec;
+      --cream-dark: #f5ead6;
+      --text: #2c2c2c;
+      --text-light: #6b6b6b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #1b4332, #2d6a4f);
+      padding: 60px 5% 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,67,147,0.2) 0%, transparent 70%);
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 250px; height: 250px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(183,228,199,0.15) 0%, transparent 70%);
+    }
+    .header-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      color: var(--green-light);
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      margin-bottom: 20px;
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    header h1 em { color: var(--pink-light); font-style: italic; }
+    header p {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.75;
+      max-width: 560px;
+      margin: 0 auto 28px;
+      position: relative;
+      z-index: 1;
+    }
+    .header-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--pink);
+      color: #fff;
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 12px 26px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(232,67,147,0.35);
+      position: relative;
+      z-index: 1;
+    }
+    .header-btn:hover { transform: translateY(-2px); background: #c73080; }
+
+    /* ── WAVE ── */
+    .wave {
+      display: block;
+      width: 100%;
+      height: 50px;
+      background: var(--cream);
+      clip-path: ellipse(55% 100% at 50% 100%);
+      margin-top: -2px;
+    }
+
+    /* ── MAIN ── */
+    main { padding: 40px 5% 80px; max-width: 1100px; margin: 0 auto; }
+
+    /* ── LEVEL SECTION ── */
+    .level-section { margin-bottom: 64px; }
+    .level-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .level-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 22px;
+      border-radius: 50px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .level-pill.a1 { background: var(--green-light); color: var(--green-dark); }
+    .level-pill.a2 { background: var(--pink-light); color: var(--pink); }
+    .level-pill.b2 { background: #e0d4f7; color: #5b21b6; }
+    .level-divider { flex: 1; height: 1.5px; background: var(--green-light); border-radius: 2px; }
+
+    /* ── GAMES GRID ── */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 20px;
+    }
+    .game-card {
+      background: #fff;
+      border-radius: 22px;
+      padding: 28px 22px;
+      border: 2px solid var(--green-light);
+      transition: all 0.25s;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+    .game-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--green-mid), var(--pink));
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+    .game-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,0.09); border-color: var(--pink-light); }
+    .game-card:hover::before { transform: scaleX(1); }
+    .game-card.b2-card { border-color: #ddd6fe; }
+    .game-card.b2-card:hover { border-color: #c4b5fd; }
+    .game-card.b2-card::before { background: linear-gradient(90deg, #8b5cf6, var(--pink)); }
+
+    .game-icon { font-size: 2.2rem; }
+    .game-type {
+      font-size: 0.68rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--pink);
+      font-weight: 600;
+    }
+    .game-card.b2-card .game-type { color: #7c3aed; }
+    .game-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--green-dark);
+      line-height: 1.3;
+    }
+    .game-card.b2-card .game-name { color: #4c1d95; }
+    .game-desc {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      line-height: 1.6;
+      flex: 1;
+    }
+    .game-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green-dark);
+      color: #fff;
+      padding: 9px 18px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      width: fit-content;
+      margin-top: 4px;
+    }
+    .game-card:hover .game-cta { background: var(--pink); }
+    .game-card.b2-card .game-cta { background: #7c3aed; }
+    .game-card.b2-card:hover .game-cta { background: var(--pink); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--green-dark);
+      color: #fff;
+      text-align: center;
+      padding: 44px 5%;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+    .footer-logo span { color: var(--pink-light); }
+    footer p { font-size: 0.85rem; opacity: 0.75; line-height: 1.7; }
+    footer a { color: var(--green-light); text-decoration: none; font-weight: 500; }
+    footer a:hover { color: var(--pink-light); }
+    .hearts { color: var(--pink-light); margin-top: 14px; display: block; }
+
+    /* ── ANIMATIONS ── */
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 600px) {
+      .games-grid { grid-template-columns: 1fr 1fr; }
+      header { padding: 50px 5% 60px; }
+    }
+    @media (max-width: 400px) {
+      .games-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-    <header><a href="#" class="logo">Pao Spanish Teacher 🌿</a></header>
-    <div class="container">
-        <div class="grid">
-            <div class="card"><span>🦁</span><h3>Animales</h3><a href="memoria_animales_salvajes_A1%20.html" class="btn">Jugar</a></div>
-            <div class="card"><span>👨‍👩‍👧</span><h3>La Familia</h3><a href="sopa-de-letras-familia-A1.html" class="btn">Jugar</a></div>
-            <div class="card"><span>❓</span><h3>Preguntas</h3><a href="palabras-interrogativas.html" class="btn">Jugar</a></div>
-            <div class="card"><span>🥦</span><h3>Verduras</h3><a href="verdurasyhortalizas%20A1.html" class="btn">Jugar</a></div>
-            <div class="card"><span>📝</span><h3>Subjuntivo 1</h3><a href="subjuntivo-completa-estructura.B2.html" class="btn">Jugar</a></div>
-            <div class="card"><span>✨</span><h3>Subjuntivo 2</h3><a href="subjuntivo-deseos-necesidades-B2.html" class="btn">Jugar</a></div>
-        </div>
+
+  <header>
+    <div class="header-tag">🎮 100% Free · No registration needed</div>
+    <h1>Free Spanish Games<br><em>Practice While You Play</em></h1>
+    <p>Interactive games designed to help you practice Spanish vocabulary and grammar in a fun and natural way. Choose your level and start playing — completely free. ♥</p>
+    <a href="https://paospanishteacher.github.io/Videos-cuentos/" class="header-btn">🎬 Also check our free videos →</a>
+  </header>
+  <div class="wave"></div>
+
+  <main>
+
+    <!-- A1 -->
+    <div class="level-section fade-in">
+      <div class="level-header">
+        <div class="level-pill a1">🟢 A1 — Beginner</div>
+        <div class="level-divider"></div>
+      </div>
+      <div class="games-grid">
+
+        <a href="lacasa_A1.html" class="game-card">
+          <div class="game-icon">🏠</div>
+          <div class="game-type">Vocabulary · Memory</div>
+          <div class="game-name">La Casa — The House</div>
+          <div class="game-desc">Learn rooms and objects in a house. Match words with images and build your home vocabulary.</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="lasprofesiones_A1.html" class="game-card">
+          <div class="game-icon">👷</div>
+          <div class="game-type">Vocabulary · Memory</div>
+          <div class="game-name">Las Profesiones — Jobs</div>
+          <div class="game-desc">Discover names of professions in Spanish. Match each job with its emoji and name.</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="juego-memoria-colores-A1.html" class="game-card">
+          <div class="game-icon">🎨</div>
+          <div class="game-type">Vocabulary · Memory</div>
+          <div class="game-name">Colores — Colors</div>
+          <div class="game-desc">Practice colors in Spanish with a fun memory card game. Flip, match and learn!</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="memoria_animales_salvajes_A1_.html" class="game-card">
+          <div class="game-icon">🦁</div>
+          <div class="game-type">Vocabulary · Memory</div>
+          <div class="game-name">Animales Salvajes I</div>
+          <div class="game-desc">Match wild animals with their names. Learn jungle vocabulary in a visual and fun way.</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="memoriaanimalesalvajes_A1.html" class="game-card">
+          <div class="game-icon">🐘</div>
+          <div class="game-type">Vocabulary · Memory</div>
+          <div class="game-name">Animales Salvajes II</div>
+          <div class="game-desc">A second wild animals memory challenge. More animals, more fun, more Spanish! ♥</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="juegomemoriaviajes_A1.html" class="game-card">
+          <div class="game-icon">✈️</div>
+          <div class="game-type">Vocabulary · Memory</div>
+          <div class="game-name">Vocabulario de Viaje — Travel</div>
+          <div class="game-desc">Practice travel vocabulary: airport, suitcase, passport, hotel and more. ¡Buen viaje!</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="lahora_A1_.html" class="game-card">
+          <div class="game-icon">⏰</div>
+          <div class="game-type">Grammar · Memory</div>
+          <div class="game-name">La Hora — Telling Time</div>
+          <div class="game-desc">Match written times with their digital clock. Learn to tell the time in Spanish.</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="verdurasyhortalizas_A1.html" class="game-card">
+          <div class="game-icon">🥕</div>
+          <div class="game-type">Vocabulary · Build Words</div>
+          <div class="game-name">Verduras — Vegetables</div>
+          <div class="game-desc">Drag and drop syllables to build the names of vegetables in Spanish. Fun word-building game!</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="construye-nacionalidades-A1.html" class="game-card">
+          <div class="game-icon">🌍</div>
+          <div class="game-type">Vocabulary · Build Words</div>
+          <div class="game-name">Nacionalidades — Nationalities</div>
+          <div class="game-desc">Learn nationalities in Spanish by building words with syllables. Where are you from?</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="sopa-de-letras-familia-A1.html" class="game-card">
+          <div class="game-icon">👨‍👩‍👧</div>
+          <div class="game-type">Vocabulary · Word Search</div>
+          <div class="game-name">La Familia — Family</div>
+          <div class="game-desc">Find family member words hidden in a word search puzzle. madre, padre, hermano...</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="palabras-interrogativas.html" class="game-card">
+          <div class="game-icon">❓</div>
+          <div class="game-type">Grammar · Interactive</div>
+          <div class="game-name">Palabras Interrogativas</div>
+          <div class="game-desc">Practice question words in Spanish: qué, quién, cómo, dónde, cuándo, por qué...</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+      </div>
     </div>
+
+    <!-- A2 -->
+    <div class="level-section fade-in">
+      <div class="level-header">
+        <div class="level-pill a2">🟠 A2 — Elementary</div>
+        <div class="level-divider"></div>
+      </div>
+      <div class="games-grid">
+
+        <a href="completar_oraciones_A2.html" class="game-card">
+          <div class="game-icon">🏙️</div>
+          <div class="game-type">Grammar · Fill in the Blank</div>
+          <div class="game-name">Completa la Oración I — City Places</div>
+          <div class="game-desc">Complete sentences about places in the city. el cine, la farmacia, el parque...</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="completaroraciones_A2.html" class="game-card">
+          <div class="game-icon">🗺️</div>
+          <div class="game-type">Grammar · Fill in the Blank</div>
+          <div class="game-name">Completa la Oración II — City Places</div>
+          <div class="game-desc">A second challenge completing sentences about city places with different vocabulary and context.</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="descubre-la-ciudad-A2.html" class="game-card">
+          <div class="game-icon">🌆</div>
+          <div class="game-type">Vocabulary · Interactive</div>
+          <div class="game-name">Descubre la Ciudad — Discover the City</div>
+          <div class="game-desc">Explore city vocabulary in an interactive way. Navigate through places and learn as you go!</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- B2 -->
+    <div class="level-section fade-in">
+      <div class="level-header">
+        <div class="level-pill b2">🔵 B2 — Upper Intermediate</div>
+        <div class="level-divider"></div>
+      </div>
+      <div class="games-grid">
+
+        <a href="subjuntivo-completa-estructura_B2.html" class="game-card b2-card">
+          <div class="game-icon">📝</div>
+          <div class="game-type">Grammar · Subjunctive</div>
+          <div class="game-name">Subjuntivo — Complete the Structure</div>
+          <div class="game-desc">Practice the subjunctive mood by completing complex sentence structures. Level up your Spanish grammar!</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+        <a href="subjuntivo-deseos-necesidades-B2.html" class="game-card b2-card">
+          <div class="game-icon">💭</div>
+          <div class="game-type">Grammar · Subjunctive</div>
+          <div class="game-name">Subjuntivo — Wishes & Needs</div>
+          <div class="game-desc">Use the subjunctive to express desires, wishes and needs in Spanish. Quiero que... Necesito que...</div>
+          <div class="game-cta">Play now ▶</div>
+        </a>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="footer-logo">Pao <span>Spanish</span> Teacher</div>
+    <p>Online Spanish classes for adults · All levels A1–C2<br>
+    Communicative approach, storytelling and neuroeducation<br>
+    <a href="https://bejewelled-pastelito-a1e1ee.netlify.app" target="_blank">↗ Visit my main website</a></p>
+    <span class="hearts">♥ ♥ ♥</span>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
 </body>
 </html>
