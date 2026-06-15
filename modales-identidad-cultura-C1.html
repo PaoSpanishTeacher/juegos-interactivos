@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#fdf8f0;--green:#3b6d11;--green-light:#c0dd97;--green-xlight:#eaf3de;--pink:#d4537e;--pink-dark:#993556;--text:#2d2d2d;}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+.header{background:var(--green);color:white;padding:18px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid white;flex-shrink:0}
+.brand-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800}
+.brand-sub{font-size:0.78rem;opacity:0.85;margin-top:2px}
+.badges{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:5px 13px;font-size:0.75rem;font-weight:700}
+.badge.pink{background:var(--pink);border-color:var(--pink-dark)}
+.screen{display:none;padding:24px 16px;max-width:740px;margin:0 auto}
+.screen.active{display:block}
+.start-card{background:white;border-radius:20px;padding:36px 32px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.10);border:2px solid var(--green-light);margin-top:32px}
+.start-card h1{font-family:'Playfair Display',serif;font-size:1.85rem;color:var(--green);margin-bottom:10px}
+.start-card .subtitle{color:#666;font-size:0.97rem;margin-bottom:24px;line-height:1.7}
+.info-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.pill{background:var(--green-xlight);color:var(--green);border-radius:20px;padding:7px 16px;font-size:0.82rem;font-weight:700}
+.pill.p2{background:#fde8ef;color:var(--pink-dark)}
+.btn{display:inline-block;background:var(--green);color:white;border:none;border-radius:30px;padding:14px 36px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s}
+.btn:hover{background:#2d5209;transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,109,17,0.25)}
+.btn.pink-btn{background:var(--pink)}.btn.pink-btn:hover{background:var(--pink-dark)}
+.progress-bar-wrap{background:var(--green-xlight);border-radius:10px;height:10px;margin-bottom:6px}
+.progress-bar{background:var(--green);height:10px;border-radius:10px;transition:width .4s}
+.progress-info{display:flex;justify-content:space-between;font-size:0.8rem;color:#666;margin-bottom:18px}
+.score-badge{background:var(--green);color:white;border-radius:20px;padding:4px 14px;font-weight:700;font-size:0.85rem}
+.question-card{background:white;border-radius:20px;padding:28px 24px;box-shadow:0 4px 20px rgba(59,109,17,0.09);border:2px solid var(--green-light);margin-bottom:18px}
+.context-line{font-size:0.85rem;color:#888;margin-bottom:12px;font-style:italic}
+.grammar-badge{display:inline-block;background:var(--green-xlight);color:var(--green);border-radius:12px;padding:4px 12px;font-size:0.75rem;font-weight:700;margin-bottom:14px}
+.question-text{font-size:1.05rem;line-height:1.8;color:var(--text);font-weight:600;margin-bottom:20px}
+.blank{display:inline-block;border-bottom:2.5px solid var(--pink);min-width:90px;color:var(--pink-dark);font-weight:800;padding:0 4px}
+.options{display:grid;gap:10px}
+.opt-btn{background:var(--green-xlight);border:2px solid var(--green-light);border-radius:14px;padding:13px 18px;font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:600;color:var(--text);cursor:pointer;text-align:left;transition:all .18s;line-height:1.4}
+.opt-btn:hover:not(:disabled){background:#d4edbb;border-color:var(--green);transform:translateX(4px)}
+.opt-btn.correct{background:#e6f7d9;border-color:#3b6d11;color:#1e4200}
+.opt-btn.wrong{background:#fde8ef;border-color:var(--pink);color:var(--pink-dark)}
+.opt-btn:disabled{cursor:default}
+.feedback-card{border-radius:16px;padding:20px 22px;margin-top:16px;display:none;animation:fadeIn .3s}
+.feedback-card.correct{background:#e6f7d9;border:2px solid #a0d470}
+.feedback-card.wrong{background:#fde8ef;border:2px solid var(--pink)}
+.feedback-title{font-weight:800;font-size:1rem;margin-bottom:8px}
+.feedback-text{font-size:0.9rem;line-height:1.65;color:#444}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.next-btn{display:none;margin-top:16px}
+.end-card{background:white;border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.12);border:2px solid var(--green-light);margin-top:24px}
+.teacher-card{background:var(--green);color:white;border-radius:16px;padding:22px;margin:20px 0;display:flex;align-items:center;gap:16px;text-align:left}
+.teacher-avatar-big{width:68px;height:68px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:36px;border:3px solid white;flex-shrink:0}
+.score-display{font-family:'Playfair Display',serif;font-size:2.8rem;color:var(--green);font-weight:800;margin:10px 0}
+.score-pct{font-size:1.1rem;color:var(--pink);font-weight:700;margin-bottom:20px}
+.grammar-note{background:var(--green-xlight);border-radius:16px;padding:22px;text-align:left;margin:20px 0}
+.grammar-note h3{font-family:'Playfair Display',serif;color:var(--green);font-size:1.1rem;margin-bottom:14px}
+.grammar-note ul{list-style:none;padding:0}
+.grammar-note li{padding:8px 0;border-bottom:1px solid #d0e8b0;font-size:0.88rem;line-height:1.65;color:#333}
+.grammar-note li:last-child{border-bottom:none}
+.grammar-note li::before{content:"✦ ";color:var(--green);font-weight:800}
+.note-example{display:block;background:white;border-radius:8px;padding:7px 12px;margin-top:6px;font-style:italic;color:#555;font-size:0.83rem;border-left:3px solid var(--green)}
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+.balloon{position:fixed;font-size:2.5rem;pointer-events:none;z-index:997;animation:riseUp 4s ease-in forwards}
+@keyframes riseUp{to{transform:translateY(-110vh) rotate(15deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="avatar">👩‍🏫</div>
+  <div>
+    <div class="brand-name">Pao Spanish Teacher</div>
+    <div class="brand-sub">Español para adultos · Nivel avanzado</div>
+  </div>
+  <div class="badges">
+    <span class="badge">C1</span>
+    <span class="badge pink">Oraciones Modales</span>
+  </div>
+</div>
+
+<div class="screen active" id="screen-start">
+  <div class="start-card">
+    <div style="font-size:3rem;margin-bottom:12px">🎭🌍</div>
+    <h1>Identidad y Cultura</h1>
+    <p class="subtitle">Completa las oraciones sobre <strong>identidad, cultura e interculturalidad</strong> eligiendo la forma correcta. Practica las oraciones modales con <strong>como si, como, según, tal como</strong> y sus variantes. ¡El modo verbal lo cambia todo! 🎯</p>
+    <div class="info-pills">
+      <span class="pill">📚 Nivel C1</span>
+      <span class="pill p2">🎯 Oraciones modales</span>
+      <span class="pill">🔀 10 preguntas aleatorias</span>
+      <span class="pill p2">💬 Opción múltiple</span>
+    </div>
+    <button class="btn" onclick="startGame()">¡Empezar juego! →</button>
+  </div>
+</div>
+
+<div class="screen" id="screen-game">
+  <div style="margin-top:20px">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="progress-info">
+      <span id="q-counter">Pregunta 1 de 10</span>
+      <span class="score-badge" id="score-display">✓ 0</span>
+    </div>
+  </div>
+  <div class="question-card">
+    <div class="context-line" id="context-line"></div>
+    <div class="grammar-badge" id="grammar-badge"></div>
+    <div class="question-text" id="question-text"></div>
+    <div class="options" id="options-container"></div>
+    <div class="feedback-card" id="feedback-card">
+      <div class="feedback-title" id="feedback-title"></div>
+      <div class="feedback-text" id="feedback-text"></div>
+    </div>
+  </div>
+  <button class="btn next-btn" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+</div>
+
+<div class="screen" id="screen-end">
+  <div class="end-card">
+    <div style="font-size:2.5rem">🎆</div>
+    <h2 style="font-family:'Playfair Display',serif;color:var(--green);font-size:1.7rem;margin:10px 0">¡Juego completado!</h2>
+    <div class="score-display" id="final-score"></div>
+    <div class="score-pct" id="final-pct"></div>
+    <div class="teacher-card">
+      <div class="teacher-avatar-big">👩‍🏫</div>
+      <div>
+        <div style="font-weight:800;font-size:1rem;margin-bottom:6px">Pao Spanish Teacher</div>
+        <div style="font-size:0.95rem;line-height:1.6;font-weight:600" id="teacher-msg"></div>
+      </div>
+    </div>
+    <div class="grammar-note">
+      <h3>📖 Recuerda esto: Oraciones Modales en C1</h3>
+      <ul>
+        <li><strong>Como si + imperfecto de subjuntivo</strong> expresa comparación con una situación irreal en el presente.
+          <span class="note-example">Habla de su cultura de origen como si la conociera desde siempre.</span>
+        </li>
+        <li><strong>Como si + pluscuamperfecto de subjuntivo</strong> expresa comparación con una situación irreal en el pasado.
+          <span class="note-example">Describió la festividad como si la hubiera vivido personalmente.</span>
+        </li>
+        <li><strong>Según + indicativo</strong> se usa cuando la fuente es conocida, verificable o real.
+          <span class="note-example">Según los antropólogos, la identidad cultural es un proceso dinámico.</span>
+        </li>
+        <li><strong>Según + subjuntivo</strong> se usa cuando la referencia es hipotética, variable o no verificada.
+          <span class="note-example">Actuará según le parezca más adecuado en cada contexto cultural.</span>
+        </li>
+        <li><strong>Tal como / tal y como + indicativo</strong> introduce una comparación con algo real y confirmado.
+          <span class="note-example">Tal como describen los estudios, la integración cultural es gradual.</span>
+        </li>
+        <li><strong>Cual si</strong> es la variante literaria y elevada de <em>como si</em>. Exige también subjuntivo.
+          <span class="note-example">Se comportaba cual si fuera el portavoz de toda una generación.</span>
+        </li>
+        <li>El error más frecuente es usar <strong>indicativo después de "como si"</strong>. Esta estructura exige siempre subjuntivo (imperfecto o pluscuamperfecto).
+          <span class="note-example">✗ Habla como si sabe todo. ✓ Habla como si supiera todo.</span>
+        </li>
+      </ul>
+    </div>
+    <button class="btn pink-btn" onclick="restartGame()">🔁 Jugar otra vez</button>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+const BANK = [
+  // BLOQUE 1: Como si + imperfecto de subjuntivo (irreal presente)
+  {ctx:"🌍 Una estudiante de intercambio describe su adaptación a una nueva cultura.",badge:"Como si + imperfecto de subjuntivo",
+  q:"Después de solo un mes en el país, Marina habla de las tradiciones locales como si las _____ desde toda la vida.",
+  opts:["conoce","conociera","hubiera conocido","conocerá"],ans:1,
+  ok:"¡Correcto! 'Como si + imperfecto de subjuntivo' expresa una comparación con una situación irreal en el presente: Marina no las conoce desde siempre, pero actúa como si fuera así.",
+  fail:"La respuesta es 'conociera'. 'Como si' exige siempre subjuntivo. El imperfecto ('conociera') se usa cuando la irrealidad se refiere al presente."},
+
+  {ctx:"🎭 Un actor describe su proceso de preparación para un papel de otra cultura.",badge:"Como si + imperfecto de subjuntivo",
+  q:"El actor se sumergió tanto en la cultura andina que actuaba en escena como si _____ en ella.",
+  opts:["hubiera nacido","naciera","nace","nació"],ans:1,
+  ok:"¡Muy bien! 'Como si + imperfecto de subjuntivo' expresa que la situación es irreal en el presente de la narración: no nació en esa cultura, pero actúa como si así fuera.",
+  fail:"La respuesta es 'naciera'. Con 'como si', la irrealidad presente se expresa con imperfecto de subjuntivo."},
+
+  {ctx:"🧳 Una migrante de segunda generación reflexiona sobre su identidad.",badge:"Como si + imperfecto de subjuntivo",
+  q:"A veces se siente extranjera en su propio país, como si no _____ completamente a ningún lugar.",
+  opts:["perteneciera","pertenece","haya pertenecido","pertenecerá"],ans:0,
+  ok:"¡Excelente! 'Como si + imperfecto de subjuntivo': la sensación de no pertenecer es una comparación irreal con el presente.",
+  fail:"La respuesta es 'perteneciera'. 'Como si' seguido de imperfecto de subjuntivo expresa una comparación irreal referida al momento presente."},
+
+  {ctx:"🏫 Un profesor de lenguas describe a un alumno superdotado en idiomas.",badge:"Como si + imperfecto de subjuntivo",
+  q:"El joven aprendió el swahili en pocos meses, como si _____ una predisposición natural innata para los idiomas.",
+  opts:["tuviera","tiene","haya tenido","tendrá"],ans:0,
+  ok:"¡Correcto! 'Como si + imperfecto de subjuntivo'. La predisposición innata es una comparación irreal: no sabemos si es real, pero actúa como si la tuviera.",
+  fail:"La respuesta es 'tuviera'. 'Como si' exige siempre subjuntivo, y el imperfecto expresa irrealidad en el presente o en el momento narrado."},
+
+  {ctx:"🎨 Una artista visual reflexiona sobre la influencia de culturas ajenas en su obra.",badge:"Como si + imperfecto de subjuntivo",
+  q:"Pinta motivos africanos con tal precisión y sensibilidad como si _____ en ese continente durante años.",
+  opts:["hubiera vivido","viviera","vivió","vive"],ans:1,
+  ok:"¡Bien! 'Como si + imperfecto de subjuntivo' compara su habilidad con una experiencia irreal en el presente: no ha vivido allí (o eso se implica), pero pinta como si así fuera.",
+  fail:"La respuesta es 'viviera'. El imperfecto de subjuntivo con 'como si' expresa comparación con una situación irreal referida al presente o al momento descrito."},
+
+  {ctx:"🤝 Un mediador cultural describe el comportamiento de un diplomático.",badge:"Como si + imperfecto de subjuntivo",
+  q:"El embajador se desenvolvía en la ceremonia tradicional como si _____ ese ritual desde su infancia.",
+  opts:["practicara","practica","haya practicado","practicará"],ans:0,
+  ok:"¡Perfecto! 'Como si + imperfecto de subjuntivo'. El embajador actúa como si el ritual le fuera familiar, aunque en realidad no es así (o no se confirma que lo sea).",
+  fail:"La respuesta es 'practicara'. Con 'como si', cuando la irrealidad se refiere al presente o al momento de la acción, se usa imperfecto de subjuntivo."},
+
+  {ctx:"🌐 Una socióloga describe el fenómeno de la aculturación en comunidades migrantes.",badge:"Como si + imperfecto de subjuntivo",
+  q:"Algunos migrantes adoptan la cultura del país de acogida con tal rapidez, como si la identidad cultural _____ algo intercambiable.",
+  opts:["fuera","es","haya sido","será"],ans:0,
+  ok:"¡Correcto! 'Como si + imperfecto de subjuntivo' expresa una comparación con una situación irreal: la identidad no es intercambiable, pero algunos actúan como si lo fuera.",
+  fail:"La respuesta es 'fuera'. 'Como si' siempre exige subjuntivo. El imperfecto 'fuera' expresa una comparación irreal referida al presente."},
+
+  {ctx:"📚 Un escritor describe a un personaje que ha perdido su lengua materna.",badge:"Como si + imperfecto de subjuntivo",
+  q:"Habla su idioma natal con titubeos, como si _____ una lengua extranjera que aprendió de adulto.",
+  opts:["fuera","es","sea","será"],ans:0,
+  ok:"¡Muy bien! 'Como si + imperfecto de subjuntivo'. Su lengua materna no es una lengua extranjera, pero la habla como si lo fuera: irrealidad en el presente.",
+  fail:"La respuesta es 'fuera'. La estructura 'como si + imperfecto de subjuntivo' expresa una comparación con algo irreal en el momento presente."},
+
+  // BLOQUE 2: Como si + pluscuamperfecto de subjuntivo (irreal pasado)
+  {ctx:"🏛️ Un historiador describe la reacción de un político ante una crisis cultural.",badge:"Como si + pluscuamperfecto de subjuntivo",
+  q:"El ministro reaccionó ante la controversia cultural como si _____ los estudios antropológicos más básicos.",
+  opts:["nunca hubiera leído","nunca leyera","nunca lee","nunca leerá"],ans:0,
+  ok:"¡Excelente! 'Como si + pluscuamperfecto de subjuntivo' expresa una comparación con una situación irreal en el pasado: la comparación se refiere a algo que debería haber ocurrido antes del momento narrado.",
+  fail:"La respuesta es 'nunca hubiera leído'. Cuando 'como si' compara con una situación irreal anterior al momento narrado, se usa pluscuamperfecto de subjuntivo."},
+
+  {ctx:"🎬 Una crítica de cine analiza una película sobre migraciones.",badge:"Como si + pluscuamperfecto de subjuntivo",
+  q:"El director retrató la experiencia migrante con tal autenticidad como si él mismo _____ el desarraigo en primera persona.",
+  opts:["hubiera vivido","viviera","vivió","vive"],ans:0,
+  ok:"¡Correcto! 'Como si + pluscuamperfecto de subjuntivo'. La comparación se refiere a una experiencia pasada irreal: el director no vivió el desarraigo, pero lo retrató como si lo hubiera hecho.",
+  fail:"La respuesta es 'hubiera vivido'. Cuando la situación irreal es anterior al momento de la acción narrada, 'como si' va seguido de pluscuamperfecto de subjuntivo."},
+
+  {ctx:"📜 Un antropólogo critica el enfoque de un informe colonial.",badge:"Como si + pluscuamperfecto de subjuntivo",
+  q:"Los colonizadores describieron aquellas culturas como si _____ con ellas durante generaciones, cuando en realidad las desconocían.",
+  opts:["hubieran convivido","convivieran","convivieron","convivan"],ans:0,
+  ok:"¡Bien! 'Como si + pluscuamperfecto de subjuntivo' porque la comparación se refiere a una convivencia irreal en el pasado, anterior al momento en que hicieron esas descripciones.",
+  fail:"La respuesta es 'hubieran convivido'. El pluscuamperfecto de subjuntivo con 'como si' expresa irrealidad en el pasado, anterior al momento narrado."},
+
+  {ctx:"🧳 Una escritora describe a un personaje que idealiza su país de origen.",badge:"Como si + pluscuamperfecto de subjuntivo",
+  q:"Describía su pueblo natal con nostalgia y detalle como si nunca _____ de él, aunque llevaba treinta años fuera.",
+  opts:["se hubiera marchado","se marchara","se marchó","se marcha"],ans:0,
+  ok:"¡Perfecto! 'Como si + pluscuamperfecto de subjuntivo'. La comparación es con una situación irreal en el pasado: sí se marchó, pero habla como si no lo hubiera hecho.",
+  fail:"La respuesta es 'se hubiera marchado'. Cuando 'como si' expresa una comparación con algo irreal anterior al momento narrado, se usa el pluscuamperfecto de subjuntivo."},
+
+  {ctx:"🏫 Una pedagoga describe la actitud de un alumno ante una cultura desconocida.",badge:"Como si + pluscuamperfecto de subjuntivo",
+  q:"El estudiante opinaba sobre las costumbres japonesas como si las _____ durante años, pero nunca había viajado a Japón.",
+  opts:["hubiera estudiado","estudiara","estudió","estudia"],ans:0,
+  ok:"¡Correcto! 'Como si + pluscuamperfecto de subjuntivo'. La comparación es con un estudio previo irreal: no las había estudiado, pero opinaba como si lo hubiera hecho.",
+  fail:"La respuesta es 'hubiera estudiado'. El pluscuamperfecto de subjuntivo con 'como si' indica que la situación irreal es anterior al momento en que se produjo la acción principal."},
+
+  // BLOQUE 3: Según + indicativo (fuente real y verificable)
+  {ctx:"📊 Una investigadora presenta los resultados de un estudio intercultural.",badge:"Según + indicativo",
+  q:"_____ los datos del informe de la UNESCO, las lenguas minoritarias desaparecen a un ritmo alarmante.",
+  opts:["Según","Como si","Cual si","Tal y como si"],ans:0,
+  ok:"¡Correcto! 'Según + indicativo' introduce una fuente real y verificable: el informe de la UNESCO existe y los datos son reales.",
+  fail:"La respuesta es 'Según'. Cuando se cita una fuente real y conocida, se usa 'según + indicativo'. Las otras opciones requieren subjuntivo o son incorrectas en este contexto."},
+
+  {ctx:"🌐 Un periodista cita a un experto en identidad cultural en su artículo.",badge:"Según + indicativo",
+  q:"_____ el antropólogo Clifford Geertz, la cultura es una red de significados que los seres humanos han tejido a su alrededor.",
+  opts:["Según","Como si","Cual si","Según que"],ans:0,
+  ok:"¡Bien! 'Según + indicativo' introduce la cita de una fuente real y conocida. La referencia a Geertz es verificable.",
+  fail:"La respuesta es 'Según'. Con fuentes reales e identificadas, la estructura correcta es 'según + indicativo'."},
+
+  {ctx:"📚 Una profesora de interculturalidad explica a sus estudiantes un concepto clave.",badge:"Según + indicativo",
+  q:"_____ las teorías de Hofstede, cada cultura puede clasificarse según dimensiones como el individualismo o la distancia al poder.",
+  opts:["Según","Como si","Cual si","Tal como si"],ans:0,
+  ok:"¡Perfecto! 'Según + indicativo'. Las teorías de Hofstede son reales y verificables, por lo que se usa indicativo después de 'según'.",
+  fail:"La respuesta es 'Según'. Cuando la fuente referenciada es real y conocida, 'según' va seguido de indicativo."},
+
+  {ctx:"🗳️ Un debate político aborda la cuestión de la identidad nacional.",badge:"Según + indicativo",
+  q:"_____ la Constitución, todos los ciudadanos tienen derecho a expresar su identidad cultural sin discriminación.",
+  opts:["Según","Como si","Cual si","Según sea"],ans:0,
+  ok:"¡Correcto! 'Según + indicativo'. La Constitución es una fuente real, verificable y citada con precisión.",
+  fail:"La respuesta es 'Según'. Con fuentes normativas reales como una constitución, 'según' va siempre seguido de indicativo."},
+
+  // BLOQUE 4: Según + subjuntivo (referencia hipotética o variable)
+  {ctx:"🤔 Una filósofa reflexiona sobre la relatividad de los valores culturales.",badge:"Según + subjuntivo",
+  q:"Lo que se considera respeto varía de una cultura a otra: cada gesto _____ más o menos apropiado según la cultura en que uno se encuentre.",
+  opts:["será","sea","es","sería"],ans:1,
+  ok:"¡Muy bien! 'Según + subjuntivo' cuando la referencia es variable o hipotética. Aquí no se habla de una cultura específica, sino de cualquier cultura posible.",
+  fail:"La respuesta es 'sea'. 'Según' seguido de subjuntivo expresa una referencia variable o hipotética, no una fuente concreta verificable."},
+
+  {ctx:"🌍 Una mediadora intercultural describe su metodología de trabajo.",badge:"Según + subjuntivo",
+  q:"La mediadora adapta su enfoque según _____ las necesidades específicas de cada comunidad con la que trabaja.",
+  opts:["son","sean","serán","eran"],ans:1,
+  ok:"¡Correcto! 'Según + subjuntivo' porque las necesidades de cada comunidad son variables e indeterminadas en el momento de hablar.",
+  fail:"La respuesta es 'sean'. Cuando 'según' introduce una referencia variable o no determinada, va seguido de subjuntivo."},
+
+  {ctx:"🏫 Un director de escuela multicultural explica su política de integración.",badge:"Según + subjuntivo",
+  q:"El centro adapta su protocolo de bienvenida según _____ el origen cultural y las necesidades de cada familia.",
+  opts:["es","sea","fue","será"],ans:1,
+  ok:"¡Bien! 'Según + subjuntivo'. El origen cultural de cada familia es una variable desconocida e indeterminada en el momento de formular la política.",
+  fail:"La respuesta es 'sea'. 'Según + subjuntivo' se usa cuando la referencia es hipotética, variable o no concretada en el momento de hablar."},
+
+  {ctx:"🎓 Una investigadora explica cómo varía la percepción del tiempo en distintas culturas.",badge:"Según + subjuntivo",
+  q:"La puntualidad se valora de forma muy diferente según _____ el contexto cultural en el que se produzca la interacción.",
+  opts:["es","sea","será","era"],ans:1,
+  ok:"¡Perfecto! 'Según + subjuntivo'. El contexto cultural es una variable hipotética e indeterminada, no una fuente específica.",
+  fail:"La respuesta es 'sea'. Cuando 'según' introduce una condición variable o hipotética (no una fuente concreta), va seguido de subjuntivo."},
+
+  {ctx:"🤝 Un formador en competencia intercultural describe el éxito de la comunicación.",badge:"Según + subjuntivo",
+  q:"La comunicación intercultural tendrá más o menos éxito según _____ la disposición de ambas partes para comprender al otro.",
+  opts:["es","sea","fue","será"],ans:1,
+  ok:"¡Correcto! 'Según + subjuntivo'. La disposición de las partes es una variable futura e indeterminada.",
+  fail:"La respuesta es 'sea'. 'Según + subjuntivo' expresa una condición variable o hipotética referida a una situación no determinada."},
+
+  // BLOQUE 5: Tal como / tal y como + indicativo
+  {ctx:"📜 Una historiadora cita un documento oficial sobre derechos culturales.",badge:"Tal como / tal y como + indicativo",
+  q:"_____ establece la Declaración Universal de los Derechos Humanos, toda persona tiene derecho a participar en la vida cultural de su comunidad.",
+  opts:["Tal como","Como si","Cual si","Según que"],ans:0,
+  ok:"¡Excelente! 'Tal como + indicativo' introduce una referencia real y verificable. La Declaración existe y establece ese derecho.",
+  fail:"La respuesta es 'Tal como'. Esta estructura introduce comparaciones con situaciones reales y confirmadas, siempre con indicativo."},
+
+  {ctx:"🌍 Un sociólogo presenta los resultados de un estudio sobre migraciones.",badge:"Tal como / tal y como + indicativo",
+  q:"_____ muestran los datos, la segunda generación de migrantes suele desarrollar una identidad híbrida entre las dos culturas.",
+  opts:["Tal y como","Como si","Cual si","Según hubieran"],ans:0,
+  ok:"¡Correcto! 'Tal y como + indicativo'. Los datos son reales y verificables. Esta estructura confirma algo que ya se conoce.",
+  fail:"La respuesta es 'Tal y como'. Con referencias reales y verificables, se usa 'tal como / tal y como + indicativo'."},
+
+  {ctx:"🎓 Una profesora explica a sus alumnos un fenómeno documentado.",badge:"Tal como / tal y como + indicativo",
+  q:"_____ señalan los expertos en comunicación intercultural, el choque cultural afecta incluso a personas con alta experiencia internacional.",
+  opts:["Tal como","Como si","Cual si","Según fueran"],ans:0,
+  ok:"¡Bien! 'Tal como + indicativo' introduce lo que los expertos dicen de forma real y confirmada.",
+  fail:"La respuesta es 'Tal como'. Esta estructura, seguida de indicativo, introduce referencias reales y verificables."},
+
+  {ctx:"📰 Una periodista cita los resultados de una encuesta sobre identidad cultural.",badge:"Tal como / tal y como + indicativo",
+  q:"_____ reveló la encuesta publicada el año pasado, más del setenta por ciento de los encuestados se identifica con más de una cultura.",
+  opts:["Tal y como","Como si","Cual si","Según que"],ans:0,
+  ok:"¡Perfecto! 'Tal y como + indicativo'. La encuesta es real y los datos son verificables.",
+  fail:"La respuesta es 'Tal y como'. Con hechos confirmados y fuentes reales, se usa esta estructura con indicativo."},
+
+  // BLOQUE 6: Cual si (variante literaria de como si)
+  {ctx:"📖 Un narrador literario describe a un personaje en una novela sobre el exilio.",badge:"Cual si (variante literaria)",
+  q:"El exiliado caminaba por las calles de su nuevo país _____ aún pisara las piedras de su ciudad natal.",
+  opts:["cual si","como que","según","tal y como"],ans:0,
+  ok:"¡Excelente! 'Cual si' es la variante literaria y elevada de 'como si'. Exige subjuntivo (imperfecto: 'pisara') y es propia del registro literario.",
+  fail:"La respuesta es 'cual si'. Esta estructura es la variante culta y literaria de 'como si'. Siempre va seguida de subjuntivo."},
+
+  {ctx:"🎭 Un dramaturgo escribe las acotaciones de su obra sobre identidad cultural.",badge:"Cual si (variante literaria)",
+  q:"La protagonista se mueve por el escenario _____ portara sobre sus hombros el peso de todas las generaciones anteriores.",
+  opts:["cual si","como que","según","tal como"],ans:0,
+  ok:"¡Correcto! 'Cual si + imperfecto de subjuntivo' es la variante literaria de 'como si'. Muy apropiada para acotaciones teatrales y textos literarios.",
+  fail:"La respuesta es 'cual si'. Es la variante literaria de 'como si', seguida de subjuntivo. Propia del registro culto y literario."},
+
+  {ctx:"📜 Un poeta describe la relación de un pueblo con su lengua en peligro de extinción.",badge:"Cual si (variante literaria)",
+  q:"Hablan su lengua ancestral _____ cada palabra _____ un tesoro que pudiera perderse para siempre.",
+  opts:["cual si / fuera","como que / es","según / sea","tal y como / es"],ans:0,
+  ok:"¡Perfecto! 'Cual si + imperfecto de subjuntivo': 'cual si cada palabra fuera un tesoro'. Variante literaria de 'como si', con subjuntivo obligatorio.",
+  fail:"La respuesta es 'cual si / fuera'. 'Cual si' es la variante literaria de 'como si' y siempre va seguida de subjuntivo."},
+
+  // BLOQUE 7: Contraste indicativo vs. subjuntivo (cambio de significado)
+  {ctx:"🌐 Dos periodistas debaten sobre una fuente de información cultural.",badge:"Contraste: según + indicativo / subjuntivo",
+  q:"A: '¿Tienes confirmada esa información sobre las tradiciones bereberes?' B: 'Sí, _____ los etnólogos que entrevisté, es completamente fiable.'",
+  opts:["según dicen","según digan","como si dijeran","cual si dijera"],ans:0,
+  ok:"¡Correcto! 'Según + indicativo' ('dicen') porque la fuente es real y conocida: los etnólogos fueron entrevistados y son identificables.",
+  fail:"La respuesta es 'según dicen'. La fuente es real y concreta (etnólogos entrevistados), por lo que 'según' va seguido de indicativo."},
+
+  {ctx:"🏫 Una coordinadora de programas de intercambio cultural explica su método.",badge:"Contraste: según + indicativo / subjuntivo",
+  q:"Asignamos los destinos _____ las preferencias que exprese cada estudiante en el formulario.",
+  opts:["según sean","según son","tal como son","como si fueran"],ans:0,
+  ok:"¡Muy bien! 'Según + subjuntivo' ('sean') porque las preferencias de cada estudiante futuro son variables e indeterminadas en el momento de hablar.",
+  fail:"La respuesta es 'según sean'. Las preferencias futuras e indeterminadas de cada estudiante son hipotéticas, por lo que 'según' va seguido de subjuntivo."},
+
+  {ctx:"🎨 Un curador de arte describe el enfoque de una exposición sobre identidades.",badge:"Contraste: como si / tal como",
+  q:"La exposición presenta las culturas _____ describe el catálogo: como realidades dinámicas, no como esencias fijas.",
+  opts:["tal como","como si","cual si","según que"],ans:0,
+  ok:"¡Correcto! 'Tal como + indicativo' introduce una comparación con algo real y confirmado: lo que dice el catálogo es un hecho.",
+  fail:"La respuesta es 'tal como'. Esta estructura introduce referencias reales con indicativo. 'Como si' y 'cual si' requieren subjuntivo y expresan irrealidad."},
+
+  {ctx:"🤝 Una mediadora describe cómo un representante cultural abordó una negociación.",badge:"Contraste: como si + pluscuamperfecto / imperfecto",
+  q:"El representante negoció con tanta soltura como si _____ cientos de mediaciones interculturales previas.",
+  opts:["hubiera gestionado","gestionara","gestionó","gestionará"],ans:0,
+  ok:"¡Excelente! 'Como si + pluscuamperfecto de subjuntivo' porque la comparación es con una experiencia irreal anterior al momento de la negociación.",
+  fail:"La respuesta es 'hubiera gestionado'. Cuando la situación irreal de 'como si' es anterior al momento de la acción narrada, se usa pluscuamperfecto de subjuntivo."},
+
+  {ctx:"🌍 Un sociólogo analiza el comportamiento de grupos migrantes de segunda generación.",badge:"Contraste: como si + imperfecto / pluscuamperfecto",
+  q:"Algunos jóvenes de segunda generación rechazan la cultura de sus padres como si _____ algo ajeno a su propia identidad.",
+  opts:["fuera","hubiera sido","es","sea"],ans:0,
+  ok:"¡Correcto! 'Como si + imperfecto de subjuntivo' porque la comparación se refiere a la percepción actual (irreal en el presente): la cultura de sus padres no es ajena, pero la tratan como si lo fuera.",
+  fail:"La respuesta es 'fuera'. El imperfecto de subjuntivo con 'como si' expresa comparación con una situación irreal en el presente."},
+
+  // BLOQUE 8: Contextos complejos y variados
+  {ctx:"🏛️ Un político inaugura un museo de culturas del mundo.",badge:"Tal y como + indicativo",
+  q:"_____ ha manifestado el comité científico, este museo pretende ser un espacio de diálogo entre civilizaciones.",
+  opts:["Tal y como","Como si","Cual si","Según que"],ans:0,
+  ok:"¡Bien! 'Tal y como + indicativo'. El comité científico es real y sus manifestaciones son verificables.",
+  fail:"La respuesta es 'Tal y como'. Con fuentes reales y verificables, se usa 'tal como / tal y como + indicativo'."},
+
+  {ctx:"📚 Una novela gráfica describe a un personaje que creció entre dos culturas.",badge:"Como si + imperfecto de subjuntivo",
+  q:"De pequeña, cambiaba de lengua en casa según con quién hablara, como si _____ dos personas distintas en un solo cuerpo.",
+  opts:["viviera","vivió","vive","haya vivido"],ans:0,
+  ok:"¡Perfecto! 'Como si + imperfecto de subjuntivo'. La comparación expresa una percepción irreal en el momento de la acción narrada: no eran dos personas distintas, pero lo sentía así.",
+  fail:"La respuesta es 'viviera'. Con 'como si', cuando la irrealidad se refiere al momento de la acción narrada, se usa imperfecto de subjuntivo."},
+
+  {ctx:"🎓 Una universidad ofrece un programa de estudios interculturales.",badge:"Según + subjuntivo",
+  q:"El programa se adaptará a las necesidades del mercado laboral según _____ evolucionando las demandas de las empresas multinacionales.",
+  opts:["vayan","van","fueron","irán"],ans:0,
+  ok:"¡Correcto! 'Según + subjuntivo' ('vayan'). Las demandas futuras son hipotéticas e indeterminadas en el momento de hablar.",
+  fail:"La respuesta es 'vayan'. 'Según + subjuntivo' expresa una condición variable o hipotética, no una fuente concreta."},
+
+  {ctx:"🌱 Una escritora describe el proceso de recuperación de lenguas en peligro.",badge:"Como si + pluscuamperfecto de subjuntivo",
+  q:"Las nuevas generaciones hablan la lengua recuperada con fluidez y emoción, como si sus abuelos _____ el testigo directamente.",
+  opts:["les hubieran pasado","les pasaran","les pasan","les pasarán"],ans:0,
+  ok:"¡Excelente! 'Como si + pluscuamperfecto de subjuntivo'. La comparación es con una transmisión irreal en el pasado, anterior al momento en que hablan la lengua.",
+  fail:"La respuesta es 'les hubieran pasado'. Cuando la situación irreal de 'como si' es anterior al momento narrado, se usa pluscuamperfecto de subjuntivo."},
+
+  {ctx:"🧠 Un psicólogo cultural reflexiona sobre la identidad en la era global.",badge:"Cual si (variante literaria)",
+  q:"En un mundo hiperconectado, algunos jóvenes construyen su identidad _____ el origen cultural _____ una mera anécdota.",
+  opts:["cual si / fuera","como que / es","según / sea","tal y como / es"],ans:0,
+  ok:"¡Perfecto! 'Cual si + imperfecto de subjuntivo': variante literaria de 'como si'. El origen cultural no es una anécdota, pero actúan como si lo fuera.",
+  fail:"La respuesta es 'cual si / fuera'. 'Cual si' es la variante culta y literaria de 'como si', siempre seguida de subjuntivo."},
+
+  {ctx:"🌍 Un ensayista reflexiona sobre el concepto de identidad colectiva.",badge:"Como si + imperfecto de subjuntivo",
+  q:"Muchos políticos hablan de la identidad nacional como si _____ algo monolítico e inmutable, cuando en realidad es un proceso en constante evolución.",
+  opts:["fuera","es","sea","haya sido"],ans:0,
+  ok:"¡Correcto! 'Como si + imperfecto de subjuntivo'. La identidad no es monolítica, pero ellos actúan como si lo fuera: comparación irreal referida al presente.",
+  fail:"La respuesta es 'fuera'. 'Como si + imperfecto de subjuntivo' expresa una comparación con una situación irreal en el presente."},
+
+  {ctx:"📡 Una investigadora sobre comunicación intercultural presenta sus conclusiones.",badge:"Según + indicativo",
+  q:"_____ los estudios realizados en veinte países, la empatía cultural reduce significativamente los conflictos en equipos de trabajo internacionales.",
+  opts:["Según","Como si","Cual si","Tal y como si"],ans:0,
+  ok:"¡Muy bien! 'Según + indicativo'. Los estudios son reales y sus resultados verificables.",
+  fail:"La respuesta es 'Según'. Con fuentes reales y concretas, 'según' va seguido de indicativo."},
+
+  {ctx:"🎭 Una directora de teatro describe el trabajo de sus actores en una obra intercultural.",badge:"Como si + pluscuamperfecto de subjuntivo",
+  q:"Los actores interpretaron los rituales indígenas con tal respeto y precisión como si _____ en aquellas comunidades durante años.",
+  opts:["hubieran vivido","vivieran","vivieron","viven"],ans:0,
+  ok:"¡Excelente! 'Como si + pluscuamperfecto de subjuntivo'. Los actores no vivieron en esas comunidades antes del momento de la interpretación, pero actuaron como si lo hubieran hecho.",
+  fail:"La respuesta es 'hubieran vivido'. El pluscuamperfecto de subjuntivo con 'como si' expresa comparación con una experiencia irreal anterior al momento narrado."},
+
+  {ctx:"🏫 Una directora de escuela describe la diversidad de su centro.",badge:"Tal como + indicativo",
+  q:"_____ refleja nuestra memoria de actividades, el centro ha acogido estudiantes de más de cuarenta nacionalidades en los últimos cinco años.",
+  opts:["Tal como","Como si","Cual si","Según que"],ans:0,
+  ok:"¡Correcto! 'Tal como + indicativo'. La memoria de actividades es un documento real y los datos son verificables.",
+  fail:"La respuesta es 'Tal como'. Esta estructura introduce referencias reales con indicativo. No expresa irrealidad."},
+
+  {ctx:"🌐 Un lingüista explica la relación entre lengua e identidad.",badge:"Como si + imperfecto de subjuntivo",
+  q:"Cuando alguien pierde su lengua materna, a veces siente que ha perdido una parte de sí mismo, como si la lengua _____ el alma de la identidad.",
+  opts:["fuera","es","sea","será"],ans:0,
+  ok:"¡Perfecto! 'Como si + imperfecto de subjuntivo'. La lengua como alma de la identidad es una comparación poética e irreal, referida al momento presente.",
+  fail:"La respuesta es 'fuera'. 'Como si + imperfecto de subjuntivo' expresa una comparación con algo irreal en el presente."},
+];
+
+const MESSAGES = [
+  "¡Brillante! Dominar las oraciones modales con subjuntivo e indicativo es una marca de español C1 auténtico. ¡Lo has hecho fenomenal! ♥",
+  "¡Impresionante! Distinguir entre 'como si', 'según', 'tal como' y sus variantes requiere una sensibilidad lingüística muy avanzada. ¡Estoy orgullosa de ti! ♥",
+  "¡Fantástico! Navegar entre la irrealidad del subjuntivo y la realidad del indicativo en contextos culturales es todo un reto. ¡Sigue así! ♥",
+  "¡Excelente trabajo! Las oraciones modales son una de las estructuras más elegantes del español avanzado. ¡Has demostrado un nivel C1 real! ♥",
+  "¡Qué bien lo has hecho! Reflexionar sobre identidad y cultura en español avanzado es pensar en español de verdad. ¡Me encanta tu esfuerzo! ♥"
+];
+
+let questions=[],current=0,score=0,answered=false;
+function shuffle(arr){return arr.slice().sort(()=>Math.random()-.5)}
+
+function startGame(){
+  questions=shuffle(BANK).slice(0,10);
+  current=0;score=0;answered=false;
+  document.getElementById('screen-start').classList.remove('active');
+  document.getElementById('screen-game').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  answered=false;
+  const q=questions[current];
+  document.getElementById('progress-bar').style.width=((current/10)*100)+'%';
+  document.getElementById('q-counter').textContent=`Pregunta ${current+1} de 10`;
+  document.getElementById('score-display').textContent=`✓ ${score}`;
+  document.getElementById('context-line').textContent=q.ctx;
+  document.getElementById('grammar-badge').textContent=q.badge;
+  document.getElementById('question-text').innerHTML=q.q.replace('_____','<span class="blank">_____</span>').replace('_____','<span class="blank">_____</span>');
+  const fb=document.getElementById('feedback-card');
+  fb.style.display='none';fb.className='feedback-card';
+  document.getElementById('next-btn').style.display='none';
+  const cont=document.getElementById('options-container');
+  cont.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opt-btn';b.textContent=o;
+    b.onclick=()=>selectOption(i);
+    cont.appendChild(b);
+  });
+}
+
+function selectOption(i){
+  if(answered)return;
+  answered=true;
+  const q=questions[current];
+  const btns=document.querySelectorAll('.opt-btn');
+  btns.forEach(b=>b.disabled=true);
+  const fb=document.getElementById('feedback-card');
+  if(i===q.ans){
+    score++;
+    btns[i].classList.add('correct');
+    fb.className='feedback-card correct';fb.style.display='block';
+    document.getElementById('feedback-title').textContent='✅ ¡Correcto!';
+    document.getElementById('feedback-text').textContent=q.ok;
+  } else {
+    btns[i].classList.add('wrong');
+    btns[q.ans].classList.add('correct');
+    fb.className='feedback-card wrong';fb.style.display='block';
+    document.getElementById('feedback-title').textContent='❌ No exactamente';
+    document.getElementById('feedback-text').textContent=q.fail;
+  }
+  document.getElementById('score-display').textContent=`✓ ${score}`;
+  document.getElementById('next-btn').style.display='inline-block';
+}
+
+function nextQuestion(){
+  current++;
+  if(current>=10)showEnd();
+  else renderQuestion();
+}
+
+function showEnd(){
+  document.getElementById('screen-game').classList.remove('active');
+  document.getElementById('screen-end').classList.add('active');
+  document.getElementById('final-score').textContent=`${score} / 10`;
+  const pct=Math.round((score/10)*100);
+  document.getElementById('final-pct').textContent=`${pct}% de aciertos`;
+  document.getElementById('teacher-msg').textContent=MESSAGES[Math.floor(Math.random()*MESSAGES.length)];
+  launchCelebration();
+}
+
+function restartGame(){
+  document.getElementById('screen-end').classList.remove('active');
+  stopCelebration();
+  startGame();
+  document.getElementById('screen-game').classList.add('active');
+}
+
+let confettiInterval,balloonEls=[];
+function launchCelebration(){
+  const canvas=document.getElementById('confetti-canvas');
+  const ctx2=canvas.getContext('2d');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const pieces=Array.from({length:120},()=>({
+    x:Math.random()*canvas.width,y:Math.random()*canvas.height-canvas.height,
+    r:Math.random()*7+3,d:Math.random()*120+40,
+    color:['#3b6d11','#d4537e','#c0dd97','#993556','#fdf8f0','#f9c74f'][Math.floor(Math.random()*6)],
+    tilt:Math.random()*10-10,speed:Math.random()*3+1
+  }));
+  let ang=0;
+  function draw(){
+    ctx2.clearRect(0,0,canvas.width,canvas.height);ang+=0.01;
+    pieces.forEach(p=>{
+      ctx2.beginPath();ctx2.lineWidth=p.r/2;ctx2.strokeStyle=p.color;
+      ctx2.moveTo(p.x+p.tilt+p.r/4,p.y);ctx2.lineTo(p.x+p.tilt,p.y+p.tilt+p.r/4);ctx2.stroke();
+      p.y+=p.speed;p.tilt=Math.sin(ang+p.d)*12;
+      if(p.y>canvas.height){p.y=-10;p.x=Math.random()*canvas.width;}
+    });
+  }
+  confettiInterval=setInterval(draw,16);
+  const emojis=['🎈','🎊','🎉','💚','🌟','💖'];
+  for(let i=0;i<12;i++){
+    const b=document.createElement('div');
+    b.className='balloon';
+    b.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    b.style.left=Math.random()*95+'%';
+    b.style.bottom='-60px';
+    b.style.animationDelay=(Math.random()*3)+'s';
+    b.style.fontSize=(1.8+Math.random()*1.5)+'rem';
+    document.body.appendChild(b);
+    balloonEls.push(b);
+  }
+  setTimeout(()=>{balloonEls.forEach(b=>{if(b.parentNode)b.remove();});balloonEls=[];},5000);
+}
+function stopCelebration(){
+  clearInterval(confettiInterval);
+  const canvas=document.getElementById('confetti-canvas');
+  canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+  balloonEls.forEach(b=>{if(b.parentNode)b.remove();});balloonEls=[];
+}
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"5070e21320304a1ba2b0a42ce9682840","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

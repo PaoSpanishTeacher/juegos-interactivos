@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#fdf8f0;--green:#3b6d11;--green-light:#c0dd97;--green-xlight:#eaf3de;
+  --pink:#d4537e;--pink-dark:#993556;--text:#2d2d2d;
+}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+.header{background:var(--green);color:white;padding:18px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid white;flex-shrink:0}
+.brand-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800}
+.brand-sub{font-size:0.78rem;opacity:0.85;margin-top:2px}
+.badges{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:5px 13px;font-size:0.75rem;font-weight:700}
+.badge.pink{background:var(--pink);border-color:var(--pink-dark)}
+.screen{display:none;padding:24px 16px;max-width:760px;margin:0 auto}
+.screen.active{display:block}
+.start-card{background:white;border-radius:20px;padding:36px 32px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.10);border:2px solid var(--green-light);margin-top:32px}
+.start-card h1{font-family:'Playfair Display',serif;font-size:1.85rem;color:var(--green);margin-bottom:10px}
+.start-card .subtitle{color:#666;font-size:0.97rem;margin-bottom:24px;line-height:1.7}
+.info-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.pill{background:var(--green-xlight);color:var(--green);border-radius:20px;padding:7px 16px;font-size:0.82rem;font-weight:700}
+.pill.p2{background:#fde8ef;color:var(--pink-dark)}
+.btn{display:inline-block;background:var(--green);color:white;border:none;border-radius:30px;padding:14px 36px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s}
+.btn:hover{background:#2d5209;transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,109,17,0.25)}
+.btn.pink-btn{background:var(--pink)}.btn.pink-btn:hover{background:var(--pink-dark)}
+.progress-bar-wrap{background:var(--green-xlight);border-radius:10px;height:10px;margin-bottom:6px}
+.progress-bar{background:var(--green);height:10px;border-radius:10px;transition:width .4s}
+.progress-info{display:flex;justify-content:space-between;font-size:0.8rem;color:#666;margin-bottom:18px}
+.score-badge{background:var(--green);color:white;border-radius:20px;padding:4px 14px;font-weight:700;font-size:0.85rem}
+.question-card{background:white;border-radius:20px;padding:28px 24px;box-shadow:0 4px 20px rgba(59,109,17,0.09);border:2px solid var(--green-light);margin-bottom:18px}
+.context-line{font-size:0.85rem;color:#888;margin-bottom:12px;font-style:italic}
+.grammar-badge{display:inline-block;background:var(--green-xlight);color:var(--green);border-radius:12px;padding:4px 12px;font-size:0.75rem;font-weight:700;margin-bottom:16px}
+.question-prompt{font-size:0.95rem;color:var(--pink-dark);font-weight:800;margin-bottom:16px;padding:10px 14px;background:#fde8ef;border-radius:10px}
+.options{display:grid;gap:10px;margin-top:4px}
+.opt-btn{background:var(--green-xlight);border:2px solid var(--green-light);border-radius:14px;padding:14px 18px;font-family:'Nunito',sans-serif;font-size:0.93rem;font-weight:600;color:var(--text);cursor:pointer;text-align:left;transition:all .18s;line-height:1.5;position:relative}
+.opt-btn:hover:not(:disabled){background:#d4edbb;border-color:var(--green);transform:translateX(4px)}
+.opt-btn.correct{background:#e6f7d9;border-color:#3b6d11;color:#1e4200}
+.opt-btn.wrong{background:#fde8ef;border-color:var(--pink);color:var(--pink-dark)}
+.opt-btn.intruso-revealed{background:#fff3cd;border-color:#f0a500;color:#7a5200}
+.opt-btn:disabled{cursor:default}
+.opt-label{display:inline-block;background:var(--green);color:white;border-radius:8px;padding:2px 8px;font-size:0.75rem;font-weight:800;margin-right:8px}
+.opt-label.wrong-label{background:var(--pink)}
+.opt-label.intruso-label{background:#f0a500}
+.feedback-card{border-radius:16px;padding:20px 22px;margin-top:16px;display:none;animation:fadeIn .3s}
+.feedback-card.correct{background:#e6f7d9;border:2px solid #a0d470}
+.feedback-card.wrong{background:#fde8ef;border:2px solid var(--pink)}
+.feedback-title{font-weight:800;font-size:1rem;margin-bottom:10px}
+.feedback-section{margin-top:10px}
+.feedback-section-title{font-size:0.8rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.feedback-section-title.pink{color:var(--pink-dark)}
+.feedback-text{font-size:0.9rem;line-height:1.65;color:#444}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.next-btn{display:none;margin-top:16px}
+.end-card{background:white;border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.12);border:2px solid var(--green-light);margin-top:24px}
+.teacher-card{background:var(--green);color:white;border-radius:16px;padding:22px;margin:20px 0;display:flex;align-items:center;gap:16px;text-align:left}
+.teacher-avatar-big{width:68px;height:68px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:36px;border:3px solid white;flex-shrink:0}
+.score-display{font-family:'Playfair Display',serif;font-size:2.8rem;color:var(--green);font-weight:800;margin:10px 0}
+.score-pct{font-size:1.1rem;color:var(--pink);font-weight:700;margin-bottom:20px}
+.grammar-note{background:var(--green-xlight);border-radius:16px;padding:22px;text-align:left;margin:20px 0}
+.grammar-note h3{font-family:'Playfair Display',serif;color:var(--green);font-size:1.1rem;margin-bottom:14px}
+.grammar-note ul{list-style:none;padding:0}
+.grammar-note li{padding:8px 0;border-bottom:1px solid #d0e8b0;font-size:0.88rem;line-height:1.65;color:#333}
+.grammar-note li:last-child{border-bottom:none}
+.grammar-note li::before{content:"✦ ";color:var(--green);font-weight:800}
+.note-example{display:block;background:white;border-radius:8px;padding:7px 12px;margin-top:6px;font-style:italic;color:#555;font-size:0.83rem;border-left:3px solid var(--green)}
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+.balloon{position:fixed;font-size:2.5rem;pointer-events:none;z-index:997;animation:riseUp 4s ease-in forwards}
+@keyframes riseUp{to{transform:translateY(-110vh) rotate(15deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="avatar">👩‍🏫</div>
+  <div>
+    <div class="brand-name">Pao Spanish Teacher</div>
+    <div class="brand-sub">Español para adultos · Nivel avanzado</div>
+  </div>
+  <div class="badges">
+    <span class="badge">C1</span>
+    <span class="badge pink">Perífrasis Verbales</span>
+  </div>
+</div>
+
+<div class="screen active" id="screen-start">
+  <div class="start-card">
+    <div style="font-size:3rem;margin-bottom:12px">🧬🔬</div>
+    <h1>Ciencia y Tecnología</h1>
+    <p class="subtitle">¿Cuál es el intruso? Tres oraciones comparten algo en común y una <strong>no encaja</strong>. El intruso puede tener un error gramatical, pertenecer a un grupo funcional diferente o usar un registro incorrecto. ¡Analiza con cuidado! 🔍</p>
+    <div class="info-pills">
+      <span class="pill">📚 Nivel C1</span>
+      <span class="pill p2">🎯 Perífrasis verbales avanzadas</span>
+      <span class="pill">🔀 10 preguntas aleatorias</span>
+      <span class="pill p2">🕵️ Elegir el intruso</span>
+    </div>
+    <button class="btn" onclick="startGame()">¡Empezar juego! →</button>
+  </div>
+</div>
+
+<div class="screen" id="screen-game">
+  <div style="margin-top:20px">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="progress-info">
+      <span id="q-counter">Pregunta 1 de 10</span>
+      <span class="score-badge" id="score-display">✓ 0</span>
+    </div>
+  </div>
+  <div class="question-card">
+    <div class="context-line" id="context-line"></div>
+    <div class="grammar-badge" id="grammar-badge"></div>
+    <div class="question-prompt">🕵️ ¿Cuál es el intruso? Elige la oración que NO encaja con las demás.</div>
+    <div class="options" id="options-container"></div>
+    <div class="feedback-card" id="feedback-card">
+      <div class="feedback-title" id="feedback-title"></div>
+      <div class="feedback-section">
+        <div class="feedback-section-title">✅ Por qué las otras son correctas</div>
+        <div class="feedback-text" id="feedback-correct"></div>
+      </div>
+      <div class="feedback-section" style="margin-top:10px">
+        <div class="feedback-section-title pink">❌ Por qué es el intruso</div>
+        <div class="feedback-text" id="feedback-intruso"></div>
+      </div>
+    </div>
+  </div>
+  <button class="btn next-btn" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+</div>
+
+<div class="screen" id="screen-end">
+  <div class="end-card">
+    <div style="font-size:2.5rem">🎆</div>
+    <h2 style="font-family:'Playfair Display',serif;color:var(--green);font-size:1.7rem;margin:10px 0">¡Juego completado!</h2>
+    <div class="score-display" id="final-score"></div>
+    <div class="score-pct" id="final-pct"></div>
+    <div class="teacher-card">
+      <div class="teacher-avatar-big">👩‍🏫</div>
+      <div>
+        <div style="font-weight:800;font-size:1rem;margin-bottom:6px">Pao Spanish Teacher</div>
+        <div style="font-size:0.95rem;line-height:1.6;font-weight:600" id="teacher-msg"></div>
+      </div>
+    </div>
+    <div class="grammar-note">
+      <h3>📖 Recuerda esto: Perífrasis Verbales Avanzadas en C1</h3>
+      <ul>
+        <li><strong>Haber de + infinitivo</strong> expresa obligación formal o deducción lógica. Es más culta que <em>tener que</em>.
+          <span class="note-example">Los investigadores han de seguir protocolos éticos estrictos.</span>
+        </li>
+        <li><strong>Venir a + infinitivo</strong> expresa aproximación, resultado final o equivalencia. No indica movimiento literal.
+          <span class="note-example">El nuevo procesador viene a costar el doble que el anterior.</span>
+        </li>
+        <li><strong>Llevar + gerundio</strong> expresa duración acumulada desde un punto del pasado hasta el presente. Siempre con referencia temporal.
+          <span class="note-example">El equipo lleva tres años desarrollando este algoritmo.</span>
+        </li>
+        <li><strong>Tener + participio</strong> expresa resultado acumulado de acciones repetidas. El participio concuerda en género y número con el objeto.
+          <span class="note-example">Ya tenemos analizados todos los datos del experimento.</span>
+        </li>
+        <li>El error más frecuente con <em>llevar + gerundio</em> es usar infinitivo: <em>lleva investigar</em> ✗ → <em>lleva investigando</em> ✓.</li>
+        <li>Con <em>tener + participio</em>, el participio no es invariable: <em>tengo escritas las conclusiones</em> ✓ (no <em>escrito</em>).
+          <span class="note-example">Tenemos diseñadas tres versiones del prototipo. ✓</span>
+        </li>
+        <li><em>Haber de</em> en contexto científico expresa necesidad metodológica; no debe confundirse con <em>haber que</em> (impersonal) ni con <em>tener que</em> (obligación más coloquial).
+          <span class="note-example">Los datos han de interpretarse con cautela. ✓ / Hay que interpretar los datos con cautela. ✓</span>
+        </li>
+      </ul>
+    </div>
+    <button class="btn pink-btn" onclick="restartGame()">🔁 Jugar otra vez</button>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+const BANK = [
+  // BLOQUE 1: Intruso por error gramatical en llevar + gerundio
+  {ctx:"🔬 Contexto: un laboratorio de biotecnología presenta su informe anual.",badge:"Llevar + gerundio vs. error gramatical",
+  opts:[
+    "El equipo lleva cinco años investigando nuevas terapias contra el cáncer.",
+    "La investigadora lleva décadas estudiar el comportamiento de las células madre.",
+    "Llevamos meses analizando los resultados del ensayo clínico.",
+    "El laboratorio lleva dos años colaborando con universidades internacionales."
+  ],ans:1,
+  correct:"Las opciones A, C y D usan correctamente 'llevar + gerundio' para expresar una acción en curso con duración acumulada: 'investigando', 'analizando', 'colaborando'.",
+  intruso:"La opción B es el intruso: 'lleva décadas estudiar' es incorrecta. 'Llevar + gerundio' exige gerundio, no infinitivo. Lo correcto: 'lleva décadas estudiando'."},
+
+  {ctx:"💻 Contexto: una empresa tecnológica presenta a su equipo de desarrollo.",badge:"Llevar + gerundio vs. error gramatical",
+  opts:[
+    "Los ingenieros llevan tres años desarrollar aplicaciones de inteligencia artificial.",
+    "La startup lleva seis meses probando su nuevo sistema de reconocimiento facial.",
+    "El director técnico lleva décadas trabajando en el sector de la ciberseguridad.",
+    "Llevamos semanas depurando el código del nuevo sistema operativo."
+  ],ans:0,
+  correct:"Las opciones B, C y D usan 'llevar + gerundio' correctamente: 'probando', 'trabajando', 'depurando'. Todas expresan duración acumulada.",
+  intruso:"La opción A es el intruso: 'llevan tres años desarrollar' usa infinitivo en lugar de gerundio. Lo correcto: 'llevan tres años desarrollando'."},
+
+  {ctx:"🚀 Contexto: una agencia espacial describe sus proyectos en curso.",badge:"Llevar + gerundio vs. error gramatical",
+  opts:[
+    "Los astrónomos llevan décadas observando el comportamiento de los agujeros negros.",
+    "El equipo lleva dos años a desarrollar un cohete reutilizable de bajo coste.",
+    "Llevamos meses preparando el lanzamiento del nuevo satélite de observación.",
+    "La ingeniera lleva años perfeccionando el sistema de propulsión del cohete."
+  ],ans:1,
+  correct:"Las opciones A, C y D usan 'llevar + gerundio' correctamente: 'observando', 'preparando', 'perfeccionando'.",
+  intruso:"La opción B es el intruso: 'lleva dos años a desarrollar' introduce incorrectamente la preposición 'a'. Lo correcto: 'lleva dos años desarrollando'."},
+
+  // BLOQUE 2: Intruso por error gramatical en tener + participio
+  {ctx:"🧪 Contexto: un equipo de investigación química presenta sus avances.",badge:"Tener + participio vs. error gramatical",
+  opts:[
+    "Ya tenemos analizadas todas las muestras del experimento.",
+    "El laboratorio tiene publicados más de cincuenta artículos científicos este año.",
+    "Tenemos revisado los protocolos de seguridad del nuevo compuesto.",
+    "Los investigadores tienen documentadas todas las reacciones observadas."
+  ],ans:2,
+  correct:"Las opciones A, B y D usan 'tener + participio' con concordancia correcta: 'analizadas' (muestras, fem. pl.), 'publicados' (artículos, masc. pl.), 'documentadas' (reacciones, fem. pl.).",
+  intruso:"La opción C es el intruso: 'tenemos revisado los protocolos' tiene error de concordancia. El participio debe concordar con el objeto: 'tenemos revisados los protocolos'."},
+
+  {ctx:"🤖 Contexto: una empresa de robótica informa sobre el estado de sus proyectos.",badge:"Tener + participio vs. error gramatical",
+  opts:[
+    "Tenemos diseñados tres prototipos del robot asistencial.",
+    "El equipo tiene probadas todas las funciones del sistema autónomo.",
+    "Ya tenemos resuelto los fallos de programación del modelo anterior.",
+    "Tienen documentadas las especificaciones técnicas del nuevo modelo."
+  ],ans:2,
+  correct:"Las opciones A, B y D usan 'tener + participio' con concordancia correcta: 'diseñados' (prototipos), 'probadas' (funciones), 'documentadas' (especificaciones).",
+  intruso:"La opción C es el intruso: 'tenemos resuelto los fallos' tiene error de concordancia. Lo correcto: 'tenemos resueltos los fallos' (masculino plural)."},
+
+  {ctx:"🧬 Contexto: un congreso de genómica presenta los resultados del año.",badge:"Tener + participio vs. error gramatical",
+  opts:[
+    "Los investigadores tienen mapeadas las regiones del genoma relacionadas con esa enfermedad.",
+    "Ya tenemos identificadas las mutaciones responsables del trastorno.",
+    "El instituto tiene publicadas sus conclusiones en las revistas más prestigiosas.",
+    "Tenemos analizado todas las secuencias genéticas de la muestra."
+  ],ans:3,
+  correct:"Las opciones A, B y C usan 'tener + participio' con concordancia correcta: 'mapeadas' (regiones), 'identificadas' (mutaciones), 'publicadas' (conclusiones).",
+  intruso:"La opción D es el intruso: 'tenemos analizado todas las secuencias' tiene error de concordancia. Lo correcto: 'tenemos analizadas todas las secuencias' (femenino plural)."},
+
+  // BLOQUE 3: Intruso por error gramatical en haber de + infinitivo
+  {ctx:"⚗️ Contexto: un comité científico establece sus normas de trabajo.",badge:"Haber de + infinitivo vs. error gramatical",
+  opts:[
+    "Los resultados han de interpretarse con cautela antes de publicarlos.",
+    "El informe ha de revisado por al menos tres expertos independientes.",
+    "Los datos han de analizarse siguiendo los protocolos establecidos.",
+    "Las conclusiones han de presentarse en el próximo congreso internacional."
+  ],ans:1,
+  correct:"Las opciones A, C y D usan 'haber de + infinitivo' correctamente: 'interpretarse', 'analizarse', 'presentarse'. Expresan obligación formal en registro científico.",
+  intruso:"La opción B es el intruso: 'ha de revisado' es incorrecta. 'Haber de' exige infinitivo, no participio. Lo correcto: 'ha de ser revisado' o 'ha de revisarse'."},
+
+  {ctx:"🏛️ Contexto: una institución científica define sus compromisos éticos.",badge:"Haber de + infinitivo vs. error gramatical",
+  opts:[
+    "Los investigadores han de garantizar la confidencialidad de los participantes.",
+    "Los experimentos han de cumplir con los estándares internacionales de ética.",
+    "Los resultados han de ser compartidos con la comunidad científica.",
+    "El equipo ha de cumpliendo los plazos establecidos por el comité."
+  ],ans:3,
+  correct:"Las opciones A, B y C usan 'haber de + infinitivo' correctamente: 'garantizar', 'cumplir', 'ser compartidos'. Expresan obligación formal.",
+  intruso:"La opción D es el intruso: 'ha de cumpliendo' es incorrecta. 'Haber de' exige infinitivo, no gerundio. Lo correcto: 'ha de cumplir'."},
+
+  // BLOQUE 4: Intruso por error gramatical en venir a + infinitivo
+  {ctx:"💡 Contexto: un economista tecnológico analiza el coste de la innovación.",badge:"Venir a + infinitivo vs. error gramatical",
+  opts:[
+    "La nueva tecnología de almacenamiento viene a resolver uno de los grandes problemas del sector.",
+    "Este hallazgo viene a confirmar las hipótesis planteadas hace una década.",
+    "El nuevo procesador viene a costando el doble que su predecesor.",
+    "La inteligencia artificial viene a transformar la manera en que procesamos los datos."
+  ],ans:2,
+  correct:"Las opciones A, B y D usan 'venir a + infinitivo' correctamente: 'resolver', 'confirmar', 'transformar'. Expresan aproximación o resultado.",
+  intruso:"La opción C es el intruso: 'viene a costando' usa gerundio en lugar de infinitivo. Lo correcto: 'viene a costar el doble'."},
+
+  {ctx:"🌐 Contexto: una conferencia de innovación digital presenta sus conclusiones.",badge:"Venir a + infinitivo vs. error gramatical",
+  opts:[
+    "Este modelo de negocio viene a demostrar que la sostenibilidad y la rentabilidad son compatibles.",
+    "La nueva plataforma viene a llenar un vacío importante en el mercado de la educación digital.",
+    "El informe viene a siendo un resumen de diez años de investigación en el campo.",
+    "Esta fusión empresarial viene a representar el mayor acuerdo tecnológico de la década."
+  ],ans:2,
+  correct:"Las opciones A, B y D usan 'venir a + infinitivo' correctamente: 'demostrar', 'llenar', 'representar'.",
+  intruso:"La opción C es el intruso: 'viene a siendo' usa gerundio en lugar de infinitivo. Lo correcto: 'viene a ser un resumen'."},
+
+  // BLOQUE 5: Intruso por pertenecer a grupo funcional diferente
+  {ctx:"🔭 Contexto: un observatorio astronómico presenta su informe de actividades.",badge:"Grupo funcional: duración acumulada",
+  opts:[
+    "El telescopio lleva décadas captando imágenes del universo profundo.",
+    "Los astrónomos llevan años cartografiando regiones inexploradas de la galaxia.",
+    "El equipo tiene publicados más de cien estudios sobre exoplanetas.",
+    "Llevamos meses procesando los datos del último eclipse solar."
+  ],ans:2,
+  correct:"Las opciones A, B y D usan 'llevar + gerundio' para expresar duración acumulada de una acción en curso: 'captando', 'cartografiando', 'procesando'.",
+  intruso:"La opción C es el intruso: 'tiene publicados' pertenece al grupo de 'tener + participio', que expresa resultado acumulado, no duración. No encaja con el grupo funcional de las otras tres."},
+
+  {ctx:"🧫 Contexto: un laboratorio de microbiología describe su trabajo actual.",badge:"Grupo funcional: resultado acumulado",
+  opts:[
+    "Tenemos clasificadas más de doscientas especies de bacterias resistentes.",
+    "El equipo tiene documentadas todas las fases del proceso de fermentación.",
+    "Los microbiólogos llevan años cultivando colonias bacterianas en condiciones extremas.",
+    "Ya tenemos analizadas las muestras del último brote epidémico."
+  ],ans:2,
+  correct:"Las opciones A, B y D usan 'tener + participio' para expresar resultado acumulado: 'clasificadas', 'documentadas', 'analizadas'.",
+  intruso:"La opción C es el intruso: 'llevan años cultivando' pertenece al grupo de 'llevar + gerundio', que expresa duración acumulada, no resultado. No encaja con el grupo funcional de las otras tres."},
+
+  {ctx:"⚖️ Contexto: un comité de bioética establece sus directrices para el año.",badge:"Grupo funcional: obligación formal",
+  opts:[
+    "Los experimentos con seres humanos han de contar con el consentimiento informado de los participantes.",
+    "Las conclusiones han de someterse a revisión por pares antes de su publicación.",
+    "Los datos personales de los participantes han de protegerse según la legislación vigente.",
+    "El comité lleva meses debatiendo los nuevos estándares de ética en inteligencia artificial."
+  ],ans:3,
+  correct:"Las opciones A, B y C usan 'haber de + infinitivo' para expresar obligación formal en registro científico-institucional: 'contar', 'someterse', 'protegerse'.",
+  intruso:"La opción D es el intruso: 'lleva meses debatiendo' pertenece al grupo de 'llevar + gerundio', que expresa duración acumulada. No comparte la función de obligación formal de las otras tres."},
+
+  {ctx:"🤖 Contexto: una empresa de inteligencia artificial presenta sus avances del trimestre.",badge:"Grupo funcional: aproximación o resultado",
+  opts:[
+    "Este nuevo modelo de lenguaje viene a superar las limitaciones de sus predecesores.",
+    "El algoritmo viene a resolver el problema de la detección de sesgos en los datos.",
+    "La herramienta viene a facilitar la interacción entre humanos y sistemas automatizados.",
+    "Los ingenieros han de actualizar el sistema cada vez que se detecte un fallo crítico."
+  ],ans:3,
+  correct:"Las opciones A, B y C usan 'venir a + infinitivo' para expresar aproximación o resultado: 'superar', 'resolver', 'facilitar'.",
+  intruso:"La opción D es el intruso: 'han de actualizar' pertenece al grupo de 'haber de + infinitivo', que expresa obligación formal. No comparte la función aproximativa de las otras tres."},
+
+  // BLOQUE 6: Intruso por registro incorrecto
+  {ctx:"📄 Contexto: un informe científico oficial presenta sus metodologías.",badge:"Registro: formal vs. coloquial",
+  opts:[
+    "Los datos han de analizarse con métodos estadísticos validados internacionalmente.",
+    "Los participantes han de firmar el consentimiento informado antes del inicio del estudio.",
+    "Hay que meter los resultados en el ordenador y ver qué sale.",
+    "Los hallazgos han de comunicarse a la comunidad científica en un plazo máximo de doce meses."
+  ],ans:2,
+  correct:"Las opciones A, B y D usan 'haber de + infinitivo' con un registro formal y técnico apropiado para un informe científico.",
+  intruso:"La opción C es el intruso: aunque usa 'hay que' (perífrasis de obligación impersonal), el registro es marcadamente coloquial e inapropiado para un informe científico. 'Meter' y 'ver qué sale' rompen el tono formal del contexto."},
+
+  {ctx:"🌿 Contexto: una investigadora de ecología describe su trabajo de campo en un artículo académico.",badge:"Registro: formal vs. coloquial",
+  opts:[
+    "Llevamos cuatro temporadas monitorizando los cambios en el ecosistema del humedal.",
+    "El equipo lleva años recopilando datos sobre la migración de aves en la región.",
+    "Ya llevamos un buen rato mirando bichos y apuntando cosillas en el cuaderno.",
+    "Llevamos tres décadas estudiando el impacto de la agricultura intensiva en la biodiversidad."
+  ],ans:2,
+  correct:"Las opciones A, B y D usan 'llevar + gerundio' con registro académico y vocabulario técnico apropiado: 'monitorizando', 'recopilando', 'estudiando'.",
+  intruso:"La opción C es el intruso: aunque usa 'llevar + gerundio' correctamente, el registro es totalmente coloquial e inapropiado para un artículo académico. 'Mirando bichos' y 'apuntando cosillas' son expresiones informales."},
+
+  {ctx:"🏗️ Contexto: una empresa de ingeniería presenta su memoria anual a los inversores.",badge:"Registro: formal vs. coloquial",
+  opts:[
+    "Tenemos diseñadas las especificaciones técnicas de los tres proyectos prioritarios.",
+    "El departamento tiene elaborados los presupuestos para el próximo ejercicio fiscal.",
+    "Tenemos ya hechos un montón de planos y cosas para el edificio ese.",
+    "Tenemos firmados los contratos con los principales proveedores de materiales."
+  ],ans:2,
+  correct:"Las opciones A, B y D usan 'tener + participio' con registro formal y léxico apropiado para una memoria empresarial: 'diseñadas', 'elaborados', 'firmados'.",
+  intruso:"La opción C es el intruso: aunque usa 'tener + participio' correctamente ('tenemos hechos'), el registro es totalmente inapropiado para una memoria empresarial. 'Un montón de planos y cosas' y 'el edificio ese' son expresiones informales."},
+
+  // BLOQUE 7: Grupos mixtos más complejos
+  {ctx:"🧠 Contexto: un neurocientífico reflexiona sobre los avances en su campo.",badge:"Perífrasis mixtas: análisis funcional",
+  opts:[
+    "Llevamos décadas intentando descifrar los mecanismos de la memoria a largo plazo.",
+    "Este descubrimiento viene a confirmar lo que muchos investigadores intuían desde hace años.",
+    "Los neurocientíficos han de comunicar sus hallazgos con rigor y sin sensacionalismo.",
+    "Ya tenemos resueltas todas las incógnitas sobre el funcionamiento del cerebro humano."
+  ],ans:3,
+  correct:"Las opciones A, B y C son correctas gramaticalmente y coherentes con el contexto: 'llevamos décadas intentando' (duración), 'viene a confirmar' (resultado), 'han de comunicar' (obligación).",
+  intruso:"La opción D es el intruso: aunque es gramaticalmente correcta ('tenemos resueltas'), es semánticamente falsa e incongruente en el contexto. La neurociencia está lejos de haber resuelto todas las incógnitas del cerebro humano, lo que la hace incoherente en un texto sobre rigor científico."},
+
+  {ctx:"🌱 Contexto: un congreso sobre tecnología verde analiza el estado actual del sector.",badge:"Perífrasis mixtas: análisis funcional",
+  opts:[
+    "Las empresas han de comprometerse con la descarbonización de sus procesos productivos.",
+    "Los ingenieros llevan años perfeccionando las células solares de tercera generación.",
+    "Este avance viene a demostrar que la energía de fusión es ya una realidad comercial.",
+    "Tenemos identificados los principales obstáculos para la transición energética global."
+  ],ans:2,
+  correct:"Las opciones A, B y D son correctas gramaticalmente: 'han de comprometerse' (obligación), 'llevan años perfeccionando' (duración), 'tenemos identificados' (resultado).",
+  intruso:"La opción C es el intruso: aunque es gramaticalmente correcta, afirma que 'la energía de fusión es ya una realidad comercial', lo que es factualmente inexacto. La fusión nuclear no está disponible comercialmente. En un congreso de rigor científico, esta afirmación es incoherente."},
+
+  {ctx:"🔐 Contexto: una empresa de ciberseguridad presenta sus servicios a un cliente corporativo.",badge:"Perífrasis mixtas: análisis funcional",
+  opts:[
+    "Llevamos más de diez años protegiendo infraestructuras críticas de ataques informáticos.",
+    "Nuestro sistema viene a garantizar una reducción del noventa por ciento en las vulnerabilidades.",
+    "Tenemos auditados los sistemas de más de quinientas empresas del sector financiero.",
+    "Los técnicos han de revisar el sistema cada dos semanas para garantizar su integridad, lo que supone un esfuerzo mínimo."
+  ],ans:3,
+  correct:"Las opciones A, B y C son correctas gramaticalmente y coherentes con el contexto: 'llevamos protegiendo' (duración), 'viene a garantizar' (resultado aproximado), 'tenemos auditados' (resultado acumulado).",
+  intruso:"La opción D es el intruso: aunque 'han de revisar' es gramaticalmente correcto, afirmar que revisar el sistema cada dos semanas 'supone un esfuerzo mínimo' es incoherente con el contexto profesional de ciberseguridad, donde la revisión continua es un proceso exigente."},
+
+  // BLOQUE 8: Más grupos con distintos tipos de intruso
+  {ctx:"📡 Contexto: una empresa de telecomunicaciones describe su expansión.",badge:"Llevar + gerundio vs. otros",
+  opts:[
+    "Llevamos tres años expandiendo nuestra red de fibra óptica por zonas rurales.",
+    "El equipo técnico lleva meses instalando antenas de última generación en todo el país.",
+    "La compañía viene a ser la operadora con mayor cobertura del mercado nacional.",
+    "Llevamos décadas invirtiendo en infraestructuras de comunicación de alta velocidad."
+  ],ans:2,
+  correct:"Las opciones A, B y D usan 'llevar + gerundio' para expresar duración acumulada de acciones en curso: 'expandiendo', 'instalando', 'invirtiendo'.",
+  intruso:"La opción C es el intruso: 'viene a ser' pertenece al grupo de 'venir a + infinitivo', que expresa aproximación o equivalencia, no duración acumulada. No comparte la función de las otras tres."},
+
+  {ctx:"🧬 Contexto: un instituto de investigación genómica presenta su balance anual.",badge:"Tener + participio: concordancia",
+  opts:[
+    "Tenemos secuenciados más de diez mil genomas en el último año.",
+    "El equipo tiene clasificadas todas las variantes genéticas identificadas.",
+    "Ya tenemos publicadas nuestras conclusiones en las revistas de mayor impacto.",
+    "Tenemos analizados todas las muestras recibidas durante el primer trimestre."
+  ],ans:3,
+  correct:"Las opciones A, B y C usan 'tener + participio' con concordancia correcta: 'secuenciados' (genomas, masc. pl.), 'clasificadas' (variantes, fem. pl.), 'publicadas' (conclusiones, fem. pl.).",
+  intruso:"La opción D es el intruso: 'tenemos analizados todas las muestras' tiene error de concordancia. 'Muestras' es femenino plural, por lo que el participio debe ser 'analizadas', no 'analizados'."},
+
+  {ctx:"🌍 Contexto: una organización internacional de ciencia y tecnología establece sus prioridades.",badge:"Haber de + infinitivo: registro y forma",
+  opts:[
+    "Los estados miembros han de contribuir equitativamente a la financiación de los proyectos comunes.",
+    "Los datos científicos han de compartirse de forma abierta y accesible para toda la comunidad.",
+    "Las instituciones han de rendir cuentas sobre el uso de los fondos destinados a la investigación.",
+    "Hay que ponerse las pilas y empezar a trabajar en serio en estos temas tan importantes."
+  ],ans:3,
+  correct:"Las opciones A, B y C usan 'haber de + infinitivo' con registro formal apropiado para una organización internacional: 'contribuir', 'compartirse', 'rendir cuentas'.",
+  intruso:"La opción D es el intruso: aunque usa 'hay que + infinitivo' (perífrasis correcta gramaticalmente), el registro es marcadamente coloquial e inapropiado. 'Ponerse las pilas' y 'trabajar en serio' son expresiones informales incompatibles con el contexto institucional."},
+
+  {ctx:"💊 Contexto: una farmacéutica presenta sus avances en el desarrollo de un nuevo fármaco.",badge:"Venir a + infinitivo: función aproximativa",
+  opts:[
+    "Este compuesto viene a reducir en un sesenta por ciento los efectos secundarios del tratamiento anterior.",
+    "Los ensayos clínicos vienen a confirmar la eficacia del fármaco en pacientes de más de sesenta años.",
+    "El nuevo medicamento viene a representar un avance significativo en el tratamiento de enfermedades raras.",
+    "El departamento lleva cuatro años realizando pruebas de seguridad con este compuesto."
+  ],ans:3,
+  correct:"Las opciones A, B y C usan 'venir a + infinitivo' para expresar aproximación o resultado: 'reducir', 'confirmar', 'representar'.",
+  intruso:"La opción D es el intruso: 'lleva cuatro años realizando' pertenece al grupo de 'llevar + gerundio', que expresa duración acumulada. No comparte la función aproximativa de las otras tres."},
+
+  {ctx:"🏥 Contexto: un hospital universitario presenta su protocolo de investigación clínica.",badge:"Haber de + infinitivo: obligación formal",
+  opts:[
+    "Los médicos han de informar a los pacientes sobre todos los riesgos del procedimiento.",
+    "Los resultados han de archivarse durante un mínimo de quince años según la normativa.",
+    "Tenemos documentados todos los efectos adversos registrados durante los ensayos.",
+    "El comité de ética ha de aprobar cualquier modificación del protocolo antes de su aplicación."
+  ],ans:2,
+  correct:"Las opciones A, B y D usan 'haber de + infinitivo' para expresar obligación formal en un contexto hospitalario e institucional: 'informar', 'archivarse', 'aprobar'.",
+  intruso:"La opción C es el intruso: 'tenemos documentados' pertenece al grupo de 'tener + participio', que expresa resultado acumulado, no obligación. No comparte la función de las otras tres."},
+
+  {ctx:"🎓 Contexto: un departamento universitario de física cuántica describe su actividad.",badge:"Perífrasis mixtas: coherencia temática",
+  opts:[
+    "Llevamos más de veinte años estudiando los fenómenos de entrelazamiento cuántico.",
+    "Tenemos publicadas más de trescientas investigaciones en revistas de alto impacto.",
+    "Los resultados de nuestros experimentos vienen a cuestionar algunos postulados clásicos.",
+    "Hemos de llevar meses pensando en estos problemas para poder resolverlos."
+  ],ans:3,
+  correct:"Las opciones A, B y C usan perífrasis correctas y coherentes: 'llevamos estudiando' (duración), 'tenemos publicadas' (resultado), 'vienen a cuestionar' (resultado aproximado).",
+  intruso:"La opción D es el intruso: 'hemos de llevar meses pensando' es una construcción anómala que mezcla 'haber de' con 'llevar + gerundio' de forma incorrecta. No existe esta estructura. Lo correcto sería 'hemos de pensar en estos problemas durante meses' o 'llevamos meses pensando en estos problemas'."},
+];
+
+const MESSAGES = [
+  "¡Ojo de águila! Detectar el intruso entre perífrasis avanzadas es un reto de nivel C1 puro. ¡Lo has hecho genial! ♥",
+  "¡Impresionante análisis! Las perífrasis verbales avanzadas son una de las joyas del español de nivel C1. ¡Sigue así! ♥",
+  "¡Fantástico! Distinguir entre función gramatical, concordancia y registro al mismo tiempo requiere una competencia muy alta. ¡Estoy orgullosa de ti! ♥",
+  "¡Excelente trabajo! Encontrar el intruso entre estructuras complejas demuestra que tu español está en un nivel muy avanzado. ♥",
+  "¡Brillante! Has demostrado que dominas las perífrasis verbales avanzadas en contextos científicos reales. ¡Eso es español de verdad! ♥"
+];
+
+let questions=[],current=0,score=0,answered=false;
+function shuffle(arr){return arr.slice().sort(()=>Math.random()-.5)}
+
+function startGame(){
+  questions=shuffle(BANK).slice(0,10);
+  current=0;score=0;answered=false;
+  document.getElementById('screen-start').classList.remove('active');
+  document.getElementById('screen-game').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  answered=false;
+  const q=questions[current];
+  document.getElementById('progress-bar').style.width=((current/10)*100)+'%';
+  document.getElementById('q-counter').textContent=`Pregunta ${current+1} de 10`;
+  document.getElementById('score-display').textContent=`✓ ${score}`;
+  document.getElementById('context-line').textContent=q.ctx;
+  document.getElementById('grammar-badge').textContent=q.badge;
+  const fb=document.getElementById('feedback-card');
+  fb.style.display='none';fb.className='feedback-card';
+  document.getElementById('next-btn').style.display='none';
+  const cont=document.getElementById('options-container');
+  cont.innerHTML='';
+  // Shuffle options but track correct answer
+  const indices=[0,1,2,3];
+  const shuffled=shuffle(indices);
+  const newAns=shuffled.indexOf(q.ans);
+  shuffled.forEach((origIdx,i)=>{
+    const b=document.createElement('button');
+    b.className='opt-btn';
+    b.innerHTML=`<span class="opt-label">${String.fromCharCode(65+i)}</span>${q.opts[origIdx]}`;
+    b.dataset.orig=origIdx;
+    b.onclick=()=>selectOption(i,newAns,shuffled);
+    cont.appendChild(b);
+  });
+}
+
+function selectOption(chosen,correctIdx,shuffled){
+  if(answered)return;
+  answered=true;
+  const q=questions[current];
+  const btns=document.querySelectorAll('.opt-btn');
+  btns.forEach(b=>b.disabled=true);
+  const fb=document.getElementById('feedback-card');
+  if(chosen===correctIdx){
+    score++;
+    btns[chosen].classList.add('intruso-revealed');
+    btns[chosen].querySelector('.opt-label').classList.add('intruso-label');
+    fb.className='feedback-card correct';fb.style.display='block';
+    document.getElementById('feedback-title').textContent='✅ ¡Correcto! Has encontrado el intruso.';
+  } else {
+    btns[chosen].classList.add('wrong');
+    btns[chosen].querySelector('.opt-label').classList.add('wrong-label');
+    btns[correctIdx].classList.add('intruso-revealed');
+    btns[correctIdx].querySelector('.opt-label').classList.add('intruso-label');
+    fb.className='feedback-card wrong';fb.style.display='block';
+    document.getElementById('feedback-title').textContent='❌ No exactamente. El intruso era otro.';
+  }
+  document.getElementById('feedback-correct').textContent=q.correct;
+  document.getElementById('feedback-intruso').textContent=q.intruso;
+  document.getElementById('score-display').textContent=`✓ ${score}`;
+  document.getElementById('next-btn').style.display='inline-block';
+}
+
+function nextQuestion(){
+  current++;
+  if(current>=10)showEnd();
+  else renderQuestion();
+}
+
+function showEnd(){
+  document.getElementById('screen-game').classList.remove('active');
+  document.getElementById('screen-end').classList.add('active');
+  document.getElementById('final-score').textContent=`${score} / 10`;
+  const pct=Math.round((score/10)*100);
+  document.getElementById('final-pct').textContent=`${pct}% de aciertos`;
+  document.getElementById('teacher-msg').textContent=MESSAGES[Math.floor(Math.random()*MESSAGES.length)];
+  launchCelebration();
+}
+
+function restartGame(){
+  document.getElementById('screen-end').classList.remove('active');
+  stopCelebration();
+  startGame();
+  document.getElementById('screen-game').classList.add('active');
+}
+
+let confettiInterval,balloonEls=[];
+function launchCelebration(){
+  const canvas=document.getElementById('confetti-canvas');
+  const ctx2=canvas.getContext('2d');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const pieces=Array.from({length:120},()=>({
+    x:Math.random()*canvas.width,y:Math.random()*canvas.height-canvas.height,
+    r:Math.random()*7+3,d:Math.random()*120+40,
+    color:['#3b6d11','#d4537e','#c0dd97','#993556','#fdf8f0','#f9c74f'][Math.floor(Math.random()*6)],
+    tilt:Math.random()*10-10,speed:Math.random()*3+1
+  }));
+  let ang=0;
+  function draw(){
+    ctx2.clearRect(0,0,canvas.width,canvas.height);ang+=0.01;
+    pieces.forEach(p=>{
+      ctx2.beginPath();ctx2.lineWidth=p.r/2;ctx2.strokeStyle=p.color;
+      ctx2.moveTo(p.x+p.tilt+p.r/4,p.y);ctx2.lineTo(p.x+p.tilt,p.y+p.tilt+p.r/4);ctx2.stroke();
+      p.y+=p.speed;p.tilt=Math.sin(ang+p.d)*12;
+      if(p.y>canvas.height){p.y=-10;p.x=Math.random()*canvas.width;}
+    });
+  }
+  confettiInterval=setInterval(draw,16);
+  const emojis=['🎈','🎊','🎉','💚','🌟','💖'];
+  for(let i=0;i<12;i++){
+    const b=document.createElement('div');
+    b.className='balloon';
+    b.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    b.style.left=Math.random()*95+'%';
+    b.style.bottom='-60px';
+    b.style.animationDelay=(Math.random()*3)+'s';
+    b.style.fontSize=(1.8+Math.random()*1.5)+'rem';
+    document.body.appendChild(b);
+    balloonEls.push(b);
+  }
+  setTimeout(()=>{balloonEls.forEach(b=>{if(b.parentNode)b.remove();});balloonEls=[];},5000);
+}
+function stopCelebration(){
+  clearInterval(confettiInterval);
+  const canvas=document.getElementById('confetti-canvas');
+  canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+  balloonEls.forEach(b=>{if(b.parentNode)b.remove();});balloonEls=[];
+}
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"5070e21320304a1ba2b0a42ce9682840","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

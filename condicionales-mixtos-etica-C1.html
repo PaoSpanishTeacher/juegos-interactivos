@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#fdf8f0;
+  --green:#3b6d11;
+  --green-light:#c0dd97;
+  --green-xlight:#eaf3de;
+  --pink:#d4537e;
+  --pink-dark:#993556;
+  --text:#2d2d2d;
+  --radius:14px;
+}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+/* HEADER */
+.header{background:var(--green);color:white;padding:18px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid white;flex-shrink:0}
+.brand-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800;letter-spacing:0.5px}
+.brand-sub{font-size:0.78rem;opacity:0.85;margin-top:2px}
+.badges{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:5px 13px;font-size:0.75rem;font-weight:700;letter-spacing:0.5px}
+.badge.pink{background:var(--pink);border-color:var(--pink-dark)}
+
+/* SCREENS */
+.screen{display:none;padding:24px 16px;max-width:720px;margin:0 auto}
+.screen.active{display:block}
+
+/* START SCREEN */
+.start-card{background:white;border-radius:20px;padding:36px 32px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.10);border:2px solid var(--green-light)}
+.start-card h1{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--green);margin-bottom:10px}
+.start-card .subtitle{color:#666;font-size:1rem;margin-bottom:24px;line-height:1.6}
+.info-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.pill{background:var(--green-xlight);color:var(--green);border-radius:20px;padding:7px 16px;font-size:0.82rem;font-weight:700}
+.pill.p2{background:#fde8ef;color:var(--pink-dark)}
+.btn{display:inline-block;background:var(--green);color:white;border:none;border-radius:30px;padding:14px 36px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:0.3px}
+.btn:hover{background:#2d5209;transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,109,17,0.25)}
+.btn.pink-btn{background:var(--pink)}
+.btn.pink-btn:hover{background:var(--pink-dark)}
+
+/* GAME SCREEN */
+.progress-bar-wrap{background:var(--green-xlight);border-radius:10px;height:10px;margin-bottom:6px}
+.progress-bar{background:var(--green);height:10px;border-radius:10px;transition:width .4s}
+.progress-info{display:flex;justify-content:space-between;font-size:0.8rem;color:#666;margin-bottom:18px}
+.score-badge{background:var(--green);color:white;border-radius:20px;padding:4px 14px;font-weight:700;font-size:0.85rem}
+
+.question-card{background:white;border-radius:20px;padding:28px 24px;box-shadow:0 4px 20px rgba(59,109,17,0.09);border:2px solid var(--green-light);margin-bottom:18px}
+.context-line{font-size:0.85rem;color:#888;margin-bottom:14px;font-style:italic}
+.grammar-badge{display:inline-block;background:var(--green-xlight);color:var(--green);border-radius:12px;padding:4px 12px;font-size:0.75rem;font-weight:700;margin-bottom:14px}
+.question-text{font-size:1.05rem;line-height:1.7;color:var(--text);font-weight:600}
+.blank{display:inline-block;border-bottom:2.5px solid var(--pink);min-width:80px;color:var(--pink-dark);font-weight:800;padding:0 4px}
+
+.options{display:grid;gap:10px;margin-top:20px}
+.opt-btn{background:var(--green-xlight);border:2px solid var(--green-light);border-radius:14px;padding:13px 18px;font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:600;color:var(--text);cursor:pointer;text-align:left;transition:all .18s;line-height:1.4}
+.opt-btn:hover:not(:disabled){background:#d4edbb;border-color:var(--green);transform:translateX(4px)}
+.opt-btn.correct{background:#e6f7d9;border-color:#3b6d11;color:#1e4200}
+.opt-btn.wrong{background:#fde8ef;border-color:var(--pink);color:var(--pink-dark)}
+.opt-btn:disabled{cursor:default}
+
+.feedback-card{border-radius:16px;padding:18px 20px;margin-top:14px;display:none;animation:fadeIn .3s}
+.feedback-card.correct{background:#e6f7d9;border:2px solid #a0d470}
+.feedback-card.wrong{background:#fde8ef;border:2px solid var(--pink)}
+.feedback-title{font-weight:800;font-size:1rem;margin-bottom:6px}
+.feedback-text{font-size:0.9rem;line-height:1.6;color:#444}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.next-btn{display:none;margin-top:16px}
+
+/* END SCREEN */
+.end-card{background:white;border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.12);border:2px solid var(--green-light);position:relative;overflow:hidden}
+.teacher-card{background:var(--green);color:white;border-radius:16px;padding:22px;margin:20px 0;display:flex;align-items:center;gap:16px;text-align:left}
+.teacher-avatar-big{width:68px;height:68px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:36px;border:3px solid white;flex-shrink:0}
+.teacher-msg{font-size:0.95rem;line-height:1.6;font-weight:600}
+.score-display{font-family:'Playfair Display',serif;font-size:2.8rem;color:var(--green);font-weight:800;margin:10px 0}
+.score-pct{font-size:1.1rem;color:var(--pink);font-weight:700;margin-bottom:20px}
+
+.grammar-note{background:var(--green-xlight);border-radius:16px;padding:22px;text-align:left;margin:20px 0}
+.grammar-note h3{font-family:'Playfair Display',serif;color:var(--green);font-size:1.1rem;margin-bottom:14px}
+.grammar-note ul{list-style:none;padding:0}
+.grammar-note li{padding:7px 0;border-bottom:1px solid #d0e8b0;font-size:0.88rem;line-height:1.6;color:#333}
+.grammar-note li:last-child{border-bottom:none}
+.grammar-note li::before{content:"✦ ";color:var(--green);font-weight:800}
+.note-example{display:block;background:white;border-radius:8px;padding:7px 12px;margin-top:6px;font-style:italic;color:#555;font-size:0.83rem;border-left:3px solid var(--green)}
+
+/* CONFETTI CANVAS */
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+
+/* FIREWORKS */
+.firework{position:fixed;pointer-events:none;z-index:998}
+
+/* BALLOONS */
+.balloon-container{position:fixed;bottom:-100px;width:100%;pointer-events:none;z-index:997}
+.balloon{position:absolute;font-size:2.5rem;animation:riseUp 4s ease-in forwards}
+@keyframes riseUp{to{transform:translateY(-110vh) rotate(20deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="avatar">👩‍🏫</div>
+  <div>
+    <div class="brand-name">Pao Spanish Teacher</div>
+    <div class="brand-sub">Español para adultos · Nivel avanzado</div>
+  </div>
+  <div class="badges">
+    <span class="badge">C1</span>
+    <span class="badge pink">Condicionales Mixtos</span>
+  </div>
+</div>
+
+<!-- START SCREEN -->
+<div class="screen active" id="screen-start">
+  <div class="start-card" style="margin-top:32px">
+    <div style="font-size:3rem;margin-bottom:12px">🧠⚖️</div>
+    <h1>Ética y Dilemas Morales</h1>
+    <p class="subtitle">Practica los <strong>condicionales mixtos</strong> en contextos de reflexión ética, filosofía moral y dilemas de la vida real. ¿Qué habrías hecho tú?</p>
+    <div class="info-pills">
+      <span class="pill">📚 Nivel C1</span>
+      <span class="pill p2">🎯 Condicionales mixtos</span>
+      <span class="pill">🔀 10 preguntas aleatorias</span>
+      <span class="pill p2">💬 Opción múltiple</span>
+    </div>
+    <button class="btn" onclick="startGame()">¡Empezar juego! →</button>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div class="screen" id="screen-game">
+  <div style="margin-top:20px">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="progress-info">
+      <span id="q-counter">Pregunta 1 de 10</span>
+      <span class="score-badge" id="score-display">✓ 0</span>
+    </div>
+  </div>
+
+  <div class="question-card">
+    <div class="context-line" id="context-line"></div>
+    <div class="grammar-badge" id="grammar-badge"></div>
+    <div class="question-text" id="question-text"></div>
+    <div class="options" id="options-container"></div>
+    <div class="feedback-card" id="feedback-card">
+      <div class="feedback-title" id="feedback-title"></div>
+      <div class="feedback-text" id="feedback-text"></div>
+    </div>
+  </div>
+  <button class="btn next-btn" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+</div>
+
+<!-- END SCREEN -->
+<div class="screen" id="screen-end">
+  <div class="end-card" style="margin-top:24px">
+    <div style="font-size:2.5rem">🎆</div>
+    <h2 style="font-family:'Playfair Display',serif;color:var(--green);font-size:1.7rem;margin:10px 0">¡Juego completado!</h2>
+    <div class="score-display" id="final-score"></div>
+    <div class="score-pct" id="final-pct"></div>
+
+    <div class="teacher-card">
+      <div class="teacher-avatar-big">👩‍🏫</div>
+      <div>
+        <div style="font-weight:800;font-size:1rem;margin-bottom:6px">Pao Spanish Teacher</div>
+        <div class="teacher-msg" id="teacher-msg"></div>
+      </div>
+    </div>
+
+    <div class="grammar-note">
+      <h3>📖 Recuerda esto: Condicionales Mixtos en C1</h3>
+      <ul>
+        <li>El condicional mixto combina una <strong>condición irreal en el pasado</strong> con una <strong>consecuencia en el presente</strong>.
+          <span class="note-example">Si hubiera estudiado medicina, ahora sería médica.</span>
+        </li>
+        <li>La prótasis usa <strong>pretérito pluscuamperfecto de subjuntivo</strong>: <em>hubiera/hubiese + participio</em>.
+          <span class="note-example">Si hubiera tomado esa decisión... / Si hubiese aceptado el trabajo...</span>
+        </li>
+        <li>La apódosis usa <strong>condicional simple</strong>: <em>-ría</em>.
+          <span class="note-example">...ahora viviría en otra ciudad. / ...hoy tendría más experiencia.</span>
+        </li>
+        <li>Con <strong>"de + infinitivo compuesto"</strong> se elimina el conector <em>si</em>, muy frecuente en C1.
+          <span class="note-example">De haberlo sabido antes, no estaría en esta situación.</span>
+        </li>
+        <li>El orden de las cláusulas puede invertirse: la apódosis puede ir primero.
+          <span class="note-example">Hoy hablaría mejor español si hubiera practicado más de joven.</span>
+        </li>
+        <li>Los verbos <em>ser, estar, tener, poder</em> son muy frecuentes en la apódosis del mixto.
+          <span class="note-example">Si no hubiera emigrado, ahora estaría cerca de su familia.</span>
+        </li>
+        <li>En contextos éticos, el condicional mixto expresa <strong>arrepentimiento, reflexión moral y juicio retrospectivo</strong>.
+          <span class="note-example">Si hubiera dicho la verdad, ahora no cargaría con esa culpa.</span>
+        </li>
+      </ul>
+    </div>
+
+    <button class="btn pink-btn" onclick="restartGame()">🔁 Jugar otra vez</button>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+const BANK = [
+  // 1-20: Clásico mixto si+pluscuamperfecto / condicional presente
+  {ctx:"🏥 Un médico reflexiona sobre una decisión difícil.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si el médico hubiera informado al paciente a tiempo, este _____ con más conocimiento.",opts:["hubiera decidido","decidiría","habría decidido","decidiera"],ans:1,ok:"¡Correcto! En el condicional mixto, la apódosis lleva condicional simple (-ría) porque la consecuencia se proyecta al presente.",fail:"La opción correcta es 'decidiría'. El condicional mixto usa condicional simple en la apódosis cuando la consecuencia es presente o habitual."},
+  {ctx:"⚖️ Una abogada reflexiona sobre un caso pasado.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si la abogada hubiera presentado las pruebas correctamente, su cliente _____ libre ahora.",opts:["sería","fuera","sea","habría sido"],ans:0,ok:"¡Exacto! 'Sería' es el condicional simple, correcto para la apódosis del condicional mixto con consecuencia presente.",fail:"La respuesta es 'sería'. En el condicional mixto, la apódosis expresa la consecuencia actual de una condición pasada no cumplida."},
+  {ctx:"🌍 Un activista medioambiental reflexiona sobre el pasado.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si los gobiernos hubieran actuado hace veinte años, el planeta _____ en mejor estado hoy.",opts:["estaría","estuviera","estará","esté"],ans:0,ok:"¡Perfecto! 'Estaría' es el condicional simple. La condición pasada no cumplida (no actuaron) genera una consecuencia presente imaginada.",fail:"La correcta es 'estaría'. Cuando imaginamos cómo sería el presente si el pasado hubiera sido diferente, usamos condicional simple."},
+  {ctx:"👨‍👩‍👧 Una madre reflexiona sobre sus decisiones de crianza.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si ella hubiera puesto más límites cuando era pequeña, su hija _____ más disciplina ahora.",opts:["tendrá","tuviera","tendría","haya tenido"],ans:2,ok:"¡Muy bien! 'Tendría' es el condicional simple. La consecuencia presente de una condición pasada no realizada.",fail:"La respuesta es 'tendría'. En el condicional mixto, la apódosis va en condicional simple para referirse al presente."},
+  {ctx:"🏛️ Un político analiza errores históricos de su gobierno.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si el gobierno hubiera invertido en educación hace una década, la sociedad _____ más preparada ahora.",opts:["sea","sería","fuera","será"],ans:1,ok:"¡Correcto! 'Sería' en la apódosis expresa la consecuencia presente imaginada de algo que no ocurrió en el pasado.",fail:"La correcta es 'sería'. El condicional mixto combina pluscuamperfecto de subjuntivo (pasado irreal) + condicional simple (consecuencia presente)."},
+  {ctx:"🧑‍🎓 Un estudiante reflexiona sobre sus elecciones académicas.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si hubiera elegido la carrera que le apasionaba, hoy _____ más feliz con su trabajo.",opts:["estaría","estuviera","haya estado","estuvo"],ans:0,ok:"¡Excelente! 'Estaría' es el condicional simple. La felicidad presente es la consecuencia de una elección pasada que no se hizo.",fail:"La respuesta es 'estaría'. Recuerda: condición pasada irreal → pluscuamperfecto de subjuntivo; consecuencia presente → condicional simple."},
+  {ctx:"🧠 Un psicólogo reflexiona sobre un paciente antiguo.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si el paciente hubiera buscado ayuda antes, su situación _____ muy diferente ahora.",opts:["fuera","sería","sea","será"],ans:1,ok:"¡Perfecto! 'Sería' es el condicional simple. La situación presente imaginada es consecuencia de no haber buscado ayuda a tiempo.",fail:"La correcta es 'sería'. El condicional simple en la apódosis indica que la consecuencia afecta al presente."},
+  {ctx:"🏢 Un empresario lamenta no haber diversificado su negocio.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si hubiera diversificado los productos a tiempo, la empresa _____ más sólida económicamente hoy.",opts:["sería","fuera","haya sido","sea"],ans:0,ok:"¡Correcto! 'Sería' en la apódosis expresa la consecuencia actual de una decisión pasada no tomada.",fail:"La respuesta es 'sería'. La solidez económica presente es la consecuencia imaginada de una diversificación que no ocurrió."},
+  {ctx:"👩‍⚕️ Una investigadora reflexiona sobre sus años de trabajo.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si el equipo hubiera compartido los datos desde el principio, la cura _____ disponible ya.",opts:["esté","estuviera","estaría","estará"],ans:2,ok:"¡Muy bien! 'Estaría' es el condicional simple. La disponibilidad presente de la cura es consecuencia de no haber compartido datos antes.",fail:"La correcta es 'estaría'. En el condicional mixto, la consecuencia presente va en condicional simple."},
+  {ctx:"🎨 Un artista reflexiona sobre no haber seguido su vocación.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si hubiera seguido su vocación artística desde joven, hoy _____ una carrera consolidada.",opts:["tuviera","tenga","tendrá","tendría"],ans:3,ok:"¡Excelente! 'Tendría' es el condicional simple. La carrera consolidada en el presente es consecuencia de no haber seguido su vocación.",fail:"La respuesta es 'tendría'. Cuando la consecuencia de una condición pasada irreal se proyecta al presente, usamos condicional simple."},
+  // 11-20
+  {ctx:"🌐 Una periodista reflexiona sobre sus reportajes.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si hubiera publicado la investigación a tiempo, el escándalo _____ a la luz mucho antes y hoy las cosas serían distintas.",opts:["salga","habría salido","saldría","saliera"],ans:2,ok:"¡Correcto! 'Saldría' es el condicional simple. Es la consecuencia que afecta al presente de no haber publicado a tiempo.",fail:"La correcta es 'saldría'. En el condicional mixto, la apódosis va en condicional simple para conectar el pasado irreal con el presente."},
+  {ctx:"🤝 Un diplomático analiza un conflicto no resuelto.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si ambas partes hubieran negociado de buena fe desde el inicio, ahora _____ un acuerdo duradero.",opts:["haya","existiría","existiera","exista"],ans:1,ok:"¡Bien! 'Existiría' es el condicional simple. El acuerdo presente es la consecuencia de unas negociaciones pasadas que no funcionaron.",fail:"La respuesta es 'existiría'. El condicional mixto requiere condicional simple en la apódosis cuando la consecuencia es actual."},
+  {ctx:"📚 Un filósofo reflexiona sobre la educación moral.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si desde la infancia se hubiera enseñado el pensamiento crítico, la sociedad _____ menos manipulable.",opts:["fuera","sea","sería","haya sido"],ans:2,ok:"¡Perfecto! 'Sería' expresa la consecuencia presente de una educación pasada que no se dio de la manera ideal.",fail:"La correcta es 'sería'. En el condicional mixto, la consecuencia presente siempre va en condicional simple."},
+  {ctx:"🏗️ Un arquitecto reflexiona sobre un proyecto fallido.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si el arquitecto hubiera escuchado a los vecinos desde el principio, el barrio _____ más cohesionado ahora.",opts:["estuviera","esté","estaría","estuvo"],ans:2,ok:"¡Correcto! 'Estaría' es el condicional simple. La cohesión del barrio en el presente es consecuencia imaginada de no haber escuchado antes.",fail:"La respuesta es 'estaría'. El condicional mixto combina condición pasada irreal con consecuencia presente en condicional simple."},
+  {ctx:"🧬 Una científica lamenta no haber publicado antes sus hallazgos.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si ella hubiera publicado sus hallazgos hace cinco años, la comunidad científica _____ más avanzada hoy.",opts:["estará","estuviera","estaría","esté"],ans:2,ok:"¡Muy bien! 'Estaría' es el condicional simple. El avance científico presente es consecuencia de no haber publicado a tiempo.",fail:"La correcta es 'estaría'. Recuerda: pluscuamperfecto de subjuntivo en la prótasis + condicional simple en la apódosis."},
+  {ctx:"🌱 Un agricultor reflexiona sobre sus prácticas del pasado.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si hubiera adoptado métodos sostenibles antes, su tierra _____ más fértil en este momento.",opts:["fuera","sería","sea","será"],ans:1,ok:"¡Excelente! 'Sería' en la apódosis conecta la condición pasada irreal con el estado presente de la tierra.",fail:"La respuesta es 'sería'. En el condicional mixto, la apódosis usa condicional simple para referirse a las consecuencias actuales."},
+  {ctx:"🏥 Una enfermera reflexiona sobre la atención en la pandemia.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si los hospitales hubieran tenido más recursos desde el principio, la tasa de mortalidad _____ menor ahora.",opts:["fuera","sea","sería","haya sido"],ans:2,ok:"¡Correcto! 'Sería' es la consecuencia presente imaginada de una condición pasada irreal: la falta de recursos.",fail:"La correcta es 'sería'. El condicional simple en la apódosis indica que las consecuencias se perciben en el presente."},
+  {ctx:"📰 Un editor reflexiona sobre noticias mal verificadas.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si el periódico hubiera verificado mejor sus fuentes, su credibilidad _____ intacta hoy.",opts:["estaría","estuviera","esté","estará"],ans:0,ok:"¡Bien! 'Estaría' es el condicional simple. La credibilidad presente es la consecuencia de no haber verificado bien en el pasado.",fail:"La respuesta es 'estaría'. La apódosis del condicional mixto va en condicional simple."},
+  {ctx:"🎓 Una rectora reflexiona sobre políticas universitarias.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si la universidad hubiera apostado por la investigación hace una década, hoy _____ entre las mejores del país.",opts:["figure","figuraría","figurara","figurará"],ans:1,ok:"¡Perfecto! 'Figuraría' es el condicional simple. El posicionamiento actual de la universidad es consecuencia de decisiones pasadas no tomadas.",fail:"La correcta es 'figuraría'. El condicional mixto lleva condicional simple en la apódosis para referirse al presente."},
+  {ctx:"🤔 Un filósofo reflexiona sobre la verdad y la responsabilidad.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si los líderes hubieran sido más transparentes, la ciudadanía _____ más confianza en las instituciones ahora.",opts:["tuviera","tendría","tenga","tendrá"],ans:1,ok:"¡Correcto! 'Tendría' es el condicional simple. La confianza presente es consecuencia de la falta de transparencia pasada.",fail:"La respuesta es 'tendría'. En el condicional mixto, la apódosis usa condicional simple para consecuencias que se viven en el presente."},
+  // 21-40: De + infinitivo compuesto
+  {ctx:"⚖️ Una jueza reflexiona sobre un veredicto antiguo.",badge:"De + infinitivo compuesto",q:"De haber tenido más pruebas, la jueza _____ un fallo diferente ahora.",opts:["daría","diera","dé","haya dado"],ans:0,ok:"¡Excelente! Con 'de + infinitivo compuesto', la apódosis lleva condicional simple. Equivale a 'Si hubiera tenido más pruebas, daría...'",fail:"La correcta es 'daría'. La estructura 'de + infinitivo compuesto' reemplaza el 'si + pluscuamperfecto de subjuntivo' y mantiene el condicional simple en la apódosis."},
+  {ctx:"🧑‍💼 Un ejecutivo reflexiona sobre una decisión empresarial.",badge:"De + infinitivo compuesto",q:"De haber aceptado esa fusión, la empresa _____ mucho más grande hoy.",opts:["fuera","sería","sea","será"],ans:1,ok:"¡Correcto! 'Sería' es el condicional simple. La estructura 'de + infinitivo compuesto' es muy elegante en C1 y equivale al condicional mixto clásico.",fail:"La respuesta es 'sería'. Con 'de + infinitivo compuesto', la apódosis mantiene el condicional simple."},
+  {ctx:"🌍 Una activista reflexiona sobre oportunidades perdidas.",badge:"De + infinitivo compuesto",q:"De haberse comprometido antes con la causa, el movimiento _____ más fuerza ahora.",opts:["tendría","tuviera","tendrá","tenga"],ans:0,ok:"¡Bien! 'Tendría' es el condicional simple en la apódosis de una estructura 'de + infinitivo compuesto'. Muy propio del registro C1.",fail:"La correcta es 'tendría'. La estructura 'de + infinitivo compuesto' equivale a 'Si se hubiera comprometido antes, tendría más fuerza ahora.'"},
+  {ctx:"💊 Un farmacéutico reflexiona sobre una investigación abandonada.",badge:"De + infinitivo compuesto",q:"De haberse continuado con los ensayos clínicos, el medicamento _____ disponible en el mercado ahora.",opts:["esté","estuviera","estaría","estará"],ans:2,ok:"¡Perfecto! 'Estaría' es el condicional simple. La estructura 'de + infinitivo compuesto' elimina la conjunción 'si' con un registro muy elevado.",fail:"La respuesta es 'estaría'. Con 'de + infinitivo compuesto', la apódosis lleva condicional simple para expresar la consecuencia presente."},
+  {ctx:"🏛️ Un historiador reflexiona sobre decisiones políticas del pasado.",badge:"De + infinitivo compuesto",q:"De haberse evitado esa guerra, millones de personas _____ vivas hoy.",opts:["estarían","estuvieran","estén","estarán"],ans:0,ok:"¡Correcto! 'Estarían' es el condicional simple. Esta estructura de alta complejidad es característica del nivel C1.",fail:"La correcta es 'estarían'. La estructura 'de + infinitivo compuesto + condicional simple' expresa consecuencias presentes de condiciones pasadas irreales."},
+  {ctx:"📡 Una ingeniera reflexiona sobre su carrera.",badge:"De + infinitivo compuesto",q:"De haber patentado su invento a tiempo, ella _____ muy conocida en su campo hoy.",opts:["fuera","sería","sea","será"],ans:1,ok:"¡Muy bien! 'Sería' es el condicional simple. 'De haber + participio' funciona como la prótasis del condicional mixto.",fail:"La respuesta es 'sería'. Con 'de + infinitivo compuesto', siempre usamos condicional simple en la apódosis del condicional mixto."},
+  {ctx:"🤝 Un mediador reflexiona sobre un conflicto familiar.",badge:"De + infinitivo compuesto",q:"De haber intervenido antes, la relación entre los hermanos _____ mejor ahora.",opts:["fuera","sería","sea","será"],ans:1,ok:"¡Excelente! 'Sería' es el condicional simple. Esta estructura elegante evita la conjunción 'si' en el condicional mixto.",fail:"La correcta es 'sería'. La apódosis del condicional mixto, tanto con 'si + pluscuamperfecto' como con 'de + infinitivo compuesto', lleva condicional simple."},
+  {ctx:"🎭 Una directora de teatro reflexiona sobre su juventud.",badge:"De + infinitivo compuesto",q:"De haber estudiado dirección en Europa, su carrera _____ un camino muy diferente.",opts:["tomara","tomaría","tome","tomará"],ans:1,ok:"¡Correcto! 'Tomaría' es el condicional simple. La consecuencia presente de no haber estudiado en Europa se expresa con condicional simple.",fail:"La respuesta es 'tomaría'. Con 'de + infinitivo compuesto', la apódosis lleva condicional simple en el condicional mixto."},
+  {ctx:"🧪 Un investigador lamenta no haber publicado sus resultados.",badge:"De + infinitivo compuesto",q:"De haber publicado los resultados antes, él _____ más reconocido en la comunidad científica hoy.",opts:["fuera","sería","sea","será"],ans:1,ok:"¡Perfecto! 'Sería' conecta la condición pasada irreal con la consecuencia presente mediante la estructura 'de + infinitivo compuesto'.",fail:"La correcta es 'sería'. La estructura 'de + infinitivo compuesto + condicional simple' es la forma del condicional mixto sin la conjunción 'si'."},
+  {ctx:"🌿 Una nutricionista reflexiona sobre hábitos pasados.",badge:"De + infinitivo compuesto",q:"De haber adoptado una dieta equilibrada desde joven, su salud _____ mucho mejor ahora.",opts:["fuera","estaría","esté","estará"],ans:1,ok:"¡Muy bien! 'Estaría' es el condicional simple. La estructura 'de + infinitivo compuesto' es equivalente al 'si + pluscuamperfecto de subjuntivo'.",fail:"La respuesta es 'estaría'. La consecuencia presente de adoptar una dieta saludable se expresa con condicional simple."},
+  // 41-60: Orden invertido (apódosis primero)
+  {ctx:"💼 Un gerente reflexiona sobre su equipo.",badge:"Apódosis primero / Orden invertido",q:"Ahora _____ más responsabilidades si hubiera demostrado mayor compromiso en aquella etapa.",opts:["tendría","tuviera","tenga","tendrá"],ans:0,ok:"¡Correcto! Aunque la apódosis va primero, sigue siendo condicional simple ('tendría'). El orden de las cláusulas no cambia los tiempos verbales.",fail:"La correcta es 'tendría'. Cuando la apódosis va primero en el condicional mixto, sigue usando condicional simple."},
+  {ctx:"🎵 Una compositora reflexiona sobre su trayectoria.",badge:"Apódosis primero / Orden invertido",q:"Hoy _____ en el primer puesto si hubiera lanzado ese álbum en el momento adecuado.",opts:["estaría","estuviera","esté","estará"],ans:0,ok:"¡Excelente! 'Estaría' en la apódosis antepuesta. En el condicional mixto, el orden no altera los tiempos verbales.",fail:"La respuesta es 'estaría'. El condicional simple en la apódosis no cambia aunque esta vaya al principio de la oración."},
+  {ctx:"📊 Una analista reflexiona sobre una decisión de inversión.",badge:"Apódosis primero / Orden invertido",q:"La empresa _____ en una posición privilegiada ahora si hubiera diversificado sus mercados a tiempo.",opts:["estaría","estuviera","esté","estará"],ans:0,ok:"¡Bien! 'Estaría' en la apódosis antepuesta. Recuerda que el orden no cambia los tiempos del condicional mixto.",fail:"La correcta es 'estaría'. La apódosis del condicional mixto siempre va en condicional simple, independientemente de su posición."},
+  {ctx:"🌍 Un diplomático reflexiona sobre una oportunidad perdida.",badge:"Apódosis primero / Orden invertido",q:"El tratado _____ en vigor si ambos países hubieran cedido en sus posiciones en aquel momento.",opts:["estaría","estuviera","esté","estará"],ans:0,ok:"¡Perfecto! 'Estaría' es el condicional simple. En el orden invertido del condicional mixto, los tiempos verbales no cambian.",fail:"La respuesta es 'estaría'. Aunque la apódosis vaya primero, el condicional mixto mantiene sus tiempos: condicional simple en la apódosis."},
+  {ctx:"🏫 Un rector reflexiona sobre políticas educativas fallidas.",badge:"Apódosis primero / Orden invertido",q:"Los estudiantes _____ mejor preparados hoy si el sistema hubiera apostado por la educación crítica antes.",opts:["estarían","estuvieran","estén","estarán"],ans:0,ok:"¡Correcto! 'Estarían' es el condicional simple. El orden invertido es un recurso estilístico que no modifica los tiempos verbales.",fail:"La correcta es 'estarían'. En el condicional mixto invertido, la apódosis mantiene el condicional simple."},
+  {ctx:"🧑‍⚕️ Un médico reflexiona sobre protocolos no aplicados.",badge:"Apódosis primero / Orden invertido",q:"Muchas vidas _____ salvadas ahora si el protocolo hubiera sido aplicado desde el primer brote.",opts:["habrían sido","serían","fueran","sean"],ans:1,ok:"¡Bien! 'Serían' es el condicional simple. En el condicional mixto, la apódosis expresa la consecuencia presente, no un resultado pasado.",fail:"La respuesta es 'serían'. El condicional mixto usa condicional simple en la apódosis para referirse al presente, no 'habrían sido' que sería el condicional compuesto (tipo 3 puro)."},
+  {ctx:"🏙️ Un urbanista reflexiona sobre el diseño de la ciudad.",badge:"Apódosis primero / Orden invertido",q:"La ciudad _____ más habitable hoy en día si se hubiera planificado con criterios sostenibles desde el principio.",opts:["sería","fuera","sea","será"],ans:0,ok:"¡Excelente! 'Sería' es el condicional simple. La habitabilidad presente es consecuencia de una planificación pasada que no ocurrió así.",fail:"La correcta es 'sería'. El condicional mixto con apódosis al inicio sigue usando condicional simple."},
+  {ctx:"🌾 Una cooperativa analiza prácticas agrícolas pasadas.",badge:"Apódosis primero / Orden invertido",q:"Los agricultores _____ más autónomos ahora si hubieran creado redes de distribución propias antes.",opts:["serían","fueran","sean","serán"],ans:0,ok:"¡Correcto! 'Serían' es el condicional simple. La autonomía presente es la consecuencia imaginada de no haber creado redes propias en el pasado.",fail:"La respuesta es 'serían'. En el condicional mixto, la apódosis siempre lleva condicional simple para la consecuencia presente."},
+  {ctx:"📱 Un emprendedor tecnológico reflexiona sobre su startup.",badge:"Apódosis primero / Orden invertido",q:"La aplicación _____ líder del mercado si el equipo hubiera resuelto los fallos técnicos a tiempo.",opts:["sería","fuera","sea","será"],ans:0,ok:"¡Bien! 'Sería' es el condicional simple. La posición de liderazgo presente es consecuencia de fallos pasados no resueltos.",fail:"La correcta es 'sería'. El condicional simple en la apódosis, aunque esta vaya primero, sigue siendo obligatorio en el condicional mixto."},
+  {ctx:"🎓 Un rector reflexiona sobre el acceso a la educación.",badge:"Apódosis primero / Orden invertido",q:"Más jóvenes _____ en la universidad ahora si el Estado hubiera invertido en becas hace una década.",opts:["estarían","estuvieran","estén","estarán"],ans:0,ok:"¡Perfecto! 'Estarían' es el condicional simple. La presencia de jóvenes universitarios en el presente es consecuencia de no haber invertido en becas.",fail:"La respuesta es 'estarían'. El condicional mixto mantiene el condicional simple en la apódosis, independientemente del orden."},
+  // 61-80: Contextos filosóficos y éticos con variantes mixtas
+  {ctx:"🤔 Un filósofo debate sobre el libre albedrío.",badge:"Condicional mixto / Reflexión ética",q:"Si la sociedad hubiera educado en la empatía desde la infancia, habría menos violencia y la gente _____ más solidaria hoy.",opts:["fuera","sea","sería","será"],ans:2,ok:"¡Correcto! 'Sería' es el condicional simple. La solidaridad presente es consecuencia de una educación pasada que no se dio de esta forma.",fail:"La correcta es 'sería'. El condicional mixto expresa cómo sería el presente si el pasado hubiera sido diferente."},
+  {ctx:"🧠 Una psicóloga reflexiona sobre traumas no tratados.",badge:"Condicional mixto / Reflexión ética",q:"Si se hubiera intervenido en su infancia, él no _____ con esa carga emocional ahora.",opts:["cargaría","cargara","cargue","cargará"],ans:0,ok:"¡Excelente! 'Cargaría' es el condicional simple en forma negativa. La carga emocional presente es consecuencia de no haber intervenido antes.",fail:"La respuesta es 'cargaría'. En el condicional mixto, la apódosis lleva condicional simple, también en oraciones negativas."},
+  {ctx:"🏛️ Una historiadora analiza decisiones del pasado.",badge:"Condicional mixto / Reflexión ética",q:"Si los líderes del siglo pasado hubieran priorizado la paz, el mundo _____ un lugar muy distinto ahora.",opts:["fuera","sería","sea","será"],ans:1,ok:"¡Correcto! 'Sería' es el condicional simple. La situación mundial presente es consecuencia imaginada de decisiones históricas que no se tomaron.",fail:"La correcta es 'sería'. El condicional simple en la apódosis del mixto describe cómo sería el presente."},
+  {ctx:"⚕️ Una bioética debate sobre dilemas médicos.",badge:"Condicional mixto / Reflexión ética",q:"Si el comité de bioética hubiera establecido protocolos más estrictos, muchos abusos _____ imposibles hoy.",opts:["serían","fueran","sean","serán"],ans:0,ok:"¡Bien! 'Serían' es el condicional simple. La imposibilidad de los abusos en el presente es la consecuencia de no haber establecido protocolos."},
+  {ctx:"📚 Un pedagogo reflexiona sobre métodos de enseñanza.",badge:"Condicional mixto / Reflexión ética",q:"Si la escuela hubiera fomentado la curiosidad en lugar de la memorización, los estudiantes _____ más creativos ahora.",opts:["fueran","serían","sean","serán"],ans:1,ok:"¡Perfecto! 'Serían' es el condicional simple. La creatividad presente de los estudiantes es consecuencia imaginada de una pedagogía diferente.",fail:"La respuesta es 'serían'. El condicional mixto con pluscuamperfecto de subjuntivo en la prótasis usa condicional simple en la apódosis."},
+  {ctx:"🌿 Un ecologista reflexiona sobre el cambio climático.",badge:"Condicional mixto / Reflexión ética",q:"Si la humanidad hubiera reducido las emisiones antes, las consecuencias del cambio climático _____ menos graves hoy.",opts:["fueran","serían","sean","serán"],ans:1,ok:"¡Correcto! 'Serían' es el condicional simple. Las consecuencias climáticas del presente son el resultado de no haber actuado antes.",fail:"La correcta es 'serían'. El condicional mixto expresa consecuencias presentes de condiciones pasadas no cumplidas."},
+  {ctx:"💰 Una economista reflexiona sobre políticas de desarrollo.",badge:"Condicional mixto / Reflexión ética",q:"Si los países ricos hubieran condonado la deuda antes, muchas naciones _____ más desarrolladas hoy.",opts:["serían","fueran","sean","serán"],ans:0,ok:"¡Excelente! 'Serían' es el condicional simple. El nivel de desarrollo presente de esas naciones es consecuencia de no haber condonado la deuda.",fail:"La respuesta es 'serían'. La apódosis del condicional mixto lleva condicional simple para referirse al estado presente."},
+  {ctx:"🧬 Un genetista reflexiona sobre investigación genética.",badge:"Condicional mixto / Reflexión ética",q:"Si la investigación genética hubiera avanzado antes sin restricciones éticas, _____ más riesgos ahora para la humanidad.",opts:["habría","habría habido","habría","habría tenido"],ans:1,ok:"¡Correcto! 'Habría habido' parece condicional compuesto, pero aquí se refiere a una consecuencia que sería visible hoy. En el habla real, también se acepta 'existirían' como condicional simple.",fail:"En este caso, la forma más natural es 'existirían más riesgos'. El condicional simple en la apódosis expresa la consecuencia presente."},
+  {ctx:"🎭 Una dramaturga reflexiona sobre la libertad artística.",badge:"Condicional mixto / Reflexión ética",q:"Si la censura no hubiera existido en aquella época, el arte _____ un papel mucho más transformador en la sociedad hoy.",opts:["jugara","jugaría","juegue","jugará"],ans:1,ok:"¡Perfecto! 'Jugaría' es el condicional simple. El papel del arte en el presente es consecuencia de la censura pasada.",fail:"La respuesta es 'jugaría'. En el condicional mixto, la apódosis lleva condicional simple para describir la consecuencia presente."},
+  {ctx:"⚖️ Un abogado reflexiona sobre la justicia y la reparación.",badge:"Condicional mixto / Reflexión ética",q:"Si las víctimas hubieran recibido reparación justa, la sociedad _____ más reconciliada en este momento.",opts:["fuera","sería","sea","será"],ans:1,ok:"¡Correcto! 'Sería' es el condicional simple. La reconciliación social presente es consecuencia de no haber reparado a las víctimas.",fail:"La correcta es 'sería'. El condicional mixto combina condición pasada irreal con consecuencia presente en condicional simple."},
+  // 81-100: Variantes con "en caso de que", "a menos que", contextos complejos
+  {ctx:"🏥 Un comité de salud pública analiza la respuesta a la pandemia.",badge:"Variante: en caso de haber + participio",q:"En caso de haber actuado de forma coordinada desde el principio, la pandemia _____ bajo control mucho antes y hoy la situación _____ diferente.",opts:["estuviera / fuera","estaría / sería","esté / sea","estará / será"],ans:1,ok:"¡Excelente! 'Estaría / sería' son los dos condicionales simples. Cuando hay dos apódosis en el mixto, ambas llevan condicional simple.",fail:"La correcta es 'estaría / sería'. Ambas apódosis del condicional mixto llevan condicional simple cuando se refieren al presente."},
+  {ctx:"🌐 Un analista reflexiona sobre la geopolítica actual.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si la comunidad internacional hubiera reconocido las señales de alerta antes, el conflicto _____ tan grave ahora.",opts:["no sería","no fuera","no sea","no será"],ans:0,ok:"¡Correcto! 'No sería' es el condicional simple en forma negativa. La gravedad presente del conflicto es consecuencia de no haber actuado a tiempo.",fail:"La respuesta es 'no sería'. El condicional mixto en forma negativa sigue usando condicional simple en la apódosis."},
+  {ctx:"💡 Una innovadora reflexiona sobre el ecosistema emprendedor.",badge:"De + infinitivo compuesto",q:"De haberse creado más fondos de inversión para mujeres emprendedoras, el sector tecnológico _____ mucho más diverso ahora.",opts:["fuera","sería","sea","será"],ans:1,ok:"¡Bien! 'Sería' es el condicional simple. La diversidad del sector tecnológico presente es consecuencia de no haber creado esos fondos.",fail:"La correcta es 'sería'. Con 'de + infinitivo compuesto', la apódosis siempre lleva condicional simple."},
+  {ctx:"🏛️ Un juez reflexiona sobre reformas legales.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si la reforma penitenciaria se hubiera aprobado antes, el índice de reincidencia _____ más bajo en la actualidad.",opts:["fuera","sería","sea","será"],ans:1,ok:"¡Perfecto! 'Sería' es el condicional simple. El índice de reincidencia presente es consecuencia de una reforma no aprobada a tiempo.",fail:"La respuesta es 'sería'. En el condicional mixto, la apódosis expresa consecuencias presentes con condicional simple."},
+  {ctx:"🌱 Un ecologista reflexiona sobre energías renovables.",badge:"De + infinitivo compuesto",q:"De haberse apostado antes por las energías renovables, la dependencia del petróleo _____ mínima hoy.",opts:["fuera","sería","sea","será"],ans:1,ok:"¡Correcto! 'Sería' es el condicional simple. La dependencia presente del petróleo es consecuencia de no haber apostado antes por las renovables.",fail:"La correcta es 'sería'. La estructura 'de + infinitivo compuesto' con condicional simple en la apódosis es propia del nivel C1."},
+  {ctx:"🤝 Una mediadora reflexiona sobre un acuerdo de paz fallido.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si las partes hubieran cedido en sus demandas en aquel momento crítico, hoy _____ en un período de posconflicto.",opts:["estaríamos","estuviéramos","estemos","estaremos"],ans:0,ok:"¡Excelente! 'Estaríamos' es el condicional simple en primera persona del plural. Muy natural en contextos de reflexión colectiva.",fail:"La respuesta es 'estaríamos'. El condicional mixto con sujeto implícito colectivo usa condicional simple en la apódosis."},
+  {ctx:"📖 Una escritora reflexiona sobre su primera novela.",badge:"Apódosis primero / Orden invertido",q:"Su obra _____ en los libros de texto hoy si hubiera tenido el valor de publicar sin censurarse.",opts:["estaría","estuviera","esté","estará"],ans:0,ok:"¡Correcto! 'Estaría' es el condicional simple con la apódosis al inicio. El orden invertido no cambia los tiempos verbales.",fail:"La correcta es 'estaría'. La apódosis del condicional mixto, ya sea al inicio o al final, siempre lleva condicional simple."},
+  {ctx:"🧪 Un científico reflexiona sobre ética en la investigación.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si los protocolos éticos hubieran sido más rigurosos, ese escándalo no _____ hoy en los medios.",opts:["estaría","estuviera","esté","estará"],ans:0,ok:"¡Bien! 'Estaría' en forma negativa. El escándalo presente en los medios es consecuencia de protocolos éticos insuficientes en el pasado.",fail:"La respuesta es 'estaría'. El condicional simple también funciona en contextos negativos en la apódosis del mixto."},
+  {ctx:"🌍 Una activista reflexiona sobre la cooperación internacional.",badge:"De + infinitivo compuesto",q:"De haberse firmado acuerdos climáticos más ambiciosos en los años noventa, ya _____ soluciones más eficaces disponibles hoy.",opts:["habría","existirían","hubiera","existan"],ans:1,ok:"¡Perfecto! 'Existirían' es el condicional simple. La disponibilidad de soluciones en el presente es consecuencia de acuerdos pasados más débiles.",fail:"La correcta es 'existirían'. En el condicional mixto, la apódosis usa condicional simple para las consecuencias presentes."},
+  {ctx:"⚖️ Un filósofo del derecho reflexiona sobre la justicia distributiva.",badge:"Si + pluscuamp. subj. / Condicional simple",q:"Si la riqueza se hubiera distribuido de forma más equitativa desde el inicio del capitalismo, la brecha social _____ tan pronunciada ahora.",opts:["no sería","no fuera","no sea","no será"],ans:0,ok:"¡Correcto! 'No sería' es el condicional simple en forma negativa. La brecha social presente es consecuencia de una distribución inequitativa histórica.",fail:"La respuesta es 'no sería'. El condicional mixto en negativo sigue usando condicional simple en la apódosis para expresar consecuencias en el presente."}
+];
+
+const MESSAGES = [
+  "¡Lo has hecho genial! La reflexión ética y los condicionales mixtos son una combinación perfecta para tu nivel C1. ¡Sigue así! ♥",
+  "¡Estupendo trabajo! Pensar en cómo el pasado moldea el presente es filosofía pura... y gramática de nivel C1. ¡Me encanta tu esfuerzo! ♥",
+  "¡Fantástico! Los condicionales mixtos son uno de los retos más elegantes del español avanzado. ¡Cada error es un paso hacia la maestría! ♥",
+  "¡Qué bien lo has hecho! Reflexionar sobre dilemas morales en español C1 demuestra una competencia comunicativa muy alta. ¡Orgullosa de ti! ♥",
+  "¡Impresionante! Has navegado por escenarios éticos complejos con condicionales mixtos. ¡Eso es español de verdad! ♥"
+];
+
+let questions = [], current = 0, score = 0, answered = false;
+
+function shuffle(arr){return arr.slice().sort(()=>Math.random()-.5)}
+
+function startGame(){
+  questions = shuffle(BANK).slice(0,10);
+  current = 0; score = 0; answered = false;
+  document.getElementById('screen-start').classList.remove('active');
+  document.getElementById('screen-game').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  answered = false;
+  const q = questions[current];
+  document.getElementById('progress-bar').style.width = ((current/10)*100)+'%';
+  document.getElementById('q-counter').textContent = `Pregunta ${current+1} de 10`;
+  document.getElementById('score-display').textContent = `✓ ${score}`;
+  document.getElementById('context-line').textContent = q.ctx;
+  document.getElementById('grammar-badge').textContent = q.badge;
+  document.getElementById('question-text').innerHTML = q.q.replace('_____','<span class="blank">_____</span>');
+  const fb = document.getElementById('feedback-card');
+  fb.style.display='none'; fb.className='feedback-card';
+  document.getElementById('next-btn').style.display='none';
+  const opts = document.getElementById('options-container');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b = document.createElement('button');
+    b.className='opt-btn'; b.textContent=o;
+    b.onclick=()=>selectOption(i);
+    opts.appendChild(b);
+  });
+}
+
+function selectOption(i){
+  if(answered) return;
+  answered = true;
+  const q = questions[current];
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach(b=>b.disabled=true);
+  const fb = document.getElementById('feedback-card');
+  if(i===q.ans){
+    score++;
+    btns[i].classList.add('correct');
+    fb.className='feedback-card correct'; fb.style.display='block';
+    document.getElementById('feedback-title').textContent='✅ ¡Correcto!';
+    document.getElementById('feedback-text').textContent=q.ok;
+  } else {
+    btns[i].classList.add('wrong');
+    btns[q.ans].classList.add('correct');
+    fb.className='feedback-card wrong'; fb.style.display='block';
+    document.getElementById('feedback-title').textContent='❌ No exactamente';
+    document.getElementById('feedback-text').textContent=q.fail;
+  }
+  document.getElementById('score-display').textContent=`✓ ${score}`;
+  document.getElementById('next-btn').style.display='inline-block';
+}
+
+function nextQuestion(){
+  current++;
+  if(current>=10) showEnd();
+  else renderQuestion();
+}
+
+function showEnd(){
+  document.getElementById('screen-game').classList.remove('active');
+  document.getElementById('screen-end').classList.add('active');
+  document.getElementById('final-score').textContent=`${score} / 10`;
+  const pct = Math.round((score/10)*100);
+  document.getElementById('final-pct').textContent=`${pct}% de aciertos`;
+  document.getElementById('teacher-msg').textContent=MESSAGES[Math.floor(Math.random()*MESSAGES.length)];
+  launchCelebration();
+}
+
+function restartGame(){
+  document.getElementById('screen-end').classList.remove('active');
+  stopCelebration();
+  startGame();
+  document.getElementById('screen-game').classList.add('active');
+}
+
+// CONFETTI
+let confettiInterval, balloonTimeout;
+function launchCelebration(){
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx2 = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const pieces = Array.from({length:120},()=>({
+    x:Math.random()*canvas.width, y:Math.random()*canvas.height-canvas.height,
+    r:Math.random()*7+3, d:Math.random()*120+40,
+    color:['#3b6d11','#d4537e','#c0dd97','#993556','#fdf8f0','#f9c74f'][Math.floor(Math.random()*6)],
+    tilt:Math.random()*10-10, speed:Math.random()*3+1
+  }));
+  let ang=0;
+  function draw(){
+    ctx2.clearRect(0,0,canvas.width,canvas.height);
+    ang+=0.01;
+    pieces.forEach(p=>{
+      ctx2.beginPath();
+      ctx2.lineWidth=p.r/2;
+      ctx2.strokeStyle=p.color;
+      ctx2.moveTo(p.x+p.tilt+p.r/4,p.y);
+      ctx2.lineTo(p.x+p.tilt,p.y+p.tilt+p.r/4);
+      ctx2.stroke();
+      p.y+=p.speed;
+      p.tilt=Math.sin(ang+p.d)*12;
+      if(p.y>canvas.height){p.y=-10;p.x=Math.random()*canvas.width;}
+    });
+  }
+  confettiInterval = setInterval(draw,16);
+
+  // Balloons
+  const bc = document.createElement('div');
+  bc.className='balloon-container'; bc.id='balloon-container';
+  document.body.appendChild(bc);
+  const emojis=['🎈','🎊','🎉','💚','🌟','💖'];
+  for(let i=0;i<14;i++){
+    const b=document.createElement('div');
+    b.className='balloon'; b.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    b.style.left=Math.random()*95+'%';
+    b.style.animationDelay=(Math.random()*3)+'s';
+    b.style.fontSize=(1.8+Math.random()*1.5)+'rem';
+    bc.appendChild(b);
+  }
+  balloonTimeout=setTimeout(()=>{if(bc.parentNode)bc.remove();},5000);
+}
+
+function stopCelebration(){
+  clearInterval(confettiInterval);
+  clearTimeout(balloonTimeout);
+  const canvas=document.getElementById('confetti-canvas');
+  const ctx2=canvas.getContext('2d');
+  ctx2.clearRect(0,0,canvas.width,canvas.height);
+  const bc=document.getElementById('balloon-container');
+  if(bc)bc.remove();
+}
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"5070e21320304a1ba2b0a42ce9682840","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#fdf8f0;
+  --green:#3b6d11;
+  --green-light:#c0dd97;
+  --green-xlight:#eaf3de;
+  --pink:#d4537e;
+  --pink-dark:#993556;
+  --text:#2d2d2d;
+}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+.header{background:var(--green);color:white;padding:18px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid white;flex-shrink:0}
+.brand-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800}
+.brand-sub{font-size:0.78rem;opacity:0.85;margin-top:2px}
+.badges{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:5px 13px;font-size:0.75rem;font-weight:700}
+.badge.pink{background:var(--pink);border-color:var(--pink-dark)}
+.screen{display:none;padding:24px 16px;max-width:740px;margin:0 auto}
+.screen.active{display:block}
+.start-card{background:white;border-radius:20px;padding:36px 32px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.10);border:2px solid var(--green-light);margin-top:32px}
+.start-card h1{font-family:'Playfair Display',serif;font-size:1.85rem;color:var(--green);margin-bottom:10px}
+.start-card .subtitle{color:#666;font-size:0.97rem;margin-bottom:24px;line-height:1.7}
+.info-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.pill{background:var(--green-xlight);color:var(--green);border-radius:20px;padding:7px 16px;font-size:0.82rem;font-weight:700}
+.pill.p2{background:#fde8ef;color:var(--pink-dark)}
+.btn{display:inline-block;background:var(--green);color:white;border:none;border-radius:30px;padding:14px 36px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s}
+.btn:hover{background:#2d5209;transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,109,17,0.25)}
+.btn.pink-btn{background:var(--pink)}
+.btn.pink-btn:hover{background:var(--pink-dark)}
+.progress-bar-wrap{background:var(--green-xlight);border-radius:10px;height:10px;margin-bottom:6px}
+.progress-bar{background:var(--green);height:10px;border-radius:10px;transition:width .4s}
+.progress-info{display:flex;justify-content:space-between;font-size:0.8rem;color:#666;margin-bottom:18px}
+.score-badge{background:var(--green);color:white;border-radius:20px;padding:4px 14px;font-weight:700;font-size:0.85rem}
+.question-card{background:white;border-radius:20px;padding:28px 24px;box-shadow:0 4px 20px rgba(59,109,17,0.09);border:2px solid var(--green-light);margin-bottom:18px}
+.context-line{font-size:0.85rem;color:#888;margin-bottom:12px;font-style:italic}
+.grammar-badge{display:inline-block;background:var(--green-xlight);color:var(--green);border-radius:12px;padding:4px 12px;font-size:0.75rem;font-weight:700;margin-bottom:14px}
+.question-text{font-size:1.05rem;line-height:1.75;color:var(--text);font-weight:600;margin-bottom:22px}
+.vf-buttons{display:flex;gap:14px;justify-content:center;margin-top:8px}
+.vf-btn{flex:1;max-width:180px;padding:16px 10px;border-radius:16px;border:2.5px solid;font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:6px}
+.vf-btn.verdadero{background:var(--green-xlight);border-color:var(--green);color:var(--green)}
+.vf-btn.falso{background:#fde8ef;border-color:var(--pink);color:var(--pink-dark)}
+.vf-btn:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,0.12)}
+.vf-btn:disabled{cursor:default;opacity:0.7}
+.vf-btn.selected-correct{background:#d4f0b0;border-color:#3b6d11;color:#1e4200;opacity:1}
+.vf-btn.selected-wrong{background:#fbb8cf;border-color:var(--pink-dark);color:var(--pink-dark);opacity:1}
+.vf-btn .vf-icon{font-size:1.8rem}
+.feedback-card{border-radius:16px;padding:20px 22px;margin-top:16px;display:none;animation:fadeIn .3s}
+.feedback-card.correct{background:#e6f7d9;border:2px solid #a0d470}
+.feedback-card.wrong{background:#fde8ef;border:2px solid var(--pink)}
+.feedback-title{font-weight:800;font-size:1rem;margin-bottom:8px}
+.feedback-section{margin-top:10px}
+.feedback-section-title{font-size:0.8rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.feedback-section-title.pink{color:var(--pink-dark)}
+.feedback-text{font-size:0.9rem;line-height:1.65;color:#444}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.next-btn{display:none;margin-top:16px}
+.end-card{background:white;border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.12);border:2px solid var(--green-light);margin-top:24px}
+.teacher-card{background:var(--green);color:white;border-radius:16px;padding:22px;margin:20px 0;display:flex;align-items:center;gap:16px;text-align:left}
+.teacher-avatar-big{width:68px;height:68px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:36px;border:3px solid white;flex-shrink:0}
+.score-display{font-family:'Playfair Display',serif;font-size:2.8rem;color:var(--green);font-weight:800;margin:10px 0}
+.score-pct{font-size:1.1rem;color:var(--pink);font-weight:700;margin-bottom:20px}
+.grammar-note{background:var(--green-xlight);border-radius:16px;padding:22px;text-align:left;margin:20px 0}
+.grammar-note h3{font-family:'Playfair Display',serif;color:var(--green);font-size:1.1rem;margin-bottom:14px}
+.grammar-note ul{list-style:none;padding:0}
+.grammar-note li{padding:8px 0;border-bottom:1px solid #d0e8b0;font-size:0.88rem;line-height:1.65;color:#333}
+.grammar-note li:last-child{border-bottom:none}
+.grammar-note li::before{content:"✦ ";color:var(--green);font-weight:800}
+.note-example{display:block;background:white;border-radius:8px;padding:7px 12px;margin-top:6px;font-style:italic;color:#555;font-size:0.83rem;border-left:3px solid var(--green)}
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+.balloon{position:fixed;font-size:2.5rem;pointer-events:none;z-index:997;animation:riseUp 4s ease-in forwards}
+@keyframes riseUp{to{transform:translateY(-110vh) rotate(15deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="avatar">👩‍🏫</div>
+  <div>
+    <div class="brand-name">Pao Spanish Teacher</div>
+    <div class="brand-sub">Español para adultos · Nivel avanzado</div>
+  </div>
+  <div class="badges">
+    <span class="badge">C1</span>
+    <span class="badge pink">Relativos con Subjuntivo</span>
+  </div>
+</div>
+
+<div class="screen active" id="screen-start">
+  <div class="start-card">
+    <div style="font-size:3rem;margin-bottom:12px">📰🔍</div>
+    <h1>Medios y Desinformación</h1>
+    <p class="subtitle">¿Verdadero o Falso? Analiza afirmaciones sobre medios de comunicación y desinformación. Deberás evaluar tanto el <strong>contenido</strong> como el uso correcto de las <strong>oraciones de relativo con subjuntivo o indicativo</strong>. ¡Doble desafío! ⚡</p>
+    <div class="info-pills">
+      <span class="pill">📚 Nivel C1</span>
+      <span class="pill p2">🎯 Relativas + subjuntivo/indicativo</span>
+      <span class="pill">🔀 10 preguntas aleatorias</span>
+      <span class="pill p2">✅❌ Verdadero o Falso</span>
+    </div>
+    <button class="btn" onclick="startGame()">¡Empezar juego! →</button>
+  </div>
+</div>
+
+<div class="screen" id="screen-game">
+  <div style="margin-top:20px">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="progress-info">
+      <span id="q-counter">Pregunta 1 de 10</span>
+      <span class="score-badge" id="score-display">✓ 0</span>
+    </div>
+  </div>
+  <div class="question-card">
+    <div class="context-line" id="context-line"></div>
+    <div class="grammar-badge" id="grammar-badge"></div>
+    <div class="question-text" id="question-text"></div>
+    <div class="vf-buttons">
+      <button class="vf-btn verdadero" id="btn-v" onclick="selectAnswer(true)">
+        <span class="vf-icon">✅</span>VERDADERO
+      </button>
+      <button class="vf-btn falso" id="btn-f" onclick="selectAnswer(false)">
+        <span class="vf-icon">❌</span>FALSO
+      </button>
+    </div>
+    <div class="feedback-card" id="feedback-card">
+      <div class="feedback-title" id="feedback-title"></div>
+      <div class="feedback-section">
+        <div class="feedback-section-title">📰 Contenido</div>
+        <div class="feedback-text" id="feedback-content"></div>
+      </div>
+      <div class="feedback-section" style="margin-top:10px">
+        <div class="feedback-section-title pink">🧠 Gramática</div>
+        <div class="feedback-text" id="feedback-grammar"></div>
+      </div>
+    </div>
+  </div>
+  <button class="btn next-btn" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+</div>
+
+<div class="screen" id="screen-end">
+  <div class="end-card">
+    <div style="font-size:2.5rem">🎆</div>
+    <h2 style="font-family:'Playfair Display',serif;color:var(--green);font-size:1.7rem;margin:10px 0">¡Juego completado!</h2>
+    <div class="score-display" id="final-score"></div>
+    <div class="score-pct" id="final-pct"></div>
+    <div class="teacher-card">
+      <div class="teacher-avatar-big">👩‍🏫</div>
+      <div>
+        <div style="font-weight:800;font-size:1rem;margin-bottom:6px">Pao Spanish Teacher</div>
+        <div style="font-size:0.95rem;line-height:1.6;font-weight:600" id="teacher-msg"></div>
+      </div>
+    </div>
+    <div class="grammar-note">
+      <h3>📖 Recuerda esto: Relativas con Subjuntivo en C1</h3>
+      <ul>
+        <li>Cuando el antecedente de la oración de relativo es <strong>desconocido, inexistente o hipotético</strong>, el verbo va en <strong>subjuntivo</strong>.
+          <span class="note-example">Busco un periodista que sepa verificar fuentes. (No sé si existe.)</span>
+        </li>
+        <li>Cuando el antecedente es <strong>conocido y específico</strong>, el verbo va en <strong>indicativo</strong>.
+          <span class="note-example">Conozco un periodista que sabe verificar fuentes. (Existe y lo conozco.)</span>
+        </li>
+        <li>Con negación en la oración principal, el antecedente se vuelve inexistente y exige <strong>subjuntivo</strong>.
+          <span class="note-example">No hay ningún medio que publique solo la verdad absoluta.</span>
+        </li>
+        <li>Los pronombres <em>cualquiera que, quien, donde, como, cuando</em> con valor generalizador llevan <strong>subjuntivo</strong>.
+          <span class="note-example">Cualquiera que consuma noticias sin contrastarlas es vulnerable a la desinformación.</span>
+        </li>
+        <li>En oraciones de relativo con preposición, el esquema es: <em>preposición + que/quien/el cual + subjuntivo/indicativo</em> según la naturaleza del antecedente.
+          <span class="note-example">El algoritmo con el que trabajamos sesgue los resultados. ✗ → sesgara ✓ (hipotético)</span>
+        </li>
+        <li>En contextos de búsqueda, necesidad o deseo, aunque el antecedente no esté negado, si es desconocido va en <strong>subjuntivo</strong>.
+          <span class="note-example">Necesitamos una plataforma que garantice la privacidad de los datos.</span>
+        </li>
+        <li>El error más frecuente en C1 es usar <strong>indicativo con antecedentes hipotéticos</strong> por influencia de la lengua materna.
+          <span class="note-example">✗ Queremos un editor que tiene experiencia internacional. ✓ ...que tenga experiencia.</span>
+        </li>
+      </ul>
+    </div>
+    <button class="btn pink-btn" onclick="restartGame()">🔁 Jugar otra vez</button>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+const BANK = [
+  // BLOQUE 1: Antecedente desconocido/inexistente → subjuntivo (VERDADERO)
+  {ctx:"📡 Redacción de un periódico digital busca nuevo personal.",badge:"Antecedente desconocido → subjuntivo",q:"«Necesitamos un redactor que tenga experiencia en verificación de noticias y que conozca herramientas de fact-checking.» — Esta oración usa el subjuntivo correctamente porque el redactor buscado aún no ha sido identificado.",ans:true,content:"La oración describe una búsqueda activa de alguien cuya identidad se desconoce, por lo que el antecedente es indefinido.",grammar:"Con antecedente desconocido o no identificado, el verbo de la oración de relativo va obligatoriamente en subjuntivo: 'que tenga', 'que conozca'. Correcto."},
+  {ctx:"🔍 Una ONG de medios libres define su perfil ideal de candidato.",badge:"Antecedente desconocido → subjuntivo",q:"«Buscamos periodistas que sean capaces de trabajar bajo presión y que defiendan la libertad de prensa.» — El uso de subjuntivo en esta oración es incorrecto porque los periodistas existen y trabajan en el sector.",ans:false,content:"Que existan periodistas en el mundo no convierte el antecedente en conocido o específico. La ONG no ha identificado a nadie en concreto.",grammar:"El subjuntivo 'sean', 'defiendan' es correcto. El antecedente es indefinido (no sabemos quiénes son), independientemente de que tales personas existan en general."},
+  {ctx:"📺 Una cadena de televisión publica una oferta de empleo.",badge:"Antecedente desconocido → subjuntivo",q:"«Queremos un presentador que transmita credibilidad y que no polarice al público.» — Esta oración usa el subjuntivo de forma incorrecta; debería decir 'que transmite' y 'que no polariza'.",ans:false,content:"La cadena no ha contratado a nadie todavía, por lo que el antecedente es desconocido y el subjuntivo es obligatorio.",grammar:"'Que transmita', 'que no polarice' son correctos. El indicativo ('transmite', 'polariza') implicaría que el presentador ya existe y es conocido."},
+  {ctx:"🌐 Una startup tecnológica busca colaboradores para su plataforma de noticias.",badge:"Antecedente desconocido → subjuntivo",q:"«Necesitamos programadores que entiendan el impacto social de los algoritmos y que quieran construir herramientas éticas.» — El subjuntivo aquí es correcto.",ans:true,content:"La empresa busca perfiles sin identificar aún, lo que hace que el antecedente sea indefinido.",grammar:"'Que entiendan', 'que quieran' están en subjuntivo correctamente. El antecedente desconocido exige subjuntivo en la oración de relativo."},
+  {ctx:"📰 Un editor jefe describe el tipo de contenido que necesita su web.",badge:"Antecedente desconocido → subjuntivo",q:"«Publicamos solo artículos que demuestren rigor periodístico y que incluyan fuentes verificadas.» — El subjuntivo 'demuestren' e 'incluyan' es incorrecto; debería ir en indicativo.",ans:false,content:"La política editorial descrita aplica a cualquier artículo futuro o presente no específico, lo que convierte el antecedente en indefinido.",grammar:"Con un antecedente genérico o no específico, el subjuntivo es correcto. 'Que demuestren', 'que incluyan' expresan una condición general, no una afirmación sobre artículos concretos identificados."},
+  // BLOQUE 2: Antecedente conocido → indicativo (VERDADERO o FALSO)
+  {ctx:"🎙️ Una productora habla de su equipo actual.",badge:"Antecedente conocido → indicativo",q:"«Tenemos un equipo de investigación que trabaja con fuentes primarias y que publica solo después de triple verificación.» — El uso del indicativo es correcto porque el equipo es conocido y específico.",ans:true,content:"El equipo ya existe y es conocido por la productora. El antecedente es específico y determinado.",grammar:"'Que trabaja', 'que publica' van en indicativo porque el antecedente ('un equipo') es conocido y real. El indicativo describe hechos sobre él."},
+  {ctx:"🏢 Un director de comunicación habla sobre la agencia que ya contrató.",badge:"Antecedente conocido → indicativo",q:"«Hemos contratado una agencia que se especialice en comunicación de crisis y que maneje redes sociales.» — Esta oración es incorrecta: debería decir 'que se especializa' y 'que maneja'.",ans:true,content:"La agencia ya fue contratada, es conocida y específica. No se trata de una búsqueda, sino de una realidad.",grammar:"Con antecedente conocido y específico, el verbo de la relativa debe ir en indicativo. 'Se especialice' y 'maneje' (subjuntivo) son incorrectos aquí. Lo correcto: 'que se especializa', 'que maneja'."},
+  {ctx:"📻 Una locutora describe el programa que ya presenta.",badge:"Antecedente conocido → indicativo",q:"«Conduzco un programa que analice la desinformación desde una perspectiva crítica.» — El subjuntivo 'analice' es correcto porque la locutora habla de algo hipotético.",ans:false,content:"La locutora ya conduce ese programa; no es hipotético ni desconocido. El programa existe y es específico.",grammar:"El indicativo es obligatorio aquí: 'que analiza'. El subjuntivo 'analice' implicaría que el programa no está identificado o no existe aún, lo cual contradice el verbo 'conduzco'."},
+  {ctx:"💻 Un bloguero describe la herramienta que usa actualmente.",badge:"Antecedente conocido → indicativo",q:"«Uso una aplicación que detecta noticias falsas en tiempo real y que me manda alertas automáticas.» — El indicativo es correcto en esta oración.",ans:true,content:"La aplicación ya existe y el bloguero la usa. El antecedente es conocido y determinado.",grammar:"'Que detecta', 'que manda' van en indicativo correctamente. El bloguero describe algo real y específico, no algo que busca o desea."},
+  {ctx:"🗞️ Un corresponsal habla del editor con quien trabaja.",badge:"Antecedente conocido → indicativo",q:"«Trabajo con un editor que comprende la complejidad del periodismo de guerra y que respete siempre mis decisiones editoriales.» — Esta oración mezcla incorrectamente indicativo y subjuntivo.",ans:true,content:"El editor es conocido y real, por lo que ambos verbos deberían ir en indicativo.",grammar:"'Que comprende' (indicativo) es correcto; 'que respete' (subjuntivo) es incorrecto. Con antecedente conocido, los dos verbos deben ir en indicativo: 'que comprende' y 'que respeta'."},
+  // BLOQUE 3: Negación → subjuntivo obligatorio
+  {ctx:"⚠️ Un investigador de medios describe la situación actual de la prensa.",badge:"Negación → subjuntivo",q:"«No existe ningún medio de comunicación que sea completamente imparcial.» — El subjuntivo 'sea' es correcto porque la negación hace que el antecedente sea inexistente.",ans:true,content:"La negación 'no existe ningún medio' implica que el antecedente es inexistente, lo que exige subjuntivo.",grammar:"Con negación que implica inexistencia del antecedente, el subjuntivo es obligatorio. 'Que sea' es correcto; 'que es' sería incorrecto."},
+  {ctx:"🔎 Una profesora de periodismo explica a sus estudiantes.",badge:"Negación → subjuntivo",q:"«No hay ningún algoritmo que garantiza la neutralidad informativa.» — Esta oración es gramaticalmente correcta.",ans:false,content:"El contenido es acertado (ningún algoritmo garantiza neutralidad total), pero la gramática es incorrecta.",grammar:"Tras 'no hay ningún', el antecedente es inexistente y exige subjuntivo: 'que garantice', no 'que garantiza' (indicativo)."},
+  {ctx:"📊 Un analista de redes sociales hace una afirmación sobre plataformas digitales.",badge:"Negación → subjuntivo",q:"«No conozco ninguna red social que no privilegie el contenido sensacionalista sobre el informativo.» — El subjuntivo 'privilegie' es incorrecto porque el analista habla de algo que conoce.",ans:false,content:"El analista afirma no conocer tal red social, lo que implica inexistencia desde su perspectiva.",grammar:"'No conozco ninguna' implica antecedente inexistente o desconocido, por lo que el subjuntivo 'privilegie' es correcto. La afirmación es FALSA por la justificación gramatical ofrecida."},
+  {ctx:"📱 Una activista digital hace una declaración sobre la privacidad en línea.",badge:"Negación → subjuntivo",q:"«No encontrarás una plataforma que proteja tus datos sin condiciones ocultas.» — Esta oración usa correctamente el subjuntivo.",ans:true,content:"La activista generaliza sobre todas las plataformas, implicando que no existe ninguna que cumpla esa condición.",grammar:"'Que proteja' es subjuntivo correcto. La negación implícita ('no encontrarás ninguna que...') hace el antecedente inexistente o hipotético."},
+  {ctx:"🧑‍💻 Un experto en ciberseguridad comenta sobre herramientas actuales.",badge:"Negación → subjuntivo",q:"«Aún no hemos desarrollado ninguna herramienta que elimine por completo el rastro digital de un usuario.» — El subjuntivo 'elimine' es correcto.",ans:true,content:"La herramienta descrita no existe todavía, lo que hace el antecedente inexistente.",grammar:"Con 'no hemos desarrollado ninguna', el antecedente es inexistente. El subjuntivo 'elimine' es obligatorio y correcto."},
+  // BLOQUE 4: Cualquiera que / quien / donde con valor generalizador
+  {ctx:"📢 Un formador en alfabetización mediática habla sobre el consumo de noticias.",badge:"Cualquiera que / quien → subjuntivo",q:"«Cualquiera que consuma información sin verificarla es potencialmente víctima de la desinformación.» — El subjuntivo 'consuma' es correcto.",ans:true,content:"La afirmación es válida y relevante sobre alfabetización mediática.",grammar:"'Cualquiera que' con valor generalizador exige siempre subjuntivo. 'Consuma' es correcto."},
+  {ctx:"🌍 Un periodista internacional hace una reflexión sobre su profesión.",badge:"Cualquiera que / quien → subjuntivo",q:"«Quien trabaja en zonas de conflicto sin seguir protocolos de seguridad pone en riesgo su vida y la de sus fuentes.» — Esta oración es correcta gramaticalmente.",ans:false,content:"El contenido es verdadero, pero la gramática es incorrecta.",grammar:"'Quien' con valor generalizador exige subjuntivo: 'quien trabaje'. El indicativo 'trabaja' lo convertiría en una referencia a alguien concreto y conocido."},
+  {ctx:"🏛️ Un político debate sobre la regulación de las redes sociales.",badge:"Cualquiera que / quien → subjuntivo",q:"«Cualquiera que difunda noticias falsas de forma deliberada debería ser responsable legalmente.» — El subjuntivo 'difunda' es correcto en esta oración.",ans:true,content:"La afirmación es coherente con el debate sobre regulación de desinformación.",grammar:"'Cualquiera que' con valor generalizador exige subjuntivo. 'Difunda' es correcto; indicativo aquí convertiría la oración en una referencia a alguien específico."},
+  {ctx:"📡 Una editora reflexiona sobre cómo se consume la información hoy.",badge:"Cualquiera que / quien → subjuntivo",q:"«Donde hay un teléfono con conexión, hay acceso a desinformación. Cualquiera que tiene un dispositivo puede compartir noticias sin verificar.» — Esta oración es gramaticalmente correcta.",ans:false,content:"El contenido refleja una realidad del mundo digital actual.",grammar:"'Cualquiera que tiene' usa indicativo, que es incorrecto. Con valor generalizador, debe ir en subjuntivo: 'cualquiera que tenga'."},
+  {ctx:"🔗 Una investigadora describe los riesgos del periodismo ciudadano.",badge:"Cualquiera que / quien → subjuntivo",q:"«Quien publique información sin contrastarla contribuye a la proliferación de bulos, independientemente de sus intenciones.» — Esta oración es correcta.",ans:true,content:"El riesgo del periodismo ciudadano sin verificación es un tema central en los estudios de medios actuales.",grammar:"'Quien publique' con valor generalizador usa subjuntivo correctamente. La oración es gramaticalmente impecable."},
+  // BLOQUE 5: Relativas con preposición + subjuntivo/indicativo
+  {ctx:"🧑‍⚖️ Un legislador propone una ley sobre plataformas digitales.",badge:"Relativa con preposición",q:"«Necesitamos una regulación con la que podamos controlar la difusión de contenidos dañinos.» — El subjuntivo 'podamos' es correcto.",ans:true,content:"La regulación es un objetivo no conseguido aún, lo que hace el antecedente hipotético.",grammar:"'Con la que podamos' usa subjuntivo correctamente. La regulación buscada no existe todavía, por lo que el antecedente es indefinido."},
+  {ctx:"💼 Una directora de comunicación habla de las herramientas que ya usa su equipo.",badge:"Relativa con preposición",q:"«Contamos con una plataforma en la que almacenamos todos los datos de nuestras fuentes de forma segura.» — El indicativo 'almacenamos' es correcto.",ans:true,content:"La plataforma ya existe y es usada por el equipo.",grammar:"'En la que almacenamos' usa indicativo correctamente porque el antecedente (la plataforma) es conocido y real."},
+  {ctx:"🔍 Un experto describe el tipo de algoritmo ideal para combatir la desinformación.",badge:"Relativa con preposición",q:"«Hacemos falta algoritmos con los que se pueda detectar el sesgo informativo de forma automática.» — Esta oración tiene un error gramatical.",ans:false,content:"La necesidad de mejores algoritmos para detectar el sesgo es real y relevante.",grammar:"La oración es gramaticalmente correcta. 'Con los que se pueda' usa subjuntivo porque los algoritmos descritos son hipotéticos (aún no existen con esas capacidades). No hay error."},
+  {ctx:"📻 Un oyente comenta sobre el programa de radio que escucha cada semana.",badge:"Relativa con preposición",q:"«Es el único programa con el que aprenda algo nuevo sobre periodismo de datos cada semana.» — El subjuntivo 'aprenda' es incorrecto.",ans:true,content:"El programa es conocido y específico, escuchado regularmente por el oyente.",grammar:"Con antecedente conocido y específico, el verbo debe ir en indicativo: 'con el que aprendo'. El subjuntivo 'aprenda' es incorrecto aquí."},
+  {ctx:"🌐 Una analista habla sobre la red de contactos que desea construir.",badge:"Relativa con preposición",q:"«Quiero crear una red de periodistas con la que podamos compartir información de forma segura y sin intermediarios.» — El subjuntivo 'podamos' es correcto.",ans:true,content:"La red de periodistas es un proyecto futuro, no una realidad existente.",grammar:"'Con la que podamos' usa subjuntivo correctamente. El antecedente (la red) es hipotético porque aún no existe."},
+  // BLOQUE 6: Contextos de búsqueda, necesidad, deseo → subjuntivo
+  {ctx:"🎓 Una universidad diseña su nuevo plan de estudios en periodismo.",badge:"Contexto de necesidad/deseo → subjuntivo",q:"«El nuevo plan de estudios necesita incluir asignaturas que preparen a los estudiantes para combatir la desinformación.» — El subjuntivo 'preparen' es correcto.",ans:true,content:"Las asignaturas son futuras e hipotéticas; el plan está siendo diseñado.",grammar:"En contextos de necesidad con antecedente no específico, el subjuntivo es obligatorio. 'Que preparen' es correcto."},
+  {ctx:"📲 Una empresa tecnológica desarrolla su estrategia de contenidos.",badge:"Contexto de necesidad/deseo → subjuntivo",q:"«Queremos crear contenidos que generan confianza en nuestra marca y que educan al usuario sobre privacidad digital.» — Esta oración es gramaticalmente correcta.",ans:false,content:"El objetivo de generar confianza y educar al usuario es legítimo.",grammar:"'Que generan', 'que educan' usan indicativo, pero el antecedente (contenidos futuros, no creados aún) exige subjuntivo: 'que generen', 'que eduquen'."},
+  {ctx:"🏢 Una agencia de comunicación busca nuevos clientes.",badge:"Contexto de necesidad/deseo → subjuntivo",q:"«Buscamos empresas que quieran mejorar su reputación digital y que estén dispuestas a apostar por la transparencia.» — El subjuntivo es correcto en esta oración.",ans:true,content:"La agencia busca clientes sin identificar todavía, lo que hace el antecedente indefinido.",grammar:"'Que quieran', 'que estén dispuestas' usan subjuntivo correctamente. El antecedente es desconocido porque se trata de una búsqueda activa."},
+  {ctx:"🌍 Un foro internacional debate sobre el futuro del periodismo.",badge:"Contexto de necesidad/deseo → subjuntivo",q:"«El mundo necesita medios de comunicación que priorizan el interés público sobre el beneficio económico.» — Esta afirmación es gramaticalmente correcta.",ans:false,content:"La afirmación sobre la necesidad de medios que prioricen el bien público es un debate legítimo.",grammar:"'Que priorizan' usa indicativo, pero el antecedente (medios ideales, no específicos) exige subjuntivo: 'que prioricen'. Error gramatical."},
+  {ctx:"💡 Una emprendedora describe su visión para una nueva plataforma de noticias.",badge:"Contexto de necesidad/deseo → subjuntivo",q:"«Sueño con crear una plataforma que ofrezca noticias verificadas, que sea accesible para todos y que no dependa de la publicidad.» — Esta oración usa el subjuntivo correctamente.",ans:true,content:"La plataforma es un sueño, un proyecto no realizado aún, por lo que el antecedente es hipotético.",grammar:"'Que ofrezca', 'que sea', 'que no dependa' usan subjuntivo correctamente. La plataforma soñada no existe, por lo que el antecedente es indefinido."},
+  // BLOQUE 7: Casos complejos y errores frecuentes en C1
+  {ctx:"📊 Un investigador presenta sus conclusiones sobre consumo de medios.",badge:"Caso complejo / Error frecuente C1",q:"«Los ciudadanos que consumen solo un medio de comunicación tienen una visión sesgada de la realidad.» — El indicativo 'consumen' es incorrecto; debería ir en subjuntivo.",ans:false,content:"La investigación sobre cámaras de eco y visión sesgada está ampliamente documentada.",grammar:"El indicativo 'consumen' es correcto. El antecedente 'los ciudadanos' está determinado por el artículo definido 'los', lo que implica que nos referimos a un grupo real y conocido, no hipotético."},
+  {ctx:"🗣️ Un comunicólogo explica los efectos del periodismo amarillista.",badge:"Caso complejo / Error frecuente C1",q:"«Los medios que utilizan titulares sensacionalistas logran más clics pero generan desconfianza a largo plazo.» — Esta oración es gramaticalmente correcta.",ans:true,content:"El efecto del sensacionalismo sobre la credibilidad mediática es un fenómeno documentado.",grammar:"'Que utilizan' usa indicativo correctamente. El antecedente ('los medios') está definido y determinado, por lo que se hace referencia a un grupo real conocido."},
+  {ctx:"🔔 Una redactora explica la política editorial de su periódico.",badge:"Caso complejo / Error frecuente C1",q:"«En nuestro periódico, rechazamos cualquier artículo que no cite fuentes verificadas o que contenga información sin contrastar.» — El subjuntivo es incorrecto en esta oración.",ans:false,content:"La política editorial descrita es rigurosa y aplicable a cualquier artículo, no a uno concreto.",grammar:"'Que no cite', 'que contenga' usan subjuntivo correctamente. El antecedente ('cualquier artículo') es indefinido y genérico, lo que exige subjuntivo."},
+  {ctx:"📱 Un experto en redes sociales analiza el comportamiento de los usuarios.",badge:"Caso complejo / Error frecuente C1",q:"«Los usuarios que comparten noticias falsas no siempre lo hacen de forma consciente.» — El indicativo es correcto aquí.",ans:true,content:"La investigación sobre desinformación muestra que muchos usuarios comparten bulos sin intención maliciosa.",grammar:"'Que comparten' usa indicativo correctamente. El artículo definido 'los' determina el antecedente como un grupo real y conocido, no hipotético."},
+  {ctx:"🌐 Una ONG pide financiación para un proyecto de verificación de noticias.",badge:"Caso complejo / Error frecuente C1",q:"«Necesitamos inversores que crean en la libertad de prensa y que estén dispuestos a financiar proyectos sin interferir en la línea editorial.» — Esta oración usa el subjuntivo correctamente.",ans:true,content:"La necesidad de financiación independiente es un desafío real del periodismo de calidad.",grammar:"'Que crean' (subjuntivo de 'creer') y 'que estén dispuestos' son correctos. Los inversores son desconocidos todavía, por lo que el antecedente es indefinido."},
+  // BLOQUE 8: Más contextos variados
+  {ctx:"🏛️ Un senador propone una reforma sobre medios públicos.",badge:"Antecedente desconocido → subjuntivo",q:"«Debemos elegir directivos para los medios públicos que garanticen la independencia editorial y que no respondan a intereses partidistas.» — Esta oración usa el subjuntivo correctamente.",ans:true,content:"La propuesta refleja el debate sobre la independencia de los medios públicos.",grammar:"'Que garanticen', 'que no respondan' usan subjuntivo correctamente. Los directivos aún no han sido elegidos, por lo que el antecedente es indefinido."},
+  {ctx:"📚 Una profesora de medios habla sobre su metodología de clase.",badge:"Antecedente conocido → indicativo",q:"«Utilizo solo materiales que provienen de fuentes acreditadas y que han sido revisados por expertos.» — El indicativo es incorrecto; debería ir en subjuntivo.",ans:false,content:"La profesora describe materiales que ya usa, específicos y conocidos.",grammar:"'Que provienen', 'que han sido revisados' usan indicativo correctamente. Los materiales son conocidos y específicos, por lo que el antecedente es determinado."},
+  {ctx:"💬 Un tuitero reflexiona sobre el ecosistema informativo digital.",badge:"Negación → subjuntivo",q:"«No hay plataforma digital que no distorsione de alguna manera la percepción de la realidad.» — Esta oración es correcta.",ans:true,content:"La afirmación sobre el efecto distorsionador de las plataformas digitales es ampliamente debatida.",grammar:"'Que no distorsione' usa subjuntivo correctamente. 'No hay plataforma' implica inexistencia del antecedente, lo que exige subjuntivo."},
+  {ctx:"🎙️ Una comentarista analiza el panorama mediático actual.",badge:"Cualquiera que / quien → subjuntivo",q:"«Quien crea todo lo que ve en las redes sociales sin cuestionarlo demuestra una falta de pensamiento crítico.» — Esta oración es gramaticalmente correcta.",ans:false,content:"La reflexión sobre pensamiento crítico y consumo de redes es válida.",grammar:"'Quien crea' usa indicativo ('crea' de 'creer'), pero con valor generalizador debe ir en subjuntivo: 'quien crea' podría ser ambiguo. La forma correcta es 'quien crea' (subjuntivo de 'creer'). En contexto escrito, la tilde marca la diferencia: 'quien créa' (indicativo) vs. 'quien crea' (subjuntivo). Este ejemplo ilustra la importancia de la tilde diacrítica."},
+  {ctx:"🌱 Una activista mediática habla sobre sus metas.",badge:"Contexto de deseo → subjuntivo",q:"«Mi sueño es crear una red de medios que llegue a comunidades rurales y que ofrezca contenidos en lenguas indígenas.» — El subjuntivo es correcto.",ans:true,content:"La inclusión de comunidades rurales y lenguas indígenas en los medios es una causa relevante.",grammar:"'Que llegue', 'que ofrezca' usan subjuntivo correctamente. La red soñada es hipotética y no existe todavía."},
+  // BLOQUE 9: Más variantes complejas
+  {ctx:"📡 Un director de informativos evalúa propuestas de nuevos programas.",badge:"Antecedente desconocido → subjuntivo",q:"«Solo aprobaremos formatos que innoven en la narrativa periodística y que conecten con la audiencia joven.» — Esta oración usa el subjuntivo correctamente.",ans:true,content:"La búsqueda de formatos innovadores para audiencias jóvenes es una preocupación real de los medios.",grammar:"'Que innoven', 'que conecten' usan subjuntivo porque los formatos aún no han sido aprobados ni identificados."},
+  {ctx:"🔍 Un verificador de noticias habla sobre su trabajo diario.",badge:"Antecedente conocido → indicativo",q:"«Hay una técnica que utilizamos todos los días: comparamos la misma noticia en al menos cinco fuentes diferentes antes de publicar.» — El indicativo 'utilizamos' es correcto.",ans:true,content:"La técnica de verificación múltiple es una práctica habitual en el fact-checking.",grammar:"'Que utilizamos' usa indicativo correctamente. La técnica es conocida, específica y real."},
+  {ctx:"⚠️ Un académico alerta sobre los riesgos de la inteligencia artificial en los medios.",badge:"Negación → subjuntivo",q:"«No existe ningún sistema de inteligencia artificial que detecte el sarcasmo con total fiabilidad en todos los idiomas.» — El subjuntivo 'detecte' es incorrecto.",ans:false,content:"La afirmación es técnicamente correcta: la detección de sarcasmo es uno de los grandes retos del procesamiento del lenguaje natural.",grammar:"'Que detecte' usa subjuntivo correctamente. 'No existe ningún sistema' implica inexistencia del antecedente, lo que exige subjuntivo."},
+  {ctx:"🧠 Una investigadora analiza los efectos cognitivos de la sobreinformación.",badge:"Relativa con preposición",q:"«El estudio se centra en los mecanismos cognitivos con los que los usuarios filtran la información en un entorno de sobreinformación.» — El indicativo 'filtran' es correcto.",ans:true,content:"El estudio descrito investiga mecanismos reales y existentes.",grammar:"'Con los que filtran' usa indicativo correctamente. Los mecanismos cognitivos son reales y conocidos en el contexto del estudio."},
+  {ctx:"🎓 Una profesora universitaria diseña un nuevo módulo de su curso.",badge:"Contexto de necesidad → subjuntivo",q:"«El módulo necesita actividades que desarrollen la capacidad crítica de los estudiantes ante la desinformación.» — El subjuntivo 'desarrollen' es correcto.",ans:true,content:"La educación mediática crítica es una necesidad reconocida en la formación universitaria.",grammar:"'Que desarrollen' usa subjuntivo correctamente. Las actividades son hipotéticas (el módulo está siendo diseñado), por lo que el antecedente es indefinido."},
+  // BLOQUE 10: Casos mixtos y errores sutiles
+  {ctx:"💻 Un bloguero describe su metodología para seleccionar fuentes.",badge:"Caso complejo",q:"«Solo enlazo artículos que provienen de medios que hayan recibido reconocimiento por su rigor periodístico.» — Esta oración usa el subjuntivo incorrectamente.",ans:false,content:"La metodología descrita de enlazar solo artículos de medios reconocidos es válida.",grammar:"'Que hayan recibido' usa subjuntivo, que puede justificarse si se interpreta como una condición no verificada siempre. Sin embargo, en este contexto es más natural el indicativo 'que han recibido' para referirse a reconocimientos reales. Ambas formas son posibles en C1, pero el indicativo es más preciso aquí."},
+  {ctx:"🌐 Una analista describe las características del periodismo de calidad.",badge:"Antecedente desconocido → subjuntivo",q:"«El periodismo de calidad es aquel que privilegie la verdad sobre la rapidez y que sitúe al ciudadano en el centro.» — Esta oración es correcta.",ans:true,content:"La definición de periodismo de calidad basada en verdad y ciudadanía es un consenso en la deontología periodística.",grammar:"'Que privilegie', 'que sitúe' usan subjuntivo correctamente. 'Aquel que' con sentido definitorio y genérico puede llevar subjuntivo cuando se describe un ideal no siempre alcanzado."},
+  {ctx:"📰 Un medio de comunicación publica su declaración de principios.",badge:"Antecedente conocido → indicativo",q:"«Somos un medio que cree en la transparencia, que reconoce sus errores y que pone la verdad por encima de cualquier interés.» — Esta oración es gramaticalmente incorrecta.",ans:false,content:"La declaración de principios de un medio es válida y frecuente.",grammar:"'Que cree', 'que reconoce', 'que pone' usan indicativo correctamente. El antecedente ('un medio' = ellos mismos) es completamente conocido y específico."},
+  {ctx:"🔔 Un experto en ética mediática hace una reflexión final.",badge:"Caso complejo / Cierre",q:"«El futuro del periodismo depende de profesionales que se comprometan con la verdad, que rechacen las presiones externas y que pongan al ciudadano siempre primero.» — El subjuntivo es correcto en toda la oración.",ans:true,content:"La reflexión sobre el futuro del periodismo y los valores de los profesionales es un debate central en los estudios de comunicación.",grammar:"'Que se comprometan', 'que rechacen', 'que pongan' usan subjuntivo correctamente. Los profesionales del futuro son indefinidos e hipotéticos, lo que exige subjuntivo en todas las relativas."}
+];
+
+const MESSAGES = [
+  "¡Brillante análisis! Distinguir entre contenido y gramática al mismo tiempo es un reto de nivel C1 puro. ¡Lo has hecho fenomenal! ♥",
+  "¡Impresionante! Navegar entre el indicativo y el subjuntivo en contextos de medios y desinformación requiere una competencia muy alta. ¡Estoy orgullosa de ti! ♥",
+  "¡Excelente trabajo! Las oraciones de relativo con subjuntivo son uno de los grandes retos del español avanzado. ¡Sigue así! ♥",
+  "¡Fantástico! Has demostrado que puedes analizar el lenguaje y el contenido al mismo tiempo. ¡Eso es pensar en español de verdad! ♥",
+  "¡Qué bien lo has hecho! El pensamiento crítico sobre medios y la gramática avanzada juntos: eso es el nivel C1. ¡Me encanta tu esfuerzo! ♥"
+];
+
+let questions=[], current=0, score=0, answered=false;
+function shuffle(arr){return arr.slice().sort(()=>Math.random()-.5)}
+
+function startGame(){
+  questions=shuffle(BANK).slice(0,10);
+  current=0;score=0;answered=false;
+  document.getElementById('screen-start').classList.remove('active');
+  document.getElementById('screen-game').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  answered=false;
+  const q=questions[current];
+  document.getElementById('progress-bar').style.width=((current/10)*100)+'%';
+  document.getElementById('q-counter').textContent=`Pregunta ${current+1} de 10`;
+  document.getElementById('score-display').textContent=`✓ ${score}`;
+  document.getElementById('context-line').textContent=q.ctx;
+  document.getElementById('grammar-badge').textContent=q.badge;
+  document.getElementById('question-text').textContent=q.q;
+  const fb=document.getElementById('feedback-card');
+  fb.style.display='none';fb.className='feedback-card';
+  document.getElementById('next-btn').style.display='none';
+  const bv=document.getElementById('btn-v');
+  const bf=document.getElementById('btn-f');
+  bv.disabled=false;bf.disabled=false;
+  bv.className='vf-btn verdadero';
+  bf.className='vf-btn falso';
+}
+
+function selectAnswer(isTrue){
+  if(answered)return;
+  answered=true;
+  const q=questions[current];
+  const bv=document.getElementById('btn-v');
+  const bf=document.getElementById('btn-f');
+  bv.disabled=true;bf.disabled=true;
+  const correct=(isTrue===q.ans);
+  if(correct)score++;
+  if(isTrue){
+    bv.className='vf-btn verdadero '+(correct?'selected-correct':'selected-wrong');
+    if(!correct)bf.className='vf-btn falso selected-correct';
+  } else {
+    bf.className='vf-btn falso '+(correct?'selected-correct':'selected-wrong');
+    if(!correct)bv.className='vf-btn verdadero selected-correct';
+  }
+  const fb=document.getElementById('feedback-card');
+  fb.className='feedback-card '+(correct?'correct':'wrong');
+  fb.style.display='block';
+  document.getElementById('feedback-title').textContent=correct?'✅ ¡Correcto!':'❌ No exactamente';
+  document.getElementById('feedback-content').textContent=q.content;
+  document.getElementById('feedback-grammar').textContent=q.grammar;
+  document.getElementById('score-display').textContent=`✓ ${score}`;
+  document.getElementById('next-btn').style.display='inline-block';
+}
+
+function nextQuestion(){
+  current++;
+  if(current>=10)showEnd();
+  else renderQuestion();
+}
+
+function showEnd(){
+  document.getElementById('screen-game').classList.remove('active');
+  document.getElementById('screen-end').classList.add('active');
+  document.getElementById('final-score').textContent=`${score} / 10`;
+  const pct=Math.round((score/10)*100);
+  document.getElementById('final-pct').textContent=`${pct}% de aciertos`;
+  document.getElementById('teacher-msg').textContent=MESSAGES[Math.floor(Math.random()*MESSAGES.length)];
+  launchCelebration();
+}
+
+function restartGame(){
+  document.getElementById('screen-end').classList.remove('active');
+  stopCelebration();
+  startGame();
+  document.getElementById('screen-game').classList.add('active');
+}
+
+let confettiInterval,balloonEls=[];
+function launchCelebration(){
+  const canvas=document.getElementById('confetti-canvas');
+  const ctx2=canvas.getContext('2d');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const pieces=Array.from({length:120},()=>({
+    x:Math.random()*canvas.width,y:Math.random()*canvas.height-canvas.height,
+    r:Math.random()*7+3,d:Math.random()*120+40,
+    color:['#3b6d11','#d4537e','#c0dd97','#993556','#fdf8f0','#f9c74f'][Math.floor(Math.random()*6)],
+    tilt:Math.random()*10-10,speed:Math.random()*3+1
+  }));
+  let ang=0;
+  function draw(){
+    ctx2.clearRect(0,0,canvas.width,canvas.height);
+    ang+=0.01;
+    pieces.forEach(p=>{
+      ctx2.beginPath();ctx2.lineWidth=p.r/2;ctx2.strokeStyle=p.color;
+      ctx2.moveTo(p.x+p.tilt+p.r/4,p.y);ctx2.lineTo(p.x+p.tilt,p.y+p.tilt+p.r/4);ctx2.stroke();
+      p.y+=p.speed;p.tilt=Math.sin(ang+p.d)*12;
+      if(p.y>canvas.height){p.y=-10;p.x=Math.random()*canvas.width;}
+    });
+  }
+  confettiInterval=setInterval(draw,16);
+  const emojis=['🎈','🎊','🎉','💚','🌟','💖'];
+  for(let i=0;i<12;i++){
+    const b=document.createElement('div');
+    b.className='balloon';
+    b.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    b.style.left=Math.random()*95+'%';
+    b.style.bottom='-60px';
+    b.style.animationDelay=(Math.random()*3)+'s';
+    b.style.fontSize=(1.8+Math.random()*1.5)+'rem';
+    document.body.appendChild(b);
+    balloonEls.push(b);
+  }
+  setTimeout(()=>{balloonEls.forEach(b=>{if(b.parentNode)b.remove();});balloonEls=[];},5000);
+}
+
+function stopCelebration(){
+  clearInterval(confettiInterval);
+  const canvas=document.getElementById('confetti-canvas');
+  const ctx2=canvas.getContext('2d');
+  ctx2.clearRect(0,0,canvas.width,canvas.height);
+  balloonEls.forEach(b=>{if(b.parentNode)b.remove();});balloonEls=[];
+}
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"5070e21320304a1ba2b0a42ce9682840","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

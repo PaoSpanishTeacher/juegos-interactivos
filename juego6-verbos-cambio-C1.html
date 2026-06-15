@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#fdf8f0;--green:#3b6d11;--green-light:#c0dd97;--green-xlight:#eaf3de;--pink:#d4537e;--pink-dark:#993556;--text:#2d2d2d;}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+.header{background:var(--green);color:white;padding:18px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid white;flex-shrink:0}
+.brand-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800}
+.brand-sub{font-size:0.78rem;opacity:0.85;margin-top:2px}
+.badges{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:5px 13px;font-size:0.75rem;font-weight:700}
+.badge.pink{background:var(--pink);border-color:var(--pink-dark)}
+.screen{display:none;padding:24px 16px;max-width:740px;margin:0 auto}
+.screen.active{display:block}
+.start-card{background:white;border-radius:20px;padding:36px 32px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.10);border:2px solid var(--green-light);margin-top:32px}
+.start-card h1{font-family:'Playfair Display',serif;font-size:1.85rem;color:var(--green);margin-bottom:10px}
+.start-card .subtitle{color:#666;font-size:0.97rem;margin-bottom:24px;line-height:1.7}
+.info-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.pill{background:var(--green-xlight);color:var(--green);border-radius:20px;padding:7px 16px;font-size:0.82rem;font-weight:700}
+.pill.p2{background:#fde8ef;color:var(--pink-dark)}
+.btn{display:inline-block;background:var(--green);color:white;border:none;border-radius:30px;padding:14px 36px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s}
+.btn:hover{background:#2d5209;transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,109,17,0.25)}
+.btn.pink-btn{background:var(--pink)}.btn.pink-btn:hover{background:var(--pink-dark)}
+.progress-bar-wrap{background:var(--green-xlight);border-radius:10px;height:10px;margin-bottom:6px}
+.progress-bar{background:var(--green);height:10px;border-radius:10px;transition:width .4s}
+.progress-info{display:flex;justify-content:space-between;font-size:0.8rem;color:#666;margin-bottom:18px}
+.score-badge{background:var(--green);color:white;border-radius:20px;padding:4px 14px;font-weight:700;font-size:0.85rem}
+.question-card{background:white;border-radius:20px;padding:28px 24px;box-shadow:0 4px 20px rgba(59,109,17,0.09);border:2px solid var(--green-light);margin-bottom:18px}
+.context-line{font-size:0.85rem;color:#888;margin-bottom:12px;font-style:italic}
+.grammar-badge{display:inline-block;background:var(--green-xlight);color:var(--green);border-radius:12px;padding:4px 12px;font-size:0.75rem;font-weight:700;margin-bottom:14px}
+.question-text{font-size:1.05rem;line-height:1.8;color:var(--text);font-weight:600;margin-bottom:20px}
+.blank{display:inline-block;border-bottom:2.5px solid var(--pink);min-width:90px;color:var(--pink-dark);font-weight:800;padding:0 4px}
+.options{display:grid;gap:10px}
+.opt-btn{background:var(--green-xlight);border:2px solid var(--green-light);border-radius:14px;padding:13px 18px;font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:600;color:var(--text);cursor:pointer;text-align:left;transition:all .18s;line-height:1.4}
+.opt-btn:hover:not(:disabled){background:#d4edbb;border-color:var(--green);transform:translateX(4px)}
+.opt-btn.correct{background:#e6f7d9;border-color:#3b6d11;color:#1e4200}
+.opt-btn.wrong{background:#fde8ef;border-color:var(--pink);color:var(--pink-dark)}
+.opt-btn:disabled{cursor:default}
+.feedback-card{border-radius:16px;padding:20px 22px;margin-top:16px;display:none;animation:fadeIn .3s}
+.feedback-card.correct{background:#e6f7d9;border:2px solid #a0d470}
+.feedback-card.wrong{background:#fde8ef;border:2px solid var(--pink)}
+.feedback-title{font-weight:800;font-size:1rem;margin-bottom:8px}
+.feedback-text{font-size:0.9rem;line-height:1.65;color:#444}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.next-btn{display:none;margin-top:16px}
+.end-card{background:white;border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.12);border:2px solid var(--green-light);margin-top:24px}
+.teacher-card{background:var(--green);color:white;border-radius:16px;padding:22px;margin:20px 0;display:flex;align-items:center;gap:16px;text-align:left}
+.teacher-avatar-big{width:68px;height:68px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:36px;border:3px solid white;flex-shrink:0}
+.score-display{font-family:'Playfair Display',serif;font-size:2.8rem;color:var(--green);font-weight:800;margin:10px 0}
+.score-pct{font-size:1.1rem;color:var(--pink);font-weight:700;margin-bottom:20px}
+.grammar-note{background:var(--green-xlight);border-radius:16px;padding:22px;text-align:left;margin:20px 0}
+.grammar-note h3{font-family:'Playfair Display',serif;color:var(--green);font-size:1.1rem;margin-bottom:14px}
+.grammar-note ul{list-style:none;padding:0}
+.grammar-note li{padding:8px 0;border-bottom:1px solid #d0e8b0;font-size:0.88rem;line-height:1.65;color:#333}
+.grammar-note li:last-child{border-bottom:none}
+.grammar-note li::before{content:"✦ ";color:var(--green);font-weight:800}
+.note-example{display:block;background:white;border-radius:8px;padding:7px 12px;margin-top:6px;font-style:italic;color:#555;font-size:0.83rem;border-left:3px solid var(--green)}
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+.balloon{position:fixed;font-size:2.5rem;pointer-events:none;z-index:997;animation:riseUp 4s ease-in forwards}
+@keyframes riseUp{to{transform:translateY(-110vh) rotate(15deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="avatar">👩‍🏫</div>
+  <div>
+    <div class="brand-name">Pao Spanish Teacher</div>
+    <div class="brand-sub">Español para adultos · Nivel avanzado</div>
+  </div>
+  <div class="badges">
+    <span class="badge">C1</span>
+    <span class="badge pink">Verbos de Cambio</span>
+  </div>
+</div>
+
+<div class="screen active" id="screen-start">
+  <div class="start-card">
+    <div style="font-size:3rem;margin-bottom:12px">🏙️🌍</div>
+    <h1>Urbanismo y Migraciones</h1>
+    <p class="subtitle">Completa las oraciones sobre <strong>urbanismo, migraciones y vida en la ciudad</strong> eligiendo el verbo de cambio correcto. Cada verbo expresa un matiz diferente: ¿cambio involuntario, voluntario, resultado final o logro con esfuerzo? ¡El verbo lo cambia todo! 🎯</p>
+    <div class="info-pills">
+      <span class="pill">📚 Nivel C1</span>
+      <span class="pill p2">🎯 Verbos de cambio</span>
+      <span class="pill">🔀 10 preguntas aleatorias</span>
+      <span class="pill p2">💬 Opción múltiple</span>
+    </div>
+    <button class="btn" onclick="startGame()">¡Empezar juego! →</button>
+  </div>
+</div>
+
+<div class="screen" id="screen-game">
+  <div style="margin-top:20px">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="progress-info">
+      <span id="q-counter">Pregunta 1 de 10</span>
+      <span class="score-badge" id="score-display">✓ 0</span>
+    </div>
+  </div>
+  <div class="question-card">
+    <div class="context-line" id="context-line"></div>
+    <div class="grammar-badge" id="grammar-badge"></div>
+    <div class="question-text" id="question-text"></div>
+    <div class="options" id="options-container"></div>
+    <div class="feedback-card" id="feedback-card">
+      <div class="feedback-title" id="feedback-title"></div>
+      <div class="feedback-text" id="feedback-text"></div>
+    </div>
+  </div>
+  <button class="btn next-btn" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+</div>
+
+<div class="screen" id="screen-end">
+  <div class="end-card">
+    <div style="font-size:2.5rem">🎆</div>
+    <h2 style="font-family:'Playfair Display',serif;color:var(--green);font-size:1.7rem;margin:10px 0">¡Juego completado!</h2>
+    <div class="score-display" id="final-score"></div>
+    <div class="score-pct" id="final-pct"></div>
+    <div class="teacher-card">
+      <div class="teacher-avatar-big">👩‍🏫</div>
+      <div>
+        <div style="font-weight:800;font-size:1rem;margin-bottom:6px">Pao Spanish Teacher</div>
+        <div style="font-size:0.95rem;line-height:1.6;font-weight:600" id="teacher-msg"></div>
+      </div>
+    </div>
+    <div class="grammar-note">
+      <h3>📖 Recuerda esto: Verbos de Cambio en C1</h3>
+      <ul>
+        <li><strong>Ponerse + adjetivo</strong>: cambio de estado emocional o físico, involuntario y generalmente temporal.
+          <span class="note-example">Se puso nervioso al ver las dimensiones del barrio degradado.</span>
+        </li>
+        <li><strong>Volverse + adjetivo</strong>: cambio profundo de carácter o actitud, involuntario y duradero.
+          <span class="note-example">Tras años de exclusión social, se volvió desconfiado con las instituciones.</span>
+        </li>
+        <li><strong>Quedarse + adjetivo/participio</strong>: resultado de un cambio, énfasis en el estado final que permanece.
+          <span class="note-example">Cuando derribaron su barrio, se quedó sin hogar de un día para otro.</span>
+        </li>
+        <li><strong>Hacerse + sustantivo/adjetivo</strong>: cambio voluntario y consciente, proceso de transformación buscada.
+          <span class="note-example">Con esfuerzo y dedicación, se hizo mediador intercultural.</span>
+        </li>
+        <li><strong>Llegar a ser + sustantivo/adjetivo</strong>: cambio con esfuerzo prolongado, logro alcanzado tras un proceso largo.
+          <span class="note-example">Llegó a ser alcaldesa de la ciudad que la acogió de migrante.</span>
+        </li>
+        <li><strong>Convertirse en + sustantivo</strong>: cambio total de naturaleza, función o rol.
+          <span class="note-example">El antiguo barrio industrial se convirtió en un polo de atracción turística.</span>
+        </li>
+        <li><strong>Tornarse + adjetivo</strong>: variante formal y literaria de <em>volverse</em>, muy frecuente en registro académico.
+          <span class="note-example">La convivencia intercultural se tornó compleja ante la falta de políticas de integración.</span>
+        </li>
+      </ul>
+    </div>
+    <button class="btn pink-btn" onclick="restartGame()">🔁 Jugar otra vez</button>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+const BANK = [
+  {ctx:"🏗️ Un vecino reacciona ante el anuncio de demolición de su edificio histórico.",badge:"Ponerse + adjetivo: cambio emocional involuntario",q:"Cuando el ayuntamiento anunció la demolición del edificio donde había vivido toda su vida, el anciano _____ muy emocionado y no pudo contener las lágrimas.",opts:["se puso","se volvió","se quedó","se hizo"],ans:0,ok:"¡Correcto! 'Ponerse + adjetivo' expresa un cambio emocional involuntario y temporal. La emoción es una reacción puntual ante la noticia, no un cambio permanente de carácter.",fail:"La respuesta es 'se puso'. 'Ponerse' expresa cambios emocionales o físicos involuntarios y temporales. 'Volverse' implicaría un cambio permanente de carácter."},
+  {ctx:"🚌 Una migrante describe su primera llegada a la gran ciudad.",badge:"Ponerse + adjetivo: cambio emocional involuntario",q:"Al bajar del autobús y ver por primera vez los rascacielos del centro, Amina _____ completamente abrumada por la magnitud de la ciudad.",opts:["se quedó","se puso","se volvió","llegó a estar"],ans:1,ok:"¡Muy bien! 'Ponerse + adjetivo' describe la reacción emocional involuntaria y puntual de Amina ante el impacto visual de la ciudad.",fail:"La respuesta es 'se puso'. 'Ponerse abrumada' expresa un estado emocional puntual e involuntario."},
+  {ctx:"🏘️ Un activista vecinal describe su reacción ante los datos de desigualdad urbana.",badge:"Ponerse + adjetivo: cambio emocional involuntario",q:"Cuando leyó los informes sobre la segregación residencial en su ciudad, el activista _____ furioso y decidió convocar una manifestación.",opts:["se volvió","se hizo","se puso","llegó a ser"],ans:2,ok:"¡Excelente! 'Ponerse furioso' describe una reacción emocional involuntaria y puntual. La furia es inmediata, no un cambio permanente de carácter.",fail:"La respuesta es 'se puso'. 'Ponerse + adjetivo' expresa reacciones emocionales puntuales e involuntarias. 'Volverse furioso' implicaría un cambio permanente de personalidad."},
+  {ctx:"🌆 Una urbanista presenta sus conclusiones sobre gentrificación en una conferencia.",badge:"Ponerse + adjetivo: cambio físico involuntario",q:"Al ver las imágenes del antes y el después del barrio, la urbanista _____ pálida: en solo diez años, el tejido social había desaparecido por completo.",opts:["se hizo","se puso","se volvió","se convirtió en"],ans:1,ok:"¡Correcto! 'Ponerse pálida' describe un cambio físico involuntario y puntual causado por la impresión.",fail:"La respuesta es 'se puso'. Los cambios físicos involuntarios y momentáneos se expresan con 'ponerse'."},
+  {ctx:"🚧 Un vecino describe su reacción cuando le notificaron el desalojo.",badge:"Ponerse + adjetivo: cambio emocional involuntario",q:"Cuando el agente le entregó la orden de desalojo, Martín _____ blanco como el papel y no fue capaz de articular palabra.",opts:["se quedó","se puso","se volvió","se tornó"],ans:1,ok:"¡Bien! 'Ponerse blanco' expresa un cambio físico involuntario y momentáneo causado por el shock emocional.",fail:"La respuesta es 'se puso'. Los cambios de color de la piel por emociones intensas se expresan con 'ponerse': ponerse rojo, blanco, pálido."},
+  {ctx:"🏚️ Un trabajador social describe el impacto de la exclusión residencial en las personas.",badge:"Volverse + adjetivo: cambio de carácter duradero",q:"Tras años viviendo en infraviviendas y siendo rechazado por instituciones, el joven _____ completamente desconfiado hacia cualquier figura de autoridad.",opts:["se puso","se quedó","se volvió","se hizo"],ans:2,ok:"¡Correcto! 'Volverse + adjetivo' expresa un cambio profundo y duradero de carácter o actitud, resultado de un proceso prolongado.",fail:"La respuesta es 'se volvió'. 'Volverse' expresa cambios profundos y duraderos de personalidad o actitud, generalmente involuntarios."},
+  {ctx:"🌃 Una periodista describe los efectos de la vida en una megaciudad.",badge:"Volverse + adjetivo: cambio de carácter duradero",q:"Después de diez años en la ciudad, aquel chico tímido que llegó del pueblo _____ tremendamente ambicioso y competitivo.",opts:["se hizo","se volvió","se quedó","se puso"],ans:1,ok:"¡Muy bien! 'Volverse' expresa un cambio profundo de carácter, involuntario y duradero. La ambición y la competitividad son rasgos que se desarrollaron gradualmente por el entorno urbano.",fail:"La respuesta es 'se volvió'. 'Hacerse' implicaría un cambio voluntario y buscado; 'volverse' describe cambios de personalidad graduales e involuntarios."},
+  {ctx:"🏙️ Un psicólogo comunitario analiza los efectos del hacinamiento urbano.",badge:"Volverse + adjetivo: cambio de carácter duradero",q:"Vivir durante años en condiciones de hacinamiento extremo hizo que muchos residentes _____ irritables e intolerantes con sus propios vecinos.",opts:["se quedaran","se pusieran","se volvieran","se hicieran"],ans:2,ok:"¡Correcto! 'Volverse irritables' expresa un cambio gradual y duradero de carácter causado por las condiciones de vida.",fail:"La respuesta es 'se volvieran'. 'Ponerse irritables' sería puntual; 'volverse irritables' describe un cambio de carácter profundo e instalado."},
+  {ctx:"🏚️ Un reportaje describe las consecuencias del derrumbe de un edificio en un barrio popular.",badge:"Quedarse + adjetivo/participio: estado final",q:"Tras el derrumbe del edificio, doce familias _____ sin hogar de un día para otro y tuvieron que ser realojadas por el ayuntamiento.",opts:["se volvieron","se pusieron","se quedaron","se hicieron"],ans:2,ok:"¡Excelente! 'Quedarse sin hogar' expresa el resultado de un cambio, con énfasis en el estado final en que quedan las personas.",fail:"La respuesta es 'se quedaron'. 'Quedarse' enfatiza el estado resultante de un cambio."},
+  {ctx:"🌉 Una migrante describe su experiencia al llegar a un país nuevo sin documentación.",badge:"Quedarse + adjetivo/participio: estado final",q:"Al cruzar la frontera sin papeles, Fatou _____ atrapada en un limbo administrativo durante más de tres años.",opts:["se volvió","se quedó","se puso","llegó a ser"],ans:1,ok:"¡Correcto! 'Quedarse atrapada' enfatiza el estado final resultante de su situación migratoria.",fail:"La respuesta es 'se quedó'. 'Quedarse + participio' expresa el estado en que queda alguien como resultado de una situación."},
+  {ctx:"🏗️ Un informe municipal describe las consecuencias de la burbuja inmobiliaria.",badge:"Quedarse + adjetivo/participio: estado final",q:"Cuando estalló la burbuja inmobiliaria, miles de familias _____ endeudadas de por vida con hipotecas que no podían pagar.",opts:["se hicieron","se volvieron","se quedaron","se tornaron"],ans:2,ok:"¡Muy bien! 'Quedarse endeudadas' describe el estado final en que quedan las familias tras el estallido de la burbuja.",fail:"La respuesta es 'se quedaron'. 'Quedarse' pone el foco en el estado resultante de un cambio."},
+  {ctx:"🌃 Un urbanista describe los efectos del abandono de los centros históricos.",badge:"Quedarse + adjetivo/participio: estado final",q:"Tras el éxodo masivo hacia las periferias, el centro histórico _____ completamente despoblado durante décadas.",opts:["se volvió","se tornó","se quedó","se puso"],ans:2,ok:"¡Correcto! 'Quedarse despoblado' enfatiza el estado final resultante del éxodo.",fail:"La respuesta es 'se quedó'. 'Quedarse + participio' expresa el estado en que queda algo como resultado de un proceso."},
+  {ctx:"🏛️ Una migrante de segunda generación describe su trayectoria profesional.",badge:"Hacerse + sustantivo: cambio voluntario",q:"Con mucho esfuerzo y sacrificio, la hija de los inmigrantes _____ abogada especializada en derecho de extranjería para ayudar a los recién llegados.",opts:["llegó a ser","se hizo","se volvió","se convirtió en"],ans:1,ok:"¡Correcto! 'Hacerse + sustantivo' expresa un cambio voluntario y consciente. Estudiar y trabajar para ser abogada es una decisión activa y buscada.",fail:"La respuesta es 'se hizo'. 'Hacerse' implica un proceso voluntario y consciente de transformación."},
+  {ctx:"🌆 Un activista urbano describe cómo empezó su compromiso social.",badge:"Hacerse + sustantivo: cambio voluntario",q:"Indignado por la situación de los sin techo en su ciudad, Javier _____ voluntario en un albergue y dedicó sus fines de semana a la causa.",opts:["se quedó","se volvió","se hizo","llegó a ser"],ans:2,ok:"¡Muy bien! 'Hacerse voluntario' expresa una decisión consciente y voluntaria. Convertirse en voluntario es una elección activa, no un cambio involuntario.",fail:"La respuesta es 'se hizo'. 'Hacerse + sustantivo' expresa cambios voluntarios y buscados."},
+  {ctx:"🌍 Una refugiada describe su proceso de integración en el país de acogida.",badge:"Hacerse + sustantivo: cambio voluntario",q:"Años después de llegar como refugiada, Nadia _____ ciudadana del país que la acogió y votó por primera vez en las elecciones municipales.",opts:["se quedó","se volvió","llegó a ser","se hizo"],ans:3,ok:"¡Excelente! 'Hacerse ciudadana' expresa un cambio voluntario y formal, resultado de un proceso activo de solicitud y compromiso.",fail:"La respuesta es 'se hizo'. 'Hacerse ciudadana' implica un proceso voluntario y formal."},
+  {ctx:"🏛️ Un documental narra la historia de un migrante que triunfó en política.",badge:"Llegar a ser: logro con esfuerzo prolongado",q:"Tras décadas de trabajo incansable y superando innumerables obstáculos, el hijo de inmigrantes _____ alcalde de la ciudad que lo vio crecer.",opts:["se hizo","se volvió","llegó a ser","se convirtió en"],ans:2,ok:"¡Correcto! 'Llegar a ser' enfatiza el esfuerzo prolongado y la dificultad del camino hasta alcanzar ese logro.",fail:"La respuesta es 'llegó a ser'. 'Llegar a ser' resalta el proceso largo y difícil hasta alcanzar un logro."},
+  {ctx:"🌆 Una urbanista narra la transformación de un barrio degradado.",badge:"Llegar a ser: logro con esfuerzo prolongado",q:"Después de años de inversión, participación ciudadana y trabajo comunitario, el barrio más conflictivo de la ciudad _____ un referente de convivencia intercultural.",opts:["se puso","se quedó","llegó a ser","se tornó"],ans:2,ok:"¡Muy bien! 'Llegar a ser' enfatiza el proceso largo y difícil de transformación.",fail:"La respuesta es 'llegó a ser'. 'Llegar a ser' expresa que algo alcanzó un estado tras un esfuerzo sostenido en el tiempo."},
+  {ctx:"🏙️ Un informe sobre gentrificación describe la transformación de un barrio obrero.",badge:"Convertirse en + sustantivo: cambio total",q:"En menos de una década, el antiguo barrio industrial de la periferia _____ uno de los destinos más codiciados por los jóvenes profesionales de la ciudad.",opts:["se volvió","se quedó","se convirtió en","llegó a ser"],ans:2,ok:"¡Excelente! 'Convertirse en' expresa un cambio total de naturaleza o función. El barrio cambió completamente su carácter.",fail:"La respuesta es 'se convirtió en'. 'Convertirse en + sustantivo' expresa un cambio total de naturaleza o rol."},
+  {ctx:"🌍 Una experta en migraciones describe el papel de ciertas ciudades.",badge:"Convertirse en + sustantivo: cambio total",q:"Durante el siglo XX, ciudades como Nueva York o Buenos Aires _____ verdaderos crisoles de culturas gracias a las oleadas migratorias.",opts:["se hicieron","llegaron a ser","se convirtieron en","se tornaron"],ans:2,ok:"¡Correcto! 'Convertirse en' expresa un cambio total de naturaleza. Las ciudades pasaron a ser algo cualitativamente diferente.",fail:"La respuesta es 'se convirtieron en'. 'Convertirse en + sustantivo' expresa un cambio total de naturaleza o esencia."},
+  {ctx:"🏚️ Un periodista describe el fenómeno de los barrios turísticos.",badge:"Convertirse en + sustantivo: cambio total",q:"Lo que antes era un barrio auténtico con vida de vecinos y comercio local _____ un parque temático para turistas sin apenas residentes fijos.",opts:["se quedó","se volvió","se convirtió en","llegó a ser"],ans:2,ok:"¡Muy bien! 'Convertirse en' expresa la transformación total de la naturaleza del barrio.",fail:"La respuesta es 'se convirtió en'. Cuando algo cambia completamente de naturaleza o función, se usa 'convertirse en + sustantivo'."},
+  {ctx:"📰 Un artículo académico analiza las tensiones en barrios multiculturales.",badge:"Tornarse + adjetivo: registro formal/literario",q:"Con la llegada masiva de nuevos residentes, la convivencia entre comunidades _____ tensa y los conflictos vecinales aumentaron considerablemente.",opts:["se puso","se quedó","se tornó","se hizo"],ans:2,ok:"¡Correcto! 'Tornarse + adjetivo' es la variante formal y literaria de 'volverse'. Expresa un cambio gradual de carácter o situación.",fail:"La respuesta es 'se tornó'. 'Tornarse' es equivalente a 'volverse' pero pertenece al registro formal y literario."},
+  {ctx:"📜 Un ensayo sobre urbanismo describe la evolución de las periferias.",badge:"Tornarse + adjetivo: registro formal/literario",q:"A medida que la ciudad creció sin planificación, las periferias _____ zonas de exclusión social donde la pobreza se perpetuaba de generación en generación.",opts:["se pusieron","se tornaron","se hicieron","llegaron a ser"],ans:1,ok:"¡Excelente! 'Tornarse' es la variante formal de 'volverse'. Muy apropiada para describir procesos urbanos complejos en un ensayo.",fail:"La respuesta es 'se tornaron'. 'Tornarse' es la variante culta de 'volverse', muy frecuente en textos académicos."},
+  {ctx:"🌆 Un informe sociológico describe la evolución de un barrio multicultural.",badge:"Tornarse + adjetivo: registro formal/literario",q:"Lo que en un principio era una coexistencia pacífica entre comunidades _____ progresivamente más conflictivo ante la competencia por los recursos escasos.",opts:["se puso","se tornó","se quedó","se hizo"],ans:1,ok:"¡Muy bien! 'Tornarse más conflictivo' es la forma culta y formal de describir este cambio gradual e involuntario.",fail:"La respuesta es 'se tornó'. 'Tornarse' es equivalente formal de 'volverse', usado en textos académicos de registro elevado."},
+  {ctx:"🌍 Dos vecinos describen la transformación del mismo migrante.",badge:"Contraste sutil: volverse vs. hacerse",q:"A: '¿Ha cambiado mucho desde que llegó?' B: 'Sí, _____ muy reservado. Antes era abierto y sociable, pero la ciudad lo ha cambiado.'",opts:["se ha hecho","se ha vuelto","ha llegado a ser","se ha convertido en"],ans:1,ok:"¡Correcto! 'Volverse reservado' expresa un cambio de carácter involuntario y gradual causado por las circunstancias. 'Hacerse reservado' implicaría que fue una decisión consciente.",fail:"La respuesta es 'se ha vuelto'. 'Volverse' expresa cambios de carácter involuntarios. El contexto indica que la ciudad lo cambió, no que él lo eligió."},
+  {ctx:"🏛️ Una periodista entrevista a una migrante sobre su integración.",badge:"Contraste sutil: hacerse vs. llegar a ser",q:"P: '¿Cómo describiría su trayectoria?' R: 'Vine sin nada y, tras veinte años de esfuerzo y superando obstáculos increíbles, _____ directora de una ONG.'",opts:["me volví","me quedé","me hice","llegué a ser"],ans:3,ok:"¡Muy bien! 'Llegar a ser' enfatiza el esfuerzo extraordinario y los obstáculos superados a lo largo de un proceso muy largo.",fail:"La respuesta es 'llegué a ser'. 'Llegar a ser' enfatiza el esfuerzo prolongado y los obstáculos superados, que es lo que la migrante quiere destacar."},
+  {ctx:"🏙️ Un informe describe la transformación de un edificio emblemático.",badge:"Contraste sutil: convertirse en vs. quedarse",q:"El antiguo mercado municipal, abandonado durante años, _____ finalmente un centro cultural de referencia para todo el barrio.",opts:["se quedó","se puso","se convirtió en","se tornó"],ans:2,ok:"¡Correcto! 'Convertirse en' expresa el cambio total de naturaleza y función del edificio: de mercado abandonado a centro cultural.",fail:"La respuesta es 'se convirtió en'. 'Convertirse en + sustantivo' expresa un cambio total de naturaleza o función."},
+  {ctx:"🌃 Un sociólogo compara dos migrantes con trayectorias opuestas.",badge:"Contraste sutil: volverse vs. quedarse",q:"Mientras uno _____ amargado por las dificultades del proceso migratorio, el otro encontró en esas mismas dificultades una fuente de fortaleza.",opts:["se quedó","se puso","se hizo","se volvió"],ans:3,ok:"¡Excelente! 'Volverse amargado' expresa un cambio profundo y duradero de carácter, involuntario, causado por las circunstancias.",fail:"La respuesta es 'se volvió'. 'Volverse amargado' describe un cambio de carácter profundo e involuntario."},
+  {ctx:"🏚️ Una trabajadora social describe el impacto del desalojo en una familia.",badge:"Contraste sutil: quedarse vs. ponerse",q:"Cuando el juez firmó la orden de desalojo, la madre _____ sin palabras: no podía creer que perdiera su hogar después de veinte años.",opts:["se volvió","se quedó","se hizo","llegó a ser"],ans:1,ok:"¡Correcto! 'Quedarse sin palabras' expresa el estado resultante de impacto emocional extremo.",fail:"La respuesta es 'se quedó'. 'Quedarse sin palabras' enfatiza el estado resultante de un impacto emocional extremo."},
+  {ctx:"🏘️ Un migrante describe cómo se integró en su nuevo barrio.",badge:"Hacerse + adjetivo: cambio voluntario",q:"Con el paso de los años, Ahmed _____ indispensable en la asociación de vecinos gracias a su capacidad para mediar entre comunidades.",opts:["se volvió","llegó a ser","se hizo","se tornó"],ans:2,ok:"¡Correcto! 'Hacerse indispensable' expresa un cambio buscado activamente mediante su comportamiento y contribución.",fail:"La respuesta es 'se hizo'. 'Hacerse + adjetivo' expresa que alguien trabaja activamente para lograr ese estado."},
+  {ctx:"🌆 Un artículo analiza cómo la ciudad transforma a las personas.",badge:"Tornarse vs. volverse: registro formal",q:"En los textos académicos sobre urbanismo, se suele preferir '_____ más individualista' en lugar de 'se volvió más individualista' para describir los efectos de la vida urbana.",opts:["se tornó","se puso","se quedó","se hizo"],ans:0,ok:"¡Muy bien! 'Tornarse' es la variante formal y académica de 'volverse'. En textos académicos, 'tornarse' es preferible por su registro más elevado.",fail:"La respuesta es 'se tornó'. 'Tornarse' es la variante culta de 'volverse', preferida en el registro académico y periodístico de calidad."},
+  {ctx:"🏘️ Una vecina describe cómo cambió su barrio con la gentrificación.",badge:"Convertirse en vs. volverse: cambio total vs. parcial",q:"El barrio no solo cambió de aspecto, sino que _____ un lugar completamente irreconocible para quienes lo habitaban desde siempre.",opts:["se volvió","se tornó","se convirtió en","llegó a ser"],ans:2,ok:"¡Correcto! 'Convertirse en un lugar irreconocible' expresa un cambio total de naturaleza y esencia.",fail:"La respuesta es 'se convirtió en'. 'Convertirse en' enfatiza la transformación total de la esencia del lugar."},
+  {ctx:"🎓 Una migrante reflexiona sobre su trayectoria académica y profesional.",badge:"Llegar a ser: logro extraordinario",q:"Nadie habría imaginado que aquella niña que llegó sin hablar el idioma _____ directora de un hospital público veinte años después.",opts:["se haría","se volvería","llegaría a ser","se convertiría en"],ans:2,ok:"¡Correcto! 'Llegar a ser' en condicional enfatiza el logro extraordinario alcanzado tras un camino largo y difícil.",fail:"La respuesta es 'llegaría a ser'. 'Llegar a ser' expresa un logro que nadie esperaba y que fue fruto de un esfuerzo excepcional."},
+];
+
+const MESSAGES = [
+  "¡Brillante precisión semántica! Distinguir entre verbos de cambio es uno de los grandes retos del español C1. ¡Lo has hecho fenomenal! ♥",
+  "¡Impresionante! Los matices entre 'volverse', 'hacerse', 'quedarse' y 'llegar a ser' son sutilísimos. ¡Estoy orgullosa de tu nivel! ♥",
+  "¡Fantástico! Dominar los verbos de cambio en contextos de urbanismo y migraciones demuestra una competencia comunicativa muy alta. ¡Sigue así! ♥",
+  "¡Excelente trabajo! Cada verbo de cambio cuenta una historia diferente. ¡Has demostrado que sabes leerlas todas! ♥",
+  "¡Qué bien lo has hecho! Los verbos de cambio son una de las joyas del español avanzado. ¡Eso es C1 de verdad! ♥"
+];
+
+let questions=[],current=0,score=0,answered=false;
+function shuffle(arr){return arr.slice().sort(()=>Math.random()-.5)}
+
+function startGame(){
+  questions=shuffle(BANK).slice(0,10);
+  current=0;score=0;answered=false;
+  document.getElementById('screen-start').classList.remove('active');
+  document.getElementById('screen-game').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  answered=false;
+  const q=questions[current];
+  document.getElementById('progress-bar').style.width=((current/10)*100)+'%';
+  document.getElementById('q-counter').textContent=`Pregunta ${current+1} de 10`;
+  document.getElementById('score-display').textContent=`✓ ${score}`;
+  document.getElementById('context-line').textContent=q.ctx;
+  document.getElementById('grammar-badge').textContent=q.badge;
+  document.getElementById('question-text').innerHTML=q.q.replace('_____','<span class="blank">_____</span>');
+  const fb=document.getElementById('feedback-card');
+  fb.style.display='none';fb.className='feedback-card';
+  document.getElementById('next-btn').style.display='none';
+  const cont=document.getElementById('options-container');
+  cont.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opt-btn';b.textContent=o;
+    b.onclick=()=>selectOption(i);
+    cont.appendChild(b);
+  });
+}
+
+function selectOption(i){
+  if(answered)return;
+  answered=true;
+  const q=questions[current];
+  const btns=document.querySelectorAll('.opt-btn');
+  btns.forEach(b=>b.disabled=true);
+  const fb=document.getElementById('feedback-card');
+  if(i===q.ans){
+    score++;
+    btns[i].classList.add('correct');
+    fb.className='feedback-card correct';fb.style.display='block';
+    document.getElementById('feedback-title').textContent='✅ ¡Correcto!';
+    document.getElementById('feedback-text').textContent=q.ok;
+  } else {
+    btns[i].classList.add('wrong');
+    btns[q.ans].classList.add('correct');
+    fb.className='feedback-card wrong';fb.style.display='block';
+    document.getElementById('feedback-title').textContent='❌ No exactamente';
+    document.getElementById('feedback-text').textContent=q.fail;
+  }
+  document.getElementById('score-display').textContent=`✓ ${score}`;
+  document.getElementById('next-btn').style.display='inline-block';
+}
+
+function nextQuestion(){
+  current++;
+  if(current>=10)showEnd();
+  else renderQuestion();
+}
+
+function showEnd(){
+  document.getElementById('screen-game').classList.remove('active');
+  document.getElementById('screen-end').classList.add('active');
+  document.getElementById('final-score').textContent=`${score} / 10`;
+  const pct=Math.round((score/10)*100);
+  document.getElementById('final-pct').textContent=`${pct}% de aciertos`;
+  document.getElementById('teacher-msg').textContent=MESSAGES[Math.floor(Math.random()*MESSAGES.length)];
+  launchCelebration();
+}
+
+function restartGame(){
+  document.getElementById('screen-end').classList.remove('active');
+  stopCelebration();
+  startGame();
+  document.getElementById('screen-game').classList.add('active');
+}
+
+let confettiInterval,balloonEls=[];
+function launchCelebration(){
+  const canvas=document.getElementById('confetti-canvas');
+  const ctx2=canvas.getContext('2d');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const pieces=Array.from({length:120},()=>({
+    x:Math.random()*canvas.width,y:Math.random()*canvas.height-canvas.height,
+    r:Math.random()*7+3,d:Math.random()*120+40,
+    color:['#3b6d11','#d4537e','#c0dd97','#993556','#fdf8f0','#f9c74f'][Math.floor(Math.random()*6)],
+    tilt:Math.random()*10-10,speed:Math.random()*3+1
+  }));
+  let ang=0;
+  function draw(){
+    ctx2.clearRect(0,0,canvas.width,canvas.height);ang+=0.01;
+    pieces.forEach(p=>{
+      ctx2.beginPath();ctx2.lineWidth=p.r/2;ctx2.strokeStyle=p.color;
+      ctx2.moveTo(p.x+p.tilt+p.r/4,p.y);ctx2.lineTo(p.x+p.tilt,p.y+p.tilt+p.r/4);ctx2.stroke();
+      p.y+=p.speed;p.tilt=Math.sin(ang+p.d)*12;
+      if(p.y>canvas.height){p.y=-10;p.x=Math.random()*canvas.width;}
+    });
+  }
+  confettiInterval=setInterval(draw,16);
+  const emojis=['🎈','🎊','🎉','💚','🌟','💖'];
+  for(let i=0;i<12;i++){
+    const b=document.createElement('div');
+    b.className='balloon';
+    b.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    b.style.left=Math.random()*95+'%';
+    b.style.bottom='-60px';
+    b.style.animationDelay=(Math.random()*3)+'s';
+    b.style.fontSize=(1.8+Math.random()*1.5)+'rem';
+    document.body.appendChild(b);
+    balloonEls.push(b);
+  }
+  setTimeout(()=>{balloonEls.forEach(b=>{if(b.parentNode)b.remove();});balloonEls=[];},5000);
+}
+function stopCelebration(){
+  clearInterval(confettiInterval);
+  const canvas=document.getElementById('confetti-canvas');
+  canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+  balloonEls.forEach(b=>{if(b.parentNode)b.remove();});balloonEls=[];
+}
+</script>
+</body>
+</html>

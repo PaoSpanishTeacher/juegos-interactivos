@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#fdf8f0;--green:#3b6d11;--green-light:#c0dd97;--green-xlight:#eaf3de;--pink:#d4537e;--pink-dark:#993556;--text:#2d2d2d;}
+body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+.header{background:var(--green);color:white;padding:18px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid white;flex-shrink:0}
+.brand-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800}
+.brand-sub{font-size:0.78rem;opacity:0.85;margin-top:2px}
+.badges{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:5px 13px;font-size:0.75rem;font-weight:700}
+.badge.pink{background:var(--pink);border-color:var(--pink-dark)}
+.screen{display:none;padding:24px 16px;max-width:760px;margin:0 auto}
+.screen.active{display:block}
+.start-card{background:white;border-radius:20px;padding:36px 32px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.10);border:2px solid var(--green-light);margin-top:32px}
+.start-card h1{font-family:'Playfair Display',serif;font-size:1.85rem;color:var(--green);margin-bottom:10px}
+.start-card .subtitle{color:#666;font-size:0.97rem;margin-bottom:24px;line-height:1.7}
+.info-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.pill{background:var(--green-xlight);color:var(--green);border-radius:20px;padding:7px 16px;font-size:0.82rem;font-weight:700}
+.pill.p2{background:#fde8ef;color:var(--pink-dark)}
+.btn{display:inline-block;background:var(--green);color:white;border:none;border-radius:30px;padding:14px 36px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s}
+.btn:hover{background:#2d5209;transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,109,17,0.25)}
+.btn.pink-btn{background:var(--pink)}.btn.pink-btn:hover{background:var(--pink-dark)}
+.progress-bar-wrap{background:var(--green-xlight);border-radius:10px;height:10px;margin-bottom:6px}
+.progress-bar{background:var(--green);height:10px;border-radius:10px;transition:width .4s}
+.progress-info{display:flex;justify-content:space-between;font-size:0.8rem;color:#666;margin-bottom:18px}
+.score-badge{background:var(--green);color:white;border-radius:20px;padding:4px 14px;font-weight:700;font-size:0.85rem}
+.question-card{background:white;border-radius:20px;padding:28px 24px;box-shadow:0 4px 20px rgba(59,109,17,0.09);border:2px solid var(--green-light);margin-bottom:18px}
+.context-line{font-size:0.85rem;color:#888;margin-bottom:12px;font-style:italic}
+.grammar-badge{display:inline-block;background:var(--green-xlight);color:var(--green);border-radius:12px;padding:4px 12px;font-size:0.75rem;font-weight:700;margin-bottom:16px}
+.question-prompt{font-size:0.95rem;color:var(--pink-dark);font-weight:800;margin-bottom:16px;padding:10px 14px;background:#fde8ef;border-radius:10px}
+.options{display:grid;gap:10px}
+.opt-btn{background:var(--green-xlight);border:2px solid var(--green-light);border-radius:14px;padding:14px 18px;font-family:'Nunito',sans-serif;font-size:0.93rem;font-weight:600;color:var(--text);cursor:pointer;text-align:left;transition:all .18s;line-height:1.5;position:relative}
+.opt-btn:hover:not(:disabled){background:#d4edbb;border-color:var(--green);transform:translateX(4px)}
+.opt-btn.correct{background:#e6f7d9;border-color:#3b6d11;color:#1e4200}
+.opt-btn.wrong{background:#fde8ef;border-color:var(--pink);color:var(--pink-dark)}
+.opt-btn.intruso-revealed{background:#fff3cd;border-color:#f0a500;color:#7a5200}
+.opt-btn:disabled{cursor:default}
+.opt-label{display:inline-block;background:var(--green);color:white;border-radius:8px;padding:2px 8px;font-size:0.75rem;font-weight:800;margin-right:8px}
+.opt-label.wrong-label{background:var(--pink)}
+.opt-label.intruso-label{background:#f0a500}
+.feedback-card{border-radius:16px;padding:20px 22px;margin-top:16px;display:none;animation:fadeIn .3s}
+.feedback-card.correct{background:#e6f7d9;border:2px solid #a0d470}
+.feedback-card.wrong{background:#fde8ef;border:2px solid var(--pink)}
+.feedback-title{font-weight:800;font-size:1rem;margin-bottom:10px}
+.feedback-section{margin-top:10px}
+.feedback-section-title{font-size:0.8rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.feedback-section-title.pink{color:var(--pink-dark)}
+.feedback-text{font-size:0.9rem;line-height:1.65;color:#444}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.next-btn{display:none;margin-top:16px}
+.end-card{background:white;border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 4px 24px rgba(59,109,17,0.12);border:2px solid var(--green-light);margin-top:24px}
+.teacher-card{background:var(--green);color:white;border-radius:16px;padding:22px;margin:20px 0;display:flex;align-items:center;gap:16px;text-align:left}
+.teacher-avatar-big{width:68px;height:68px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:36px;border:3px solid white;flex-shrink:0}
+.score-display{font-family:'Playfair Display',serif;font-size:2.8rem;color:var(--green);font-weight:800;margin:10px 0}
+.score-pct{font-size:1.1rem;color:var(--pink);font-weight:700;margin-bottom:20px}
+.grammar-note{background:var(--green-xlight);border-radius:16px;padding:22px;text-align:left;margin:20px 0}
+.grammar-note h3{font-family:'Playfair Display',serif;color:var(--green);font-size:1.1rem;margin-bottom:14px}
+.grammar-note ul{list-style:none;padding:0}
+.grammar-note li{padding:8px 0;border-bottom:1px solid #d0e8b0;font-size:0.88rem;line-height:1.65;color:#333}
+.grammar-note li:last-child{border-bottom:none}
+.grammar-note li::before{content:"✦ ";color:var(--green);font-weight:800}
+.note-example{display:block;background:white;border-radius:8px;padding:7px 12px;margin-top:6px;font-style:italic;color:#555;font-size:0.83rem;border-left:3px solid var(--green)}
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+.balloon{position:fixed;font-size:2.5rem;pointer-events:none;z-index:997;animation:riseUp 4s ease-in forwards}
+@keyframes riseUp{to{transform:translateY(-110vh) rotate(15deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="avatar">👩‍🏫</div>
+  <div>
+    <div class="brand-name">Pao Spanish Teacher</div>
+    <div class="brand-sub">Español para adultos · Nivel avanzado</div>
+  </div>
+  <div class="badges">
+    <span class="badge">C1</span>
+    <span class="badge pink">Nominalizaciones</span>
+  </div>
+</div>
+
+<div class="screen active" id="screen-start">
+  <div class="start-card">
+    <div style="font-size:3rem;margin-bottom:12px">💼🏆</div>
+    <h1>Trabajo y Liderazgo</h1>
+    <p class="subtitle">¿Cuál es el intruso? Tres expresiones comparten algo en común y una <strong>no encaja</strong>. El intruso puede tener un error morfológico, romper el registro formal, ser semánticamente incoherente o ser un falso sustantivo. ¡Analiza con precisión! 🔍</p>
+    <div class="info-pills">
+      <span class="pill">📚 Nivel C1</span>
+      <span class="pill p2">🎯 Nominalizaciones formales</span>
+      <span class="pill">🔀 10 preguntas aleatorias</span>
+      <span class="pill p2">🕵️ Elegir el intruso</span>
+    </div>
+    <button class="btn" onclick="startGame()">¡Empezar juego! →</button>
+  </div>
+</div>
+
+<div class="screen" id="screen-game">
+  <div style="margin-top:20px">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="progress-info">
+      <span id="q-counter">Pregunta 1 de 10</span>
+      <span class="score-badge" id="score-display">✓ 0</span>
+    </div>
+  </div>
+  <div class="question-card">
+    <div class="context-line" id="context-line"></div>
+    <div class="grammar-badge" id="grammar-badge"></div>
+    <div class="question-prompt">🕵️ ¿Cuál es el intruso? Elige la expresión que NO encaja con las demás.</div>
+    <div class="options" id="options-container"></div>
+    <div class="feedback-card" id="feedback-card">
+      <div class="feedback-title" id="feedback-title"></div>
+      <div class="feedback-section">
+        <div class="feedback-section-title">✅ Por qué las otras son correctas</div>
+        <div class="feedback-text" id="feedback-correct"></div>
+      </div>
+      <div class="feedback-section" style="margin-top:10px">
+        <div class="feedback-section-title pink">❌ Por qué es el intruso</div>
+        <div class="feedback-text" id="feedback-intruso"></div>
+      </div>
+    </div>
+  </div>
+  <button class="btn next-btn" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+</div>
+
+<div class="screen" id="screen-end">
+  <div class="end-card">
+    <div style="font-size:2.5rem">🎆</div>
+    <h2 style="font-family:'Playfair Display',serif;color:var(--green);font-size:1.7rem;margin:10px 0">¡Juego completado!</h2>
+    <div class="score-display" id="final-score"></div>
+    <div class="score-pct" id="final-pct"></div>
+    <div class="teacher-card">
+      <div class="teacher-avatar-big">👩‍🏫</div>
+      <div>
+        <div style="font-weight:800;font-size:1rem;margin-bottom:6px">Pao Spanish Teacher</div>
+        <div style="font-size:0.95rem;line-height:1.6;font-weight:600" id="teacher-msg"></div>
+      </div>
+    </div>
+    <div class="grammar-note">
+      <h3>📖 Recuerda esto: Nominalizaciones en Registro Formal C1</h3>
+      <ul>
+        <li>Las nominalizaciones transforman verbos o adjetivos en sustantivos para dar más densidad y formalidad al texto.
+          <span class="note-example">implementar → implementación / eficiente → eficiencia / liderar → liderazgo</span>
+        </li>
+        <li>Los sufijos más frecuentes en nominalizaciones formales son: <strong>-ción/-sión, -idad, -miento, -anza, -aje, -ura</strong>.
+          <span class="note-example">gestión, responsabilidad, empoderamiento, confianza, liderazgo, cobertura</span>
+        </li>
+        <li>Errores morfológicos frecuentes: añadir <em>-amiento</em> o <em>-ción</em> a verbos que no lo admiten.
+          <span class="note-example">✗ implementamiento, ✗ dialogación, ✗ solucionamiento → ✓ implementación, ✓ diálogo, ✓ solución</span>
+        </li>
+        <li>El registro formal evita verbos coloquiales y prefiere sustantivos abstractos en textos académicos y profesionales.
+          <span class="note-example">✗ "hay que ponerse las pilas" → ✓ "se requiere una mayor implicación del equipo"</span>
+        </li>
+        <li>No todas las nominalizaciones posibles existen en español. Es un error frecuente en C1 crear palabras por analogía.
+          <span class="note-example">✗ la dirigencia del proyecto (en este sentido) → ✓ la dirección del proyecto</span>
+        </li>
+        <li>En el discurso académico y profesional, las nominalizaciones permiten condensar información y mantener la objetividad.
+          <span class="note-example">"La implementación de la estrategia requirió la colaboración de todos los departamentos."</span>
+        </li>
+        <li>Algunas nominalizaciones cambian de significado según el contexto. Es importante elegir la más precisa semánticamente.
+          <span class="note-example">dirección (lugar) vs. dirección (gestión) / intervención (médica) vs. intervención (política)</span>
+        </li>
+      </ul>
+    </div>
+    <button class="btn pink-btn" onclick="restartGame()">🔁 Jugar otra vez</button>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+const BANK = [
+  // BLOQUE 1: Error morfológico (falsa nominalización)
+  {ctx:"📋 Un informe de recursos humanos describe las prioridades del departamento.",badge:"Error morfológico: falsa nominalización",
+  opts:["La implementación de nuevas políticas de bienestar laboral","La capacitación continua del personal directivo","El solucionamiento de los conflictos internos del equipo","La evaluación periódica del desempeño individual"],
+  ans:2,
+  correct:"'Implementación', 'capacitación' y 'evaluación' son nominalizaciones correctas, bien formadas con el sufijo -ción, propias del registro formal de recursos humanos.",
+  intruso:"'Solucionamiento' es una falsa nominalización: no existe en español. El sustantivo correcto es 'solución' (de 'solucionar'). Es un error frecuente por analogía con 'funcionamiento' o 'mejoramiento'."},
+
+  {ctx:"🏢 Una consultora presenta su propuesta de mejora organizacional a un cliente.",badge:"Error morfológico: falsa nominalización",
+  opts:["La restructuración de los procesos internos de la empresa","La dialogación entre los distintos departamentos implicados","La optimización de los recursos humanos disponibles","La consolidación de la cultura corporativa a largo plazo"],
+  ans:1,
+  correct:"'Restructuración', 'optimización' y 'consolidación' son nominalizaciones correctas y propias del registro formal empresarial.",
+  intruso:"'Dialogación' no existe en español. El sustantivo correcto derivado de 'dialogar' es 'diálogo'. Es una falsa nominalización creada por analogía incorrecta con el sufijo -ción."},
+
+  {ctx:"📊 Un director de operaciones redacta el resumen ejecutivo del trimestre.",badge:"Error morfológico: falsa nominalización",
+  opts:["La planificación estratégica de los objetivos anuales","La implementación de los protocolos de calidad aprobados","El mejoramiento continuo de los indicadores de rendimiento","La supervisión directa de los equipos de trabajo regionales"],
+  ans:2,
+  correct:"'Planificación', 'implementación' y 'supervisión' son nominalizaciones formales correctas, habituales en informes ejecutivos.",
+  intruso:"'Mejoramiento' existe en algunos contextos latinoamericanos, pero en el registro formal estándar peninsular y académico, la nominalización correcta es 'mejora' o 'mejoría'. En un informe ejecutivo de alto nivel, 'mejoramiento' resulta inadecuado y suena a calco incorrecto."},
+
+  {ctx:"🧑‍💼 Una directora de comunicación interna redacta un protocolo corporativo.",badge:"Error morfológico: falsa nominalización",
+  opts:["La transparentización de los procesos de toma de decisiones","La comunicación efectiva entre los equipos multidisciplinares","La gestión eficiente de los conflictos organizacionales","La promoción de una cultura de retroalimentación continua"],
+  ans:0,
+  correct:"'Comunicación', 'gestión' y 'promoción' son nominalizaciones formales correctas y propias del registro corporativo.",
+  intruso:"'Transparentización' es una falsa nominalización que no existe en español. El sustantivo correcto es 'transparencia' (del adjetivo 'transparente'). El verbo 'transparentar' tampoco admite esta derivación nominal."},
+
+  {ctx:"📁 Un coordinador de proyectos presenta los resultados del año a la junta directiva.",badge:"Error morfológico: falsa nominalización",
+  opts:["La consecución de los objetivos establecidos en el plan anual","La potenciación de las habilidades directivas del equipo","El lograimiento de los indicadores clave de rendimiento","La consolidación de las alianzas estratégicas con socios externos"],
+  ans:2,
+  correct:"'Consecución', 'potenciación' y 'consolidación' son nominalizaciones formales correctas, adecuadas para un informe directivo.",
+  intruso:"'Lograimiento' es una falsa nominalización que no existe en español. El sustantivo correcto de 'lograr' es 'logro'. No existe el sufijo '-imiento' aplicable a este verbo."},
+
+  // BLOQUE 2: Registro incorrecto (coloquial entre formales)
+  {ctx:"🏛️ Un ejecutivo presenta su visión estratégica en una conferencia empresarial.",badge:"Registro incorrecto: coloquial entre formales",
+  opts:["El fortalecimiento de la cohesión interna de los equipos directivos","La consolidación de una visión compartida entre los distintos niveles jerárquicos","Hay que ponerse las pilas y trabajar más duro que nunca como equipo","La articulación de un liderazgo transformacional orientado a resultados"],
+  ans:2,
+  correct:"'Fortalecimiento', 'consolidación' y 'articulación' son nominalizaciones formales correctas, propias del discurso directivo y académico.",
+  intruso:"'Hay que ponerse las pilas y trabajar más duro' es una expresión completamente coloquial e inapropiada para una conferencia empresarial. Rompe el registro formal del resto de opciones. Lo equivalente formal sería: 'Se requiere un incremento significativo del compromiso y la productividad del equipo'."},
+
+  {ctx:"📄 Una consultora de recursos humanos redacta un informe sobre clima laboral.",badge:"Registro incorrecto: coloquial entre formales",
+  opts:["La percepción del ambiente de trabajo por parte de los empleados es malísima y todo el mundo está harto","La evaluación del clima organizacional revela índices de insatisfacción significativos","La identificación de las principales causas de desmotivación en el equipo","La propuesta de medidas correctoras orientadas a mejorar el bienestar laboral"],
+  ans:0,
+  correct:"'Evaluación', 'identificación' y 'propuesta' son nominalizaciones formales correctas y propias de un informe de recursos humanos.",
+  intruso:"La primera opción usa un registro marcadamente coloquial e inapropiado para un informe profesional: 'malísima', 'todo el mundo está harto'. Además, carece de nominalización formal. Lo correcto sería: 'La percepción del entorno laboral refleja índices de insatisfacción significativos'."},
+
+  {ctx:"🎤 Un líder empresarial da un discurso de apertura en un congreso de innovación.",badge:"Registro incorrecto: coloquial entre formales",
+  opts:["La transformación digital representa un desafío estructural para las organizaciones del siglo XXI","La generación de valor sostenible exige una reconfiguración profunda de los modelos de negocio","Si no nos ponemos a innovar ya, nos va a comer la competencia y se acabó","La adopción de nuevas tecnologías debe ir acompañada de una cultura organizacional abierta al cambio"],
+  ans:2,
+  correct:"'Transformación', 'generación de valor' y 'adopción' son nominalizaciones formales adecuadas para un discurso en un congreso de innovación.",
+  intruso:"La tercera opción usa un registro coloquial e inapropiado para un congreso: 'ponerse a innovar ya', 'nos va a comer la competencia', 'se acabó'. Rompe completamente el tono formal y académico del discurso."},
+
+  {ctx:"📝 Un director de formación redacta los objetivos de un programa de liderazgo.",badge:"Registro incorrecto: coloquial entre formales",
+  opts:["El desarrollo de competencias directivas orientadas a la gestión del cambio","La adquisición de herramientas para la toma de decisiones en entornos complejos","Aprender a llevarse bien con el equipo y no meterse en líos innecesarios","El fomento de una cultura de mejora continua y aprendizaje organizacional"],
+  ans:2,
+  correct:"'Desarrollo', 'adquisición' y 'fomento' son nominalizaciones formales correctas y adecuadas para los objetivos de un programa directivo.",
+  intruso:"'Aprender a llevarse bien con el equipo y no meterse en líos innecesarios' usa un registro coloquial completamente inapropiado para objetivos formativos. Carece de nominalización formal y el léxico es informal."},
+
+  // BLOQUE 3: Incoherencia semántica
+  {ctx:"🤝 Un equipo directivo debate sobre estrategias de retención del talento.",badge:"Incoherencia semántica",
+  opts:["La flexibilización de las condiciones laborales como medida de atracción","El reconocimiento del desempeño individual mediante incentivos no económicos","La construcción de infraestructuras viales en zonas rurales del país","La promoción de un entorno laboral inclusivo y psicológicamente seguro"],
+  ans:2,
+  correct:"'Flexibilización', 'reconocimiento del desempeño' y 'promoción de un entorno laboral' son nominalizaciones coherentes con el contexto de retención del talento en una empresa.",
+  intruso:"'La construcción de infraestructuras viales en zonas rurales' es semánticamente incoherente con el contexto de una reunión sobre retención del talento. Aunque es una nominalización correcta, no tiene ninguna relación temática con las estrategias de recursos humanos."},
+
+  {ctx:"📈 Una empresa de consultoría presenta su plan de transformación organizacional.",badge:"Incoherencia semántica",
+  opts:["La reingeniería de los procesos operativos para aumentar la eficiencia","La digitalización de los flujos de trabajo en todos los departamentos","La catalogación de especies marinas en el océano Pacífico sur","La redefinición de los roles y responsabilidades dentro de la estructura jerárquica"],
+  ans:2,
+  correct:"'Reingeniería', 'digitalización' y 'redefinición de roles' son nominalizaciones coherentes con un plan de transformación organizacional empresarial.",
+  intruso:"'La catalogación de especies marinas en el océano Pacífico sur' es semánticamente incoherente: aunque es una nominalización correcta, no tiene ninguna relación con un plan de transformación organizacional de una consultora."},
+
+  {ctx:"🧑‍🏫 Un formador diseña un programa de desarrollo del liderazgo femenino.",badge:"Incoherencia semántica",
+  opts:["El empoderamiento de mujeres en posiciones de responsabilidad directiva","La visibilización de referentes femeninos en sectores de alta dirección","La extracción de minerales en yacimientos de litio en Sudamérica","La eliminación de sesgos inconscientes en los procesos de selección y promoción"],
+  ans:2,
+  correct:"'Empoderamiento', 'visibilización de referentes' y 'eliminación de sesgos' son nominalizaciones coherentes y relevantes para un programa de liderazgo femenino.",
+  intruso:"'La extracción de minerales en yacimientos de litio en Sudamérica' es semánticamente incoherente con el contexto de desarrollo del liderazgo femenino. Es una nominalización correcta pero completamente ajena al tema."},
+
+  {ctx:"💡 Una empresa de innovación presenta su estrategia de gestión del conocimiento.",badge:"Incoherencia semántica",
+  opts:["La sistematización del aprendizaje organizacional mediante plataformas digitales","La transferencia de conocimiento entre generaciones dentro de la organización","La depuración de aguas residuales en plantas de tratamiento industrial","La creación de comunidades de práctica interdepartamentales"],
+  ans:2,
+  correct:"'Sistematización del aprendizaje', 'transferencia de conocimiento' y 'creación de comunidades de práctica' son nominalizaciones coherentes con la gestión del conocimiento empresarial.",
+  intruso:"'La depuración de aguas residuales en plantas de tratamiento industrial' es una nominalización correcta pero semánticamente incoherente con el contexto de gestión del conocimiento en una empresa de innovación."},
+
+  // BLOQUE 4: Falso sustantivo (parece nominalización pero no existe)
+  {ctx:"📋 Un departamento de calidad elabora su memoria anual de actividades.",badge:"Falso sustantivo",
+  opts:["La verificación de los estándares de calidad en cada fase del proceso","La certificación de los productos según las normativas internacionales vigentes","La controlación exhaustiva de los procedimientos de fabricación","La auditoría interna de los sistemas de gestión implementados"],
+  ans:2,
+  correct:"'Verificación', 'certificación' y 'auditoría' son nominalizaciones correctas y propias del lenguaje de gestión de la calidad.",
+  intruso:"'Controlación' no existe en español. El sustantivo correcto derivado de 'controlar' es 'control'. Es un falso sustantivo creado por analogía incorrecta con el sufijo -ción."},
+
+  {ctx:"🏗️ Una empresa constructora presenta su plan de seguridad laboral.",badge:"Falso sustantivo",
+  opts:["La prevención de riesgos laborales en todas las fases de la obra","La formación específica del personal en materia de seguridad","La protección individual mediante equipos homologados y certificados","La segurizamiento de las instalaciones frente a accidentes graves"],
+  ans:3,
+  correct:"'Prevención', 'formación' y 'protección' son nominalizaciones correctas y habituales en el ámbito de la seguridad laboral.",
+  intruso:"'Segurizamiento' es un falso sustantivo que no existe en español. El sustantivo correcto es 'segurización' (en algunos contextos técnicos) o, más comúnmente, 'protección', 'aseguramiento' o 'securización'. 'Segurizamiento' es una forma inventada."},
+
+  {ctx:"🧑‍💼 Un responsable de cumplimiento normativo redacta un informe de riesgos.",badge:"Falso sustantivo",
+  opts:["La identificación de las vulnerabilidades en el sistema de control interno","La mitigación de los riesgos operacionales mediante protocolos específicos","La regulamentación de los procesos de reporte financiero","La supervisión continua del cumplimiento de las obligaciones legales"],
+  ans:2,
+  correct:"'Identificación', 'mitigación' y 'supervisión' son nominalizaciones correctas y propias del lenguaje de cumplimiento normativo y gestión de riesgos.",
+  intruso:"'Regulamentación' es un falso sustantivo en español. La forma correcta es 'regulación' (de 'regular') o 'reglamentación' (de 'reglamentar'). 'Regulamentación' mezcla incorrectamente las dos formas."},
+
+  {ctx:"📊 Un analista financiero presenta los resultados del ejercicio a los accionistas.",badge:"Falso sustantivo",
+  opts:["La rentabilización de los activos a través de una gestión eficiente del capital","La diversificación de la cartera de inversiones para minimizar el riesgo","La capitalizamiento de las reservas acumuladas durante el último ejercicio","La amortización anticipada de la deuda a largo plazo con entidades financieras"],
+  ans:2,
+  correct:"'Rentabilización', 'diversificación' y 'amortización' son nominalizaciones correctas y propias del lenguaje financiero formal.",
+  intruso:"'Capitalizamiento' es un falso sustantivo: no existe en español. El sustantivo correcto es 'capitalización' (de 'capitalizar'). Es un error por analogía con otras formas en -miento."},
+
+  // BLOQUE 5: Nominalización correcta pero de registro equivocado para el contexto
+  {ctx:"🎓 Una escuela de negocios publica la convocatoria de su programa MBA.",badge:"Registro inadecuado para el contexto",
+  opts:["El desarrollo de competencias directivas en entornos globales y multiculturales","La adquisición de herramientas analíticas para la toma de decisiones estratégicas","El aprendizaje de cosas interesantes sobre cómo llevar una empresa","La construcción de una red de contactos profesionales de alto nivel"],
+  ans:2,
+  correct:"'Desarrollo de competencias', 'adquisición de herramientas analíticas' y 'construcción de una red de contactos' son nominalizaciones formales correctas y adecuadas para una convocatoria MBA.",
+  intruso:"'El aprendizaje de cosas interesantes sobre cómo llevar una empresa' usa un registro completamente inapropiado para una convocatoria de un programa MBA. El léxico es vago e informal ('cosas interesantes', 'llevar una empresa'). Lo correcto sería: 'La adquisición de conocimientos aplicados a la gestión empresarial estratégica'."},
+
+  {ctx:"📜 Un director de recursos humanos redacta una política de desconexión digital.",badge:"Registro inadecuado para el contexto",
+  opts:["La garantía del derecho a la desconexión fuera del horario laboral establecido","La delimitación clara de los tiempos de disponibilidad de los empleados","El aseguramiento del respeto a la vida personal y familiar del trabajador","No molestar a la gente cuando ya han acabado de currar por el día"],
+  ans:3,
+  correct:"'Garantía', 'delimitación' y 'aseguramiento' son nominalizaciones formales correctas y adecuadas para una política corporativa de desconexión digital.",
+  intruso:"La última opción usa un registro coloquial completamente inapropiado para una política corporativa: 'molestar a la gente', 'acabado de currar'. Carece de nominalización formal y el tono es incompatible con un documento institucional."},
+
+  {ctx:"🤝 Una multinacional publica su código ético corporativo.",badge:"Registro inadecuado para el contexto",
+  opts:["El compromiso con la integridad en todas las operaciones y relaciones comerciales","La prevención de conductas contrarias a los principios éticos de la organización","La promoción de la diversidad, la equidad y la inclusión en todos los niveles","El rechazo total a los chanchullos y a todo tipo de corruptelas en la empresa"],
+  ans:3,
+  correct:"'Compromiso con la integridad', 'prevención de conductas' y 'promoción de la diversidad' son nominalizaciones formales correctas y adecuadas para un código ético corporativo.",
+  intruso:"'El rechazo total a los chanchullos y a todo tipo de corruptelas' usa léxico marcadamente coloquial e inapropiado para un código ético corporativo: 'chanchullos', 'corruptelas'. Aunque el contenido es correcto, el registro es completamente inadecuado."},
+
+  // BLOQUE 6: Grupos mixtos (combinación de tipos de error)
+  {ctx:"🏆 Una empresa premia a sus mejores líderes en su gala anual de reconocimiento.",badge:"Grupo mixto: error morfológico + registro",
+  opts:["La excelencia en la gestión de equipos multidisciplinares bajo presión","La capacidad de inspiración y motivación de los colaboradores a su cargo","El liderazamiento efectivo de proyectos de alto impacto organizacional","La demostración de valores éticos en la toma de decisiones complejas"],
+  ans:2,
+  correct:"'Excelencia en la gestión', 'capacidad de inspiración' y 'demostración de valores' son nominalizaciones correctas y coherentes con el contexto de un premio al liderazgo.",
+  intruso:"'Liderazamiento' es una falsa nominalización que no existe en español. El sustantivo correcto es 'liderazgo' (sustantivo ya existente) o 'lideración' en algunos contextos. 'Liderazamiento' combina un error morfológico con un registro inadecuado."},
+
+  {ctx:"📈 Un consejo de administración evalúa el desempeño del equipo directivo.",badge:"Grupo mixto: semántica + registro",
+  opts:["La alineación de los objetivos individuales con la estrategia corporativa global","La rendición de cuentas ante los grupos de interés de la organización","La cocción de pasta al dente como técnica culinaria de origen italiano","La generación de valor sostenible para los accionistas y la sociedad"],
+  ans:2,
+  correct:"'Alineación de objetivos', 'rendición de cuentas' y 'generación de valor sostenible' son nominalizaciones correctas y coherentes con la evaluación del desempeño directivo.",
+  intruso:"'La cocción de pasta al dente como técnica culinaria' combina incoherencia semántica total con un contexto completamente ajeno al del consejo de administración. Es una nominalización correcta morfológicamente, pero absolutamente fuera de contexto."},
+
+  {ctx:"🧑‍💻 Una empresa tecnológica define su cultura de innovación interna.",badge:"Grupo mixto: falso sustantivo + incoherencia",
+  opts:["El fomento de la creatividad y el pensamiento lateral en todos los equipos","La tolerancia al fracaso como parte inherente del proceso de innovación","La innovacionamiento continuo de los productos y servicios ofrecidos","La creación de espacios seguros para la experimentación y el aprendizaje"],
+  ans:2,
+  correct:"'Fomento de la creatividad', 'tolerancia al fracaso' y 'creación de espacios seguros' son nominalizaciones correctas y coherentes con una cultura de innovación.",
+  intruso:"'Innovacionamiento' es un falso sustantivo que no existe en español. Combina un error morfológico grave (el sufijo -miento no aplica aquí) con una redundancia semántica innecesaria. El sustantivo correcto sería simplemente 'innovación'."},
+
+  {ctx:"⚖️ Un departamento de cumplimiento normativo presenta su informe de ética.",badge:"Grupo mixto: registro + morfología",
+  opts:["La detección y notificación de irregularidades a través de canales seguros","La protección de los denunciantes frente a posibles represalias laborales","La concienciación de los empleados sobre las obligaciones éticas y legales","El chivatazo organizado de los empleados cuando alguien la lía en la empresa"],
+  ans:3,
+  correct:"'Detección y notificación', 'protección de los denunciantes' y 'concienciación de los empleados' son nominalizaciones formales correctas y adecuadas para un informe de ética corporativa.",
+  intruso:"'El chivatazo organizado de los empleados cuando alguien la lía en la empresa' combina registro completamente coloquial ('chivatazo', 'la lía') con ausencia total de nominalización formal. Es semántica y estilísticamente inapropiado para un informe de cumplimiento normativo."},
+
+  {ctx:"🌱 Una empresa sostenible presenta su memoria de responsabilidad social corporativa.",badge:"Nominalizaciones de RSC: registro formal",
+  opts:["La reducción de la huella de carbono mediante procesos productivos más eficientes","La integración de criterios ambientales en la cadena de valor de la organización","La implicación activa de los grupos de interés en la toma de decisiones estratégicas","El verdecimiento a tope de la empresa para quedar bien con los ecologistas"],
+  ans:3,
+  correct:"'Reducción de la huella de carbono', 'integración de criterios ambientales' e 'implicación activa de los grupos de interés' son nominalizaciones formales correctas y propias de una memoria de RSC.",
+  intruso:"'El verdecimiento a tope de la empresa para quedar bien con los ecologistas' combina un registro coloquial inapropiado ('a tope', 'quedar bien') con una expresión peyorativa. Aunque 'verdecimiento' podría considerarse una nominalización válida en algunos contextos, el conjunto de la expresión es completamente inadecuado para una memoria de RSC."},
+
+  {ctx:"🏥 Un hospital corporativo define sus valores institucionales.",badge:"Nominalizaciones institucionales: coherencia",
+  opts:["El compromiso con la excelencia asistencial y la seguridad del paciente","La promoción de la investigación clínica y la innovación terapéutica","La gestión eficiente de los recursos sanitarios disponibles","La clasificación taxonómica de los reptiles del período jurásico"],
+  ans:3,
+  correct:"'Compromiso con la excelencia asistencial', 'promoción de la investigación clínica' y 'gestión eficiente de los recursos sanitarios' son nominalizaciones correctas y coherentes con los valores de un hospital.",
+  intruso:"'La clasificación taxonómica de los reptiles del período jurásico' es una nominalización correcta morfológicamente, pero completamente incoherente con el contexto de los valores institucionales de un hospital corporativo."},
+
+  {ctx:"📡 Una agencia de comunicación estratégica presenta sus servicios a una multinacional.",badge:"Nominalizaciones de comunicación corporativa",
+  opts:["La construcción y gestión de la reputación corporativa en entornos digitales","La elaboración de mensajes clave adaptados a cada grupo de interés","La monitorización continua de la conversación sobre la marca en redes sociales","La habladura constante de la empresa en todos los sitios de internet"],
+  ans:3,
+  correct:"'Construcción y gestión de la reputación', 'elaboración de mensajes clave' y 'monitorización continua' son nominalizaciones formales correctas y propias del lenguaje de comunicación corporativa.",
+  intruso:"'La habladura constante de la empresa en todos los sitios de internet' usa registro coloquial inapropiado ('habladura', 'sitios de internet') y carece de nominalización formal adecuada. Es semánticamente impreciso y estilísticamente incompatible con el contexto."},
+];
+
+const MESSAGES = [
+  "¡Ojo de experto! Detectar nominalizaciones incorrectas en contextos profesionales es una habilidad de nivel C1 puro. ¡Lo has hecho brillantemente! ♥",
+  "¡Impresionante precisión léxica! Distinguir entre registro, morfología y coherencia semántica al mismo tiempo es todo un reto. ¡Estoy orgullosa de ti! ♥",
+  "¡Fantástico! El dominio del registro formal y las nominalizaciones te abre las puertas del español académico y profesional de alto nivel. ¡Sigue así! ♥",
+  "¡Excelente trabajo! Encontrar el intruso entre nominalizaciones complejas demuestra una competencia léxica muy avanzada. ¡Eso es C1 de verdad! ♥",
+  "¡Brillante análisis! El español formal y académico requiere precisión léxica y sensibilidad al registro. ¡Has demostrado tenerlos! ♥"
+];
+
+let questions=[],current=0,score=0,answered=false;
+function shuffle(arr){return arr.slice().sort(()=>Math.random()-.5)}
+
+function startGame(){
+  questions=shuffle(BANK).slice(0,10);
+  current=0;score=0;answered=false;
+  document.getElementById('screen-start').classList.remove('active');
+  document.getElementById('screen-game').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  answered=false;
+  const q=questions[current];
+  document.getElementById('progress-bar').style.width=((current/10)*100)+'%';
+  document.getElementById('q-counter').textContent=`Pregunta ${current+1} de 10`;
+  document.getElementById('score-display').textContent=`✓ ${score}`;
+  document.getElementById('context-line').textContent=q.ctx;
+  document.getElementById('grammar-badge').textContent=q.badge;
+  const fb=document.getElementById('feedback-card');
+  fb.style.display='none';fb.className='feedback-card';
+  document.getElementById('next-btn').style.display='none';
+  const cont=document.getElementById('options-container');
+  cont.innerHTML='';
+  const indices=[0,1,2,3];
+  const shuffled=shuffle(indices);
+  const newAns=shuffled.indexOf(q.ans);
+  shuffled.forEach((origIdx,i)=>{
+    const b=document.createElement('button');
+    b.className='opt-btn';
+    b.innerHTML=`<span class="opt-label">${String.fromCharCode(65+i)}</span>${q.opts[origIdx]}`;
+    b.dataset.orig=origIdx;
+    b.onclick=()=>selectOption(i,newAns);
+    cont.appendChild(b);
+  });
+}
+
+function selectOption(chosen,correctIdx){
+  if(answered)return;
+  answered=true;
+  const q=questions[current];
+  const btns=document.querySelectorAll('.opt-btn');
+  btns.forEach(b=>b.disabled=true);
+  const fb=document.getElementById('feedback-card');
+  if(chosen===correctIdx){
+    score++;
+    btns[chosen].classList.add('intruso-revealed');
+    btns[chosen].querySelector('.opt-label').classList.add('intruso-label');
+    fb.className='feedback-card correct';fb.style.display='block';
+    document.getElementById('feedback-title').textContent='✅ ¡Correcto! Has encontrado el intruso.';
+  } else {
+    btns[chosen].classList.add('wrong');
+    btns[chosen].querySelector('.opt-label').classList.add('wrong-label');
+    btns[correctIdx].classList.add('intruso-revealed');
+    btns[correctIdx].querySelector('.opt-label').classList.add('intruso-label');
+    fb.className='feedback-card wrong';fb.style.display='block';
+    document.getElementById('feedback-title').textContent='❌ No exactamente. El intruso era otro.';
+  }
+  document.getElementById('feedback-correct').textContent=q.correct;
+  document.getElementById('feedback-intruso').textContent=q.intruso;
+  document.getElementById('score-display').textContent=`✓ ${score}`;
+  document.getElementById('next-btn').style.display='inline-block';
+}
+
+function nextQuestion(){
+  current++;
+  if(current>=10)showEnd();
+  else renderQuestion();
+}
+
+function showEnd(){
+  document.getElementById('screen-game').classList.remove('active');
+  document.getElementById('screen-end').classList.add('active');
+  document.getElementById('final-score').textContent=`${score} / 10`;
+  const pct=Math.round((score/10)*100);
+  document.getElementById('final-pct').textContent=`${pct}% de aciertos`;
+  document.getElementById('teacher-msg').textContent=MESSAGES[Math.floor(Math.random()*MESSAGES.length)];
+  launchCelebration();
+}
+
+function restartGame(){
+  document.getElementById('screen-end').classList.remove('active');
+  stopCelebration();
+  startGame();
+  document.getElementById('screen-game').classList.add('active');
+}
+
+let confettiInterval,balloonEls=[];
+function launchCelebration(){
+  const canvas=document.getElementById('confetti-canvas');
+  const ctx2=canvas.getContext('2d');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const pieces=Array.from({length:120},()=>({
+    x:Math.random()*canvas.width,y:Math.random()*canvas.height-canvas.height,
+    r:Math.random()*7+3,d:Math.random()*120+40,
+    color:['#3b6d11','#d4537e','#c0dd97','#993556','#fdf8f0','#f9c74f'][Math.floor(Math.random()*6)],
+    tilt:Math.random()*10-10,speed:Math.random()*3+1
+  }));
+  let ang=0;
+  function draw(){
+    ctx2.clearRect(0,0,canvas.width,canvas.height);ang+=0.01;
+    pieces.forEach(p=>{
+      ctx2.beginPath();ctx2.lineWidth=p.r/2;ctx2.strokeStyle=p.color;
+      ctx2.moveTo(p.x+p.tilt+p.r/4,p.y);ctx2.lineTo(p.x+p.tilt,p.y+p.tilt+p.r/4);ctx2.stroke();
+      p.y+=p.speed;p.tilt=Math.sin(ang+p.d)*12;
+      if(p.y>canvas.height){p.y=-10;p.x=Math.random()*canvas.width;}
+    });
+  }
+  confettiInterval=setInterval(draw,16);
+  const emojis=['🎈','🎊','🎉','💚','🌟','💖'];
+  for(let i=0;i<12;i++){
+    const b=document.createElement('div');
+    b.className='balloon';
+    b.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    b.style.left=Math.random()*95+'%';
+    b.style.bottom='-60px';
+    b.style.animationDelay=(Math.random()*3)+'s';
+    b.style.fontSize=(1.8+Math.random()*1.5)+'rem';
+    document.body.appendChild(b);
+    balloonEls.push(b);
+  }
+  setTimeout(()=>{balloonEls.forEach(b=>{if(b.parentNode)b.remove();});balloonEls=[];},5000);
+}
+function stopCelebration(){
+  clearInterval(confettiInterval);
+  const canvas=document.getElementById('confetti-canvas');
+  canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+  balloonEls.forEach(b=>{if(b.parentNode)b.remove();});balloonEls=[];
+}
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"5070e21320304a1ba2b0a42ce9682840","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
